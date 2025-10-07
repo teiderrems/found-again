@@ -1,0 +1,94 @@
+<!-- login.component.html -->
+<div class="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+  <!-- Image de fond floutée et assombrie -->
+  <div class="absolute inset-0 z-0">
+    <img src="assets/bakground.jpg" alt="Background"   />
+  </div>
+
+  <!-- Contenu principal (formulaire) -->
+  <div class="relative z-10 max-w-md w-full bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-xl p-8 sm:p-10">
+    <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Connexion à votre compte</h2>
+
+    <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="signIn()">
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          placeholder="votre@email.com"
+          required
+        />
+        <p class="text-red-500 text-xs mt-1" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+          <span *ngIf="email?.errors?.['required']">L'email est requis.</span>
+          <span *ngIf="email?.errors?.['email'] || email?.errors?.['pattern']">Format d'email invalide.</span>
+        </p>
+      </div>
+
+      <!-- Mot de passe -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          placeholder="••••••••"
+          required
+        />
+        <p class="text-red-500 text-xs mt-1" *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+          <span *ngIf="password?.errors?.['required']">Le mot de passe est requis.</span>
+          <span *ngIf="password?.errors?.['minlength'] || password?.errors?.['maxlength']">Entre 4 et 10 caractères.</span>
+          <span *ngIf="password?.errors?.['pattern']">Doit contenir au moins une lettre et un chiffre.</span>
+        </p>
+      </div>
+
+      <!-- Erreur générale -->
+      <p class="text-red-600 text-sm text-center" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <!-- Rappel et lien -->
+      <div class="flex items-center justify-between text-sm">
+        <label class="flex items-center">
+          <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+          <span class="ml-2 text-gray-600">Se souvenir de moi</span>
+        </label>
+        <a routerLink="/confirm-email" class="text-indigo-600 hover:underline">Mot de passe oublié ?</a>
+      </div>
+
+      <!-- Bouton principal -->
+      <button
+        type="submit"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow transition duration-200"
+      >
+        Se connecter
+      </button>
+    </form>
+
+    <!-- OU -->
+    <div class="flex items-center my-6">
+      <div class="flex-grow border-t border-gray-300"></div>
+      <span class="mx-4 text-sm text-gray-500">ou</span>
+      <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <!-- Connexion Google -->
+    <form (ngSubmit)="signInGoogle()">
+      <button
+        type="submit"
+        class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm"
+      >
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5" />
+        Se connecter avec Google
+      </button>
+    </form>
+
+    <!-- Lien vers l'inscription -->
+    <div class="mt-6 text-center text-sm text-gray-600">
+      Vous n'avez pas de compte ?
+      <a routerLink="/register" class="text-indigo-600 hover:underline font-medium">Créer un compte</a>
+    </div>
+  </div>
+</div>

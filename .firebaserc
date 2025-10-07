@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "found-again": {
+      "hosting": {
+        "found-again": [
+          "found-again"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "found-again"
+  }
+}

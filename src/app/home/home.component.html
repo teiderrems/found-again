@@ -1,0 +1,117 @@
+<div class="h-full w-full overflow-hidden">
+   <app-header />
+   <div class="w-full overflow-y-auto overflow-x-hidden">
+      <router-outlet>
+        <div [class.cacher]="getUrl.includes('profil')" class="flex justify-center" style="background-color: rgb(243, 243, 248);">
+          <div class="sm:w-3/6 w-5/6">
+            <app-reservation
+              (trajets)="getTraject($event)"
+              (infos)="getInfos($event)"
+            />
+          </div>
+        </div>
+
+         <div [class.cacher]="getUrl.includes('profil')" class="sm:mx-24 items-center my-5 flex space-y-4 flex-col overflow-y-auto">
+            @for (trajet of trajets2; track trajet.item.id) {
+             <div class="bg-gray-100 mx-auto max-w-7xl px-6 lg:px-8 w-full cursor-pointer"  (click)="choise(trajet.item)">
+                      <div class="overflow-hidden rounded-lg shadow-lg lg:flex lg:max-w-none">
+                        <div class="flex-1 bg-white px-6 py-8 lg:p-12">
+                          <h3 class="text-2xl font-bold text-gray-900 sm:text-3xl sm:tracking-tight">{{trajet.item.departure_date_time | date:'shortTime'}} {{infos.departure}}</h3>
+                          <p class="mt-6 text-base text-gray-500">{{trajet.item.arrival_date_time | date:'shortTime'}} {{infos.destination}}</p>
+                          <div class="mt-8">
+                            <div class="flex items-center">
+                              <h4 class="flex-shrink-0 bg-white pr-4 text-base font-semibold text-indigo-600">Durée</h4>
+                              <div class="flex-1 border-t-2 border-gray-200"></div>
+                            </div>
+                            <ul role="list" class="mt-8 space-y-5 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:gap-y-5 lg:space-y-0">
+                              <li class="flex items-start lg:col-span-1">
+                                <div class="flex-shrink-0">
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-green-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                  </svg>
+                                </div>
+                                <p class="ml-3 text-sm text-gray-700">{{formatDuration(trajet.item.duration!)}} <span [class.cacher]="!getCorrespondance(trajet.item)">{{getCorrespondance(trajet.item)}}</span></p>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="bg-gray-50 py-8 px-6 text-center lg:flex lg:flex-shrink-0 lg:flex-col lg:justify-center lg:p-12">
+                          <p class="text-lg font-medium leading-6 text-gray-900">Dès</p>
+                          <div class="mt-4 flex items-center justify-center text-5xl font-bold tracking-tight text-gray-900">
+                            <span>€{{trajet.item.price }}</span>
+                            <span class="ml-3 text-xl font-medium tracking-normal text-gray-500">EUR</span>
+                          </div>
+                          <div class="mt-6">
+                            <div class="rounded-md shadow">
+                              <a (click)="choise(trajet.item)" class="flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-base font-medium text-white hover:bg-gray-900" (click)="choise(trajet.item)">Valider</a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="bg-gray-50 py-8 px-6 text-center lg:flex lg:flex-shrink-0 lg:flex-col lg:justify-center lg:p-12">
+                          <p class="text-lg font-medium leading-6 text-gray-900">Dès</p>
+                          <div class="mt-4 flex items-center justify-center text-5xl font-bold tracking-tight text-gray-900">
+                            <span>€{{getNewPrice(trajet.item.price!) }}</span>
+                            <span class="ml-3 text-xl font-medium tracking-normal text-gray-500">EUR</span>
+                          </div>
+                          <div class="mt-6">
+                            <div class="rounded-md shadow">
+                              <a (click)="choise(trajet.item)" class="flex items-center justify-center rounded-md border border-transparent bg-gray-800 px-5 py-3 text-base font-medium text-white hover:bg-gray-900" (click)="choise(trajet.item)">Valider</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+            }
+         </div>
+      </router-outlet>
+   </div>
+</div>
+<ng-template #customIcon><span nz-icon nzType="smile"></span></ng-template>
+
+<ng-template #current_itineraire>
+   <div mat-dialog-title>
+      <div class="flex w-full items-center justify-between" >
+         <span class="flex items-center">
+            (<span class="pr-1">{{
+            getHeader({ item: currentTraject!, visible: false })
+            }}</span
+            >)<span class="px-1">{{ infos.departure }}</span>
+            <mat-icon fontIcon="east"></mat-icon>
+            <span class="px-1">{{ infos.destination }}</span>
+         </span>
+         <span class=" p-2">{{currentTraject?.price|currency:'EUR'}}</span>
+      </div>
+   </div>
+   <mat-dialog-content>
+      <mat-vertical-stepper #stepper linear="false">
+         @for (section of currentTraject?.sections; track section.id) {
+            @if (section?.from && section?.to) {
+               @if ($index < (currentTraject?.sections)!.length - 1) {
+                  <mat-step editable="false">
+                     <ng-template matStepperIcon="chat">
+                        <mat-icon>forum</mat-icon>
+                     </ng-template>
+                     <ng-template matStepContent>
+                        <p>{{getDescription(section)}}</p>
+                     </ng-template>
+                     <ng-template matStepLabel><span class="pr-2">({{section.departure_date_time|date:'shortTime'}})</span>{{ section.from.name }}</ng-template>
+                  </mat-step>
+               } @else {
+                  <ng-template matStepContent>
+                     <div class="flex items-center pr-2 pb-2 space-x-1">{{getDescription(section)}}<mat-icon [class.cacher]="!sectionWithTGV(section)">wifi</mat-icon><mat-icon>pedal_bike</mat-icon></div>
+                  </ng-template>
+                  <mat-step editable="false">
+                     <ng-template matStepLabel><span class="pr-2">({{section.departure_date_time|date:'shortTime'}})</span>{{ section.to.name }}</ng-template>
+                  </mat-step>
+               }
+            }
+         }
+      </mat-vertical-stepper>
+   </mat-dialog-content>
+   <mat-dialog-actions >
+      <div class="h-full flex justify-end w-full">
+         <button mat-flat-button mat-dialog-close class="" (click)="handleOk()" color="primary" cdkFocusInitial>Valider</button>
+         <button mat-flat-button mat-dialog-close class="mx-2" (click)="handleCancel()" color="warn">Annuler</button>
+      </div>
+   </mat-dialog-actions>
+</ng-template>
