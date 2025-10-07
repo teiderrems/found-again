@@ -1,0 +1,78 @@
+<div class="h-full mt-5 flex justify-center">
+  <main class="w-full max-w-4xl pb-10 lg:py-12 px-4 lg:px-0">
+    
+    <div class="space-y-6">
+      <div class="space-y-6 sm:px-6 lg:col-span-9 lg:px-0">
+        <section aria-labelledby="payment-details-heading">
+          <form class="space-y-4" [formGroup]="profileForm" (ngSubmit)="handleSubmit()">
+            <div class="shadow sm:overflow-hidden sm:rounded-md">
+              <div class="bg-white py-6 px-4 sm:p-6">
+                <div>
+                  <h2 id="payment-details-heading" class="text-lg font-medium leading-6 text-gray-900">Mes informations personnelles</h2>
+                  <p class="mt-1 text-sm text-gray-500">Modifier mes informations personnelles.</p>
+                </div>
+
+                <div class="mt-6 grid grid-cols-4 gap-6">
+                  <div class="col-span-4 sm:col-span-2">
+                    <label for="first-name" class="block text-sm font-medium text-gray-700">Nom</label>
+                    <input type="text" formControlName="fullName" name="first-name" id="first-name" autocomplete="cc-given-name" class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-gray-900 focus:outline-none focus:ring-gray-900 sm:text-sm">
+                  </div>
+
+                  <div class="col-span-4 sm:col-span-2">
+                    <label for="email-address" class="block text-sm font-medium text-gray-700">Adresse email</label>
+                    <input type="text" formControlName="email"  name="email-address" id="email-address" autocomplete="email" class="mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-gray-900 focus:outline-none focus:ring-gray-900 sm:text-sm">
+                  </div>
+                </div>
+              </div>
+              <div class="bg-gray-50 px-4 py-3 text-right sm:px-6">
+                <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-gray-800 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2">Enregistrer</button>
+              </div>
+            </div>
+          </form>
+        </section>
+        <section aria-labelledby="billing-history-heading">
+          <div class="bg-white pt-6 shadow sm:overflow-hidden sm:rounded-md">
+            <div class="px-4 sm:px-6">
+              <h2 id="billing-history-heading" class="text-lg font-medium leading-6 text-gray-900">Historique</h2>
+            </div>
+            <div class="mt-6 flex flex-col">
+              <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                  <div class="overflow-hidden border-t border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                      <thead class="bg-gray-50">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Départ</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Destination</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Jour</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Horaire</th>
+                        <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Action</th>
+                      </tr>
+                      </thead>
+                      <tbody class="divide-y divide-gray-200 bg-white">
+                      @for (hist of historiques; track hist) {
+                        <tr>
+                          <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                            {{hist.depart}}
+                          </td>
+                          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{{hist.destination}}</td>
+                          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{{formatDate(hist.startDate,undefined,false)}} </td>
+                          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">{{formatTime(hist.startDate) }}</td>
+                          <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><button class="rounded-full" nz-button nzDanger (click)="openDialog('500ms','500ms');currentHist=hist" >Supprimer</button></td>
+                        </tr>
+                        <ng-template #modal>
+                          <app-dialog (ok)="handleClic($event)"/>
+                        </ng-template>
+                      }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>

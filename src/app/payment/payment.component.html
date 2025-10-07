@@ -1,0 +1,138 @@
+<main class="lg:flex lg:min-h-screen bg-gray-100 font-sans text-gray-800">
+
+  <!-- Résumé de la commande -->
+  <section class="hidden w-full max-w-md flex-col bg-white border-r shadow-md lg:flex">
+    <div class="p-6 border-b">
+      <img src="assets/logo1.png" alt="Logo" class="h-20 mx-auto" />
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-8">
+      <h2 class="text-xl font-semibold mb-6">Votre commande</h2>
+      <ul class="divide-y divide-gray-200">
+        <li class="py-4">
+          <div class="flex justify-between">
+            <div>
+              <h3 class="text-sm font-medium">{{ productName }}</h3>
+              <p class="text-sm text-gray-500">Billet de train</p>
+            </div>
+            <p class="text-sm font-semibold text-indigo-600">{{ amount | currency:'EUR' }}</p>
+          </div>
+        </li>
+      </ul>
+
+      <dl class="mt-6 space-y-3 text-sm">
+        <div class="flex justify-between">
+          <dt>Sous-total</dt>
+          <dd class="text-gray-900">{{ amount | currency:'EUR' }}</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt>Taxes</dt>
+          <dd class="text-gray-900">{{ tax | currency:'EUR' }}</dd>
+        </div>
+        <div class="flex justify-between border-t pt-4 font-semibold">
+          <dt>Total</dt>
+          <dd class="text-gray-900">{{ totalAmount | currency:'EUR' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- Formulaire de paiement -->
+  <section class="flex-1 px-6 py-12 sm:px-10 bg-gray-50">
+    <div class="max-w-xl mx-auto">
+      <div class="mb-8 text-center">
+        <h1 class="text-2xl font-bold tracking-tight">Paiement sécurisé</h1>
+        <p class="text-sm text-gray-500">Entrez vos informations pour finaliser la réservation</p>
+      </div>
+     <!-- Moyens de paiement -->
+<div class="flex items-center justify-center gap-4 mt-6 p-3 border rounded-md bg-white shadow-sm">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" class="h-8" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="MasterCard" class="h-8" />
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-8" />
+</div>
+
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium">Email</label>
+          <input type="email" id="email" formControlName="email"
+            class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="exemple@email.com">
+          <p class="text-red-500 text-xs mt-1" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+            <span *ngIf="email?.errors?.['required']">L'email est requis.</span>
+            <span *ngIf="email?.errors?.['email']">Format d'email invalide.</span>
+            <span *ngIf="email?.errors?.['pattern']">L'email doit respecter le format email.</span>
+          </p>
+        </div>
+
+        <!-- Nom sur carte -->
+        <div>
+          <label for="name-on-card" class="block text-sm font-medium">Nom sur la carte</label>
+          <input type="text" id="name-on-card" formControlName="fullName"
+            class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="Jean Dupont">
+          <p class="text-red-500 text-xs mt-1" *ngIf="fullName?.invalid && (fullName?.dirty || fullName?.touched)">
+            <span *ngIf="fullName?.hasError('required')">Votre nom est requis.</span>
+            <span *ngIf="fullName?.hasError('minlength') || fullName?.hasError('maxlength')">Le nom doit avoir au plus 200 caractères.</span>
+          </p>
+        </div>
+
+        <!-- Carte -->
+        <div>
+          <label for="card-number" class="block text-sm font-medium">Numéro de carte</label>
+          <input type="text" id="card-number" formControlName="cardNumber"
+            class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="1234 5678 9012 3456">
+          <p class="text-red-500 text-xs mt-1" *ngIf="cardNumber?.invalid && (cardNumber?.dirty || cardNumber?.touched)">
+            <span *ngIf="cardNumber?.hasError('required')">Le numéro de la carte est requis.</span>
+            <span *ngIf="cardNumber?.hasError('minlength') || cardNumber?.hasError('maxlength')">Max. 16 chiffres.</span>
+          </p>
+        </div>
+
+        <!-- Expiration + CVC -->
+        <div class="flex space-x-4">
+          <div class="w-1/2">
+            <label for="expiration-date" class="block text-sm font-medium">Date d'expiration</label>
+            <input type="text" id="expiration-date" formControlName="expirationDate"
+              class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="MM/YY">
+            <p class="text-red-500 text-xs mt-1" *ngIf="expirationDate?.invalid && (expirationDate?.dirty || expirationDate?.touched)">
+              <span *ngIf="expirationDate?.hasError('required')">Requis.</span>
+              <span *ngIf="expirationDate?.hasError('minlength') || expirationDate?.hasError('maxlength')">Format MM/YY</span>
+            </p>
+          </div>
+
+          <div class="w-1/2">
+            <label for="cvc" class="block text-sm font-medium">CVC</label>
+            <input type="text" id="cvc" formControlName="cvc"
+              class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="123">
+            <p class="text-red-500 text-xs mt-1" *ngIf="cvc?.invalid && (cvc?.dirty || cvc?.touched)">
+              <span *ngIf="cvc?.hasError('required')">Code requis</span>
+              <span *ngIf="cvc?.hasError('pattern')">3 chiffres requis</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Adresse -->
+        <div>
+          <label for="address" class="block text-sm font-medium">Adresse</label>
+          <input type="text" id="address" formControlName="address"
+            class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="12 rue de Lyon">
+          <p class="text-red-500 text-xs mt-1" *ngIf="address?.invalid && (address?.dirty || address?.touched)">
+            <span *ngIf="address?.hasError('required')">Adresse requise</span>
+            <span *ngIf="address?.hasError('minlength') || address?.hasError('maxlength')">Max. 200 caractères.</span>
+          </p>
+        </div>
+
+        <!-- Bouton de paiement -->
+        <button type="submit"
+          class="w-full mt-6 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition">
+          Payer {{ totalAmount | currency:"EUR" }}
+        </button>
+      </form>
+    </div>
+  </section>
+</main>

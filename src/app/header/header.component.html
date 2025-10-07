@@ -1,0 +1,47 @@
+<header class="backdrop-blur-md shadow fixed top-0 w-full z-50" style="background-color: #101825f9;">
+
+
+
+  <div class="mx-auto max-w-7xl px-2 sm:px-4 lg:divide-y lg:divide-gray-200 lg:px-8">
+    <div class="relative flex h-16 justify-between">
+      <div class="relative z-10 flex px-2 lg:px-0">
+        <div class="flex flex-shrink-0 items-center">
+          <a routerLink="/"><img class="block h-16 w-auto" src="../../assets/logo1.png" alt="Your Company"></a>
+        </div>
+      </div>
+      <div class="relative z-10 flex items-center lg:hidden">
+        <button type="button" mat-button color="white" [matMenuTriggerFor]="mobile_menu" class="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-900" aria-controls="mobile-menu" aria-expanded="false">
+          <div>
+            <mat-menu #mobile_menu="matMenu">
+            <a mat-menu-item routerLink="/profil"><mat-icon fontIcon="manage_accounts"></mat-icon>Profil</a>
+            <li mat-menu-item (click)="logOut()"><mat-icon fontIcon="logout"></mat-icon>Se déconnecter</li>
+          </mat-menu>
+        </div>
+          <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
+        <div class="relative ml-4 flex-shrink-0">
+          <div>
+            <button mat-button [matMenuTriggerFor]="menu" class="flex items-center space-x-1">
+              <mat-icon fontIcon="person" class="text-yellow-400"></mat-icon>
+              <span class="text-yellow-400">{{email}}</span>
+            </button>
+            <mat-menu #menu="matMenu">
+              <a mat-menu-item routerLink="/profil"><mat-icon fontIcon="manage_accounts"></mat-icon>Profil</a>
+              <li mat-menu-item (click)="logOut()"><mat-icon fontIcon="logout"></mat-icon>Se déconnecter</li>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="w-full mt-16">
+
+</div>

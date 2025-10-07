@@ -6,51 +6,55 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "test": "ng test",
+    "prepare": "husky",
+    "lint": "npx lint-staged",
+    "config": "tailwind-config-viewer -o"
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.3.0",
-    "@angular/compiler": "^20.3.0",
-    "@angular/core": "^20.3.0",
-    "@angular/forms": "^20.3.0",
-    "@angular/platform-browser": "^20.3.0",
-    "@angular/router": "^20.3.0",
-    "@ng-icons/core": "^32.1.0",
-    "@ng-icons/lucide": "^32.1.0",
-    "@tailwindcss/postcss": "^4.1.14",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "postcss": "^8.5.6",
+    "@angular/animations": "^17.3.0",
+    "@angular/cdk": "^17.3.10",
+    "@angular/common": "^17.3.0",
+    "@angular/compiler": "^17.3.0",
+    "@angular/core": "^17.3.0",
+    "@angular/fire": "^17.0.1",
+    "@angular/forms": "^17.3.0",
+    "@angular/material": "^17.3.10",
+    "@angular/platform-browser": "^17.3.0",
+    "@angular/platform-browser-dynamic": "^17.3.0",
+    "@angular/router": "^17.3.0",
+    "@ant-design/icons": "^5.6.1",
+    "@ctrl/tinycolor": "^4.1.0",
+    "@tailwindcss/postcss": "^4.0.6",
+    "dayjs": "^1.11.13",
+    "ng-zorro-antd": "^17.4.1",
     "rxjs": "~7.8.0",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.14",
-    "tailwindcss-animate": "^1.0.7",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.3"
   },
   "devDependencies": {
-    "@angular/build": "^20.3.4",
-    "@angular/cli": "^20.3.4",
-    "@angular/compiler-cli": "^20.3.0",
+    "@angular-devkit/build-angular": "^17.3.11",
+    "@angular/cli": "^17.3.11",
+    "@angular/compiler-cli": "^17.3.0",
+    "@tailwindcss/forms": "^0.5.10",
     "@types/jasmine": "~5.1.0",
-    "jasmine-core": "~5.9.0",
+    "angular-eslint": "19.2.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.21.0",
+    "husky": "^9.1.7",
+    "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.9.2"
+    "lint-staged": "^15.4.3",
+    "postcss": "^8.5.2",
+    "prettier": "3.5.0",
+    "tailwind-config-viewer": "^2.0.4",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.4.2",
+    "typescript-eslint": "8.25.0"
   }
 }
