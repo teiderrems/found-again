@@ -7,5 +7,5 @@
   }
 
   .ng-untouched:not(form){
-    @apply border border-gray-500
+    @apply border border-gray-500;
   }

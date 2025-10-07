@@ -4,8 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { RouterModule } from '@angular/router';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzModalModule } from 'ng-zorro-antd/modal';
 import { ConfirmEmailComponent } from '../confirm-email/confirm-email.component';
 
 
@@ -16,7 +14,7 @@ import { ConfirmEmailComponent } from '../confirm-email/confirm-email.component'
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule,RouterModule,NzDividerModule,NzModalModule
+    FormsModule,RouterModule
   ]
 })
 export class AuthModule { }

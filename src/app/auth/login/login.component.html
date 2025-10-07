@@ -1,13 +1,8 @@
 <!-- login.component.html -->
-<div class="relative min-h-screen flex items-center justify-center overflow-hidden">
-
-  <!-- Image de fond floutée et assombrie -->
-  <div class="absolute inset-0 z-0">
-    <img src="assets/bakground.jpg" alt="Background"   />
-  </div>
+<div class="min-h-screen flex items-center justify-center overflow-hidden">
 
   <!-- Contenu principal (formulaire) -->
-  <div class="relative z-10 max-w-md w-full bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-xl p-8 sm:p-10">
+  <div class="max-w-md w-full bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-xl p-8 sm:p-10">
     <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Connexion à votre compte</h2>
 
     <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="signIn()">
@@ -18,7 +13,7 @@
           type="email"
           id="email"
           formControlName="email"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
           placeholder="votre@email.com"
           required
         />
@@ -35,7 +30,7 @@
           type="password"
           id="password"
           formControlName="password"
-          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
           placeholder="••••••••"
           required
         />
@@ -52,7 +47,7 @@
       <!-- Rappel et lien -->
       <div class="flex items-center justify-between text-sm">
         <label class="flex items-center">
-          <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+          <input type="checkbox" class="rounded-sm border-gray-300 text-indigo-600 focus:ring-indigo-500" />
           <span class="ml-2 text-gray-600">Se souvenir de moi</span>
         </label>
         <a routerLink="/confirm-email" class="text-indigo-600 hover:underline">Mot de passe oublié ?</a>
@@ -61,7 +56,7 @@
       <!-- Bouton principal -->
       <button
         type="submit"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow transition duration-200"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200"
       >
         Se connecter
       </button>
@@ -69,16 +64,16 @@
 
     <!-- OU -->
     <div class="flex items-center my-6">
-      <div class="flex-grow border-t border-gray-300"></div>
+      <div class="grow border-t border-gray-300"></div>
       <span class="mx-4 text-sm text-gray-500">ou</span>
-      <div class="flex-grow border-t border-gray-300"></div>
+      <div class="grow border-t border-gray-300"></div>
     </div>
 
     <!-- Connexion Google -->
     <form (ngSubmit)="signInGoogle()">
       <button
         type="submit"
-        class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm"
+        class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-xs"
       >
         <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5" />
         Se connecter avec Google
