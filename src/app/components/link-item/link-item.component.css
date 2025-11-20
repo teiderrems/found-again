@@ -1,0 +1,13 @@
+
+
+.active{
+    @apply border border-[#FC4E00]
+}
+
+a{
+    @apply text-[#009245] font-bold
+}
+
+.box{
+    @apply border p-2 rounded-lg space-x-1
+}

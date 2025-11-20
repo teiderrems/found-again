@@ -1,0 +1,8 @@
+@if (link()) {
+<div class="flex items-center" [class.box]="(!!link()?.icon)">
+    @if (link()?.icon) {
+        <mat-icon [fontIcon]="link()?.icon!" class="text-[#009245]"></mat-icon>
+    }
+    <a href={{link()?.url}} [class.active]="is_active()">{{link()?.title}}</a>
+</div>
+}
