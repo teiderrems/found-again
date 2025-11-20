@@ -1,8 +1,8 @@
 <header class="backdrop-blur-md h-[160px] shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
   <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
     <div class="flex h-full w-1/5 justify-start items-center">
-      <a routerLink="/" class=" no-underline h-3/4"><img class=" h-full w-full" src="../../assets/header_logo.png"
-          alt="Your Company"></a>
+      <a routerLink="/" class=" no-underline hover:cursor-pointer h-3/4"><img class=" h-full w-full"
+          src="../../assets/header_logo.png" alt="Your Company"></a>
     </div>
     <div class="flex w-3/5 justify-center space-x-9">
       <nav class="flex justify-center items-center space-x-9">
@@ -10,21 +10,30 @@
         <app-link-item [link]="item" />
         }
       </nav>
-      <div class=" flex items-center">
-        <div class=" rounded-lg relative flex items-center">
-          <input type="search" class="h-[45px] border-[#FC4E00] w-[282px] rounded-lg focus-visible:border"
-            placeholder="Rechercher un objet">
-          <mat-icon fontIcon="search" class="absolute z-10 right-2 text-gray-500 opacity-50"></mat-icon>
-        </div>
-      </div>
     </div>
-    <div class="w-1/5 flex space-x-2 justify-end">
-
-      @for (item of links_auth; track $index) {
-        <app-link-item [link]="item"/>
-      }
+    <div class="w-1/5 flex space-x-2 items-center text-[#009245] font-bold justify-end">
+      <mat-icon fontIcon="person_outline"></mat-icon>
+      <span>Delphine</span>
+      <button [matMenuTriggerFor]="menu" matIconButton >
+        <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+      </button>
     </div>
   </div>
+
+  <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
+    <a routerLink="#" mat-menu-item>
+      <mat-icon>person</mat-icon>
+      <span>Profil</span>
+    </a>
+    <a routerLink="#" mat-menu-item>
+      <mat-icon>history</mat-icon>
+      <span>Historiques</span>
+    </a>
+    <a routerLink="#" mat-menu-item>
+      <mat-icon>logout</mat-icon>
+      <span>Déconnexion</span>
+    </a>
+  </mat-menu>
   <!-- @if (user$) {
   <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
     <div class="relative ml-4 shrink-0">

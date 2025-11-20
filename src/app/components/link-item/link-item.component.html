@@ -3,6 +3,6 @@
     @if (link()?.icon) {
         <mat-icon [fontIcon]="link()?.icon!" class="text-[#009245]"></mat-icon>
     }
-    <a href={{link()?.url}} [class.active]="is_active()">{{link()?.title}}</a>
+    <a routerLink={{link()?.url}} routerLinkActive="active">{{link()?.title}}</a>
 </div>
 }
