@@ -14,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { HeaderComponent } from './header/header.component';
 
 registerLocaleData(fr);
 
@@ -37,7 +38,8 @@ registerLocaleData(fr);
       provideAuth(() => getAuth()),
       provideFirestore(() => getFirestore()),
       FormsModule,
-      RouterModule
+      RouterModule,
+      HeaderComponent
    ],
    providers: [
       provideAnimationsAsync(),
