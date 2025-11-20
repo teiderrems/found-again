@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
 
   loginForm: FormGroup;
-  errorMessage : String ="";
+  errorMessage = "";
 
   constructor(private fb: FormBuilder, private authService: AuthService,private readonly router:Router){
     //Initialiser notre formulaire
