@@ -16,33 +16,34 @@ import { RouterModule } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { LostObjectComponent } from './lost-object/lost-object.component';
+import { MatMenuContent } from "@angular/material/menu";
 
 registerLocaleData(fr);
 
 @NgModule({
-   declarations: [AppComponent, NotFoundComponent],
+   declarations: [AppComponent, NotFoundComponent, LostObjectComponent],
    imports: [
-      BrowserModule,
-      AppRoutingModule,
-      FooterComponent,
-      AuthModule,
-      ReactiveFormsModule,
-      provideFirebaseApp(() =>
-         initializeApp({
-            apiKey: 'AIzaSyCd84UfFYutkiLklTTS_igwyN9orgWYGro',
-            authDomain: 'found-again.firebaseapp.com',
-            projectId: 'found-again',
-            storageBucket: 'found-again.firebasestorage.app',
-            messagingSenderId: '372344879955',
-            appId: '1:372344879955:web:86d8a73086486f717dffa6',
-         }),
-      ),
-      provideAuth(() => getAuth()),
-      provideFirestore(() => getFirestore()),
-      FormsModule,
-      RouterModule,
-      HeaderComponent
-   ],
+    BrowserModule,
+    AppRoutingModule,
+    FooterComponent,
+    AuthModule,
+    ReactiveFormsModule,
+    provideFirebaseApp(() => initializeApp({
+        apiKey: 'AIzaSyCd84UfFYutkiLklTTS_igwyN9orgWYGro',
+        authDomain: 'found-again.firebaseapp.com',
+        projectId: 'found-again',
+        storageBucket: 'found-again.firebasestorage.app',
+        messagingSenderId: '372344879955',
+        appId: '1:372344879955:web:86d8a73086486f717dffa6',
+    })),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    FormsModule,
+    RouterModule,
+    HeaderComponent,
+    MatMenuContent
+],
    providers: [
       provideAnimationsAsync(),
       {
