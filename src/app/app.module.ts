@@ -16,12 +16,11 @@ import { RouterModule } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { HomeComponent } from './home/home.component';
 
 registerLocaleData(fr);
 
 @NgModule({
-   declarations: [AppComponent, NotFoundComponent, HomeComponent ],
+   declarations: [AppComponent, NotFoundComponent],
    imports: [
       BrowserModule,
       AppRoutingModule,

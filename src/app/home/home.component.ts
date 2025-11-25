@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HeaderComponent } from "../components/header/header.component";
+import { FooterComponent } from "../components/footer/footer.component";
 
 interface Item {
    title: string;
@@ -12,13 +14,13 @@ interface Item {
 }
 
 @Component({
-  selector: 'app-app-home',
+  selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent],
    standalone: true
 })
-export class AppHomeComponent implements OnInit {
+export class HomeComponent implements OnInit {
    searchControl = new FormControl('');
 
    items = [
