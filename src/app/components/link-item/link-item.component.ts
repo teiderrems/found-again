@@ -1,15 +1,14 @@
-import { LinkType } from '@/app/header/header.component';
-import { NgClass } from '@angular/common';
+import { LinkType } from '@/app/components/header/header.component';
 import { Component, input, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-link-item',
   templateUrl: './link-item.component.html',
   styleUrl: './link-item.component.css',
   standalone:true,
-  imports:[MatIconModule]
+  imports: [MatIconModule, RouterLink, RouterLinkActive]
 })
 export class LinkItemComponent {
   

@@ -13,8 +13,8 @@ interface Item {
 
 @Component({
   selector: 'app-app-home',
-  templateUrl: './app-home.component.html',
-  styleUrl: './app-home.component.css',
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css',
   imports: [ReactiveFormsModule, CommonModule],
    standalone: true
 })

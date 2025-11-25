@@ -5,40 +5,29 @@ import { RegisterComponent } from './auth/register/register.component';
 import {  AuthGuard, redirectUnauthorizedTo,redirectLoggedInTo } from '@angular/fire/auth-guard';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
-import { AppHomeComponent } from '@/app/app-home/app-home.component';
 
 
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['login']);
 const routes: Routes = [
-  {
-    path:'',
-    component:AppHomeComponent,
-    // canActivate:[AuthGuard],
-    data:{
-      authGuardPipe: redirectUnauthorizedToLanding
-    },
-    title:'Accueil',
-    children:[
-      // {
-      //   path:'profil',
-      //   component:HomeComponent,
-      //   pathMatch:'full',
-      //   title:'Profile',
-      //   runGuardsAndResolvers:(from,to)=>from.url===to.url
-      // },
-    ]
-  },
-   {
-      path:'home',
-      component: AppHomeComponent,
-      pathMatch:'full',
-      canActivate:[AuthGuard],
-      data:{
-         authGuardPipe: redirectLoggedInToHome
-      },
-      title:'Accueil'
-   },
+  // {
+  //   path:'',
+  //   component:HomeComponent,
+  //   canActivate:[AuthGuard],
+  //   data:{
+  //     authGuardPipe: redirectUnauthorizedToLanding
+  //   },
+  //   title:'Accueil',
+  //   children:[
+  //     {
+  //       path:'profil',
+  //       component:ProfileComponent,
+  //       pathMatch:'full',
+  //       title:'Profile',
+  //       runGuardsAndResolvers:(from,to)=>from.url===to.url
+  //     },
+  //   ]
+  // },
   {
     path:'login',
     component:LoginComponent,

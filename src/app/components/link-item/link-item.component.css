@@ -1,7 +1,7 @@
 
 
 .active{
-    @apply border border-[#FC4E00]
+    @apply text-[#FC4E00]
 }
 
 a{

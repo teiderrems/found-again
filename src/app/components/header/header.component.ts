@@ -2,13 +2,14 @@ import { Component, inject, OnDestroy, TemplateRef, ViewChild } from '@angular/c
 import { commercial_modes as Commercial, CustomType } from '@/app/interfaces/dtos/api';
 import { AuthService } from '@/app/auth/auth.service';
 import { ApiServiceService } from '@/app/api-service.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Auth, user, User } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { LinkItemComponent } from '../components/link-item/link-item.component';
+import { LinkItemComponent } from '../link-item/link-item.component';
 import { MatInputModule } from '@angular/material/input';
+import {MatButtonModule, MatIconButton} from '@angular/material/button';
 
 export type LinkType = {
    id: string;
@@ -22,7 +23,7 @@ export type LinkType = {
    selector: 'app-header',
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
-   imports: [MatMenuModule, MatInputModule, MatIconModule, LinkItemComponent],
+   imports: [MatMenuModule, MatInputModule, MatIconModule, LinkItemComponent,RouterLink,MatButtonModule],
    standalone: true,
 })
 export class HeaderComponent implements OnDestroy {
@@ -45,16 +46,24 @@ export class HeaderComponent implements OnDestroy {
       {
          id: 'home',
          title: 'Accueil',
-         url: '/',
+         url: '/home',
          is_active: false,
       },
       {
          id: 'found_objet',
-         title: 'Déclaré un objet trouvé ',
+         title: 'Déclarer un objet trouvé ',
          url: '/found-objet',
          is_active: false,
       },
+      {
+         id: 'found_objet',
+         title: 'Déclarer une perte ',
+         url: '/lost-objet',
+         is_active: false,
+      },
    ];
+
+
    public links_auth: LinkType[] = [
       {
          id: 'login',
