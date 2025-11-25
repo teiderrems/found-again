@@ -6,6 +6,8 @@ import {  AuthGuard, redirectUnauthorizedTo,redirectLoggedInTo } from '@angular/
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { HomeComponent } from './home/home.component';
+import { LostObjectComponent } from './lost-object/lost-object.component';
+import { FoundObjectComponent } from './found-object/found-object.component';
 
 
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
@@ -24,13 +26,20 @@ const routes: Routes = [
     },
     title:'Accueil',
     children:[
-      // {
-      //   path:'profil',
-      //   component:ProfileComponent,
-      //   pathMatch:'full',
-      //   title:'Profile',
-      //   runGuardsAndResolvers:(from,to)=>from.url===to.url
-      // },
+      {
+        path:'lost-object',
+        component:LostObjectComponent,
+        pathMatch:'full',
+        title:'Déclarer un objet perdu',
+        runGuardsAndResolvers:(from,to)=>from.url===to.url
+      },
+      {
+        path:'found-object',
+        component:FoundObjectComponent,
+        pathMatch:'full',
+        title:'Déclarer un objet retrouvé',
+        runGuardsAndResolvers:(from,to)=>from.url===to.url
+      },
     ]
   },
   {

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from "../components/header/header.component";
 import { FooterComponent } from "../components/footer/footer.component";
+import { Router, RouterOutlet } from '@angular/router';
 
 interface Item {
    title: string;
@@ -17,11 +18,13 @@ interface Item {
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
-  imports: [ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent],
+  imports: [ReactiveFormsModule, CommonModule, HeaderComponent, FooterComponent,RouterOutlet],
    standalone: true
 })
 export class HomeComponent implements OnInit {
    searchControl = new FormControl('');
+
+   router=inject(Router);
 
    items = [
       {

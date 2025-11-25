@@ -52,13 +52,13 @@ export class HeaderComponent implements OnDestroy {
       {
          id: 'found_objet',
          title: 'Déclarer un objet trouvé ',
-         url: '/found-objet',
+         url: '/found-object',
          is_active: false,
       },
       {
          id: 'found_objet',
          title: 'Déclarer une perte ',
-         url: '/lost-objet',
+         url: '/lost-object',
          is_active: false,
       },
    ];
