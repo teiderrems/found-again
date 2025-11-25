@@ -12,14 +12,13 @@ const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['login']);
 const routes: Routes = [
   {
-    path:'',
-    redirectTo:'/home',
-    pathMatch:'full'
+    path:'home',
+    redirectTo:'/'
   },
   {
-    path:'home',
+    path:'',
     component:HomeComponent,
-    canActivate:[AuthGuard],
+    // canActivate:[AuthGuard],
     data:{
       authGuardPipe: redirectUnauthorizedToLanding
     },

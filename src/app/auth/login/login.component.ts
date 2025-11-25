@@ -15,20 +15,19 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService,private readonly router:Router){
     //Initialiser notre formulaire
-    this.loginForm = this.fb.group({
-      email:['user@gmail.com',[
-        Validators.required,
-        Validators.email,
-        Validators.pattern('^[a-zA-Z0-9._%+-]+@(?:gmail\\.com|hotmail\\.com|outlook\\.com|yahoo\\.com|yahoo\\.fr)$')
-      ]],
-      password:['user1234',[
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(10),
-        Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z]).*$')
-      ]
-        ]
-    });
+     this.loginForm = this.fb.group({
+        email:['user@gmail.com',[
+          Validators.required,
+          Validators.email,
+          Validators.pattern('^[a-zA-Z0-9._%+-]+@(?:gmail\\.com|hotmail\\.com|outlook\\.com|yahoo\\.com|yahoo\\.fr)$')
+        ]],
+        password:['user1234',[
+          Validators.required,
+          Validators.minLength(4),
+          Validators.maxLength(10),
+          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z]).*$')
+        ]]
+     });
   }
 
 
@@ -59,7 +58,6 @@ export class LoginComponent {
   get password(){
     return this.loginForm.get('password');
   }
-
 
   //connexion avec google
 
