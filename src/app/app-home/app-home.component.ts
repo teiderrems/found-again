@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 interface Item {
    title: string;
@@ -13,7 +14,9 @@ interface Item {
 @Component({
   selector: 'app-app-home',
   templateUrl: './app-home.component.html',
-  styleUrl: './app-home.component.css'
+  styleUrl: './app-home.component.css',
+  imports: [ReactiveFormsModule, CommonModule],
+   standalone: true
 })
 export class AppHomeComponent implements OnInit {
    searchControl = new FormControl('');

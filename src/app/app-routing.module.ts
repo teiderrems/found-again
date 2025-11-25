@@ -11,34 +11,24 @@ import { AppHomeComponent } from '@/app/app-home/app-home.component';
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['login']);
 const routes: Routes = [
-  // {
-  //   path:'',
-  //   component:HomeComponent,
-  //   canActivate:[AuthGuard],
-  //   data:{
-  //     authGuardPipe: redirectUnauthorizedToLanding
-  //   },
-  //   title:'Accueil',
-  //   children:[
-  //     {
-  //       path:'profil',
-  //       component:ProfileComponent,
-  //       pathMatch:'full',
-  //       title:'Profile',
-  //       runGuardsAndResolvers:(from,to)=>from.url===to.url
-  //     },
-  //   ]
-  // },
-   {
-      path:'',
-      component:LoginComponent,
-      pathMatch:'full',
-      canActivate:[AuthGuard],
-      data:{
-         authGuardPipe: redirectLoggedInToHome
-      },
-      title:'Se connecter'
-   },
+  {
+    path:'',
+    component:AppHomeComponent,
+    // canActivate:[AuthGuard],
+    data:{
+      authGuardPipe: redirectUnauthorizedToLanding
+    },
+    title:'Accueil',
+    children:[
+      // {
+      //   path:'profil',
+      //   component:HomeComponent,
+      //   pathMatch:'full',
+      //   title:'Profile',
+      //   runGuardsAndResolvers:(from,to)=>from.url===to.url
+      // },
+    ]
+  },
    {
       path:'home',
       component: AppHomeComponent,
