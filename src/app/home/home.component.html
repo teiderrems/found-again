@@ -1,6 +1,6 @@
 <div class="max-h-screen h-screen max-w-screen-2xl flex flex-col">
   <app-header />
-  <div class=" flex flex-col overflow-y-auto  mt-[160px] w-screen space-y-10">
+  <div class=" flex flex-col overflow-y-auto h-full  mt-[160px] w-screen space-y-10">
     @if (router.url==='/') {
     <div class="flex-1 w-full relative">
       <div class="w-full sticky z-10 top-0 scroll-mt-3 max-w-4xl mx-auto my-8 px-4">
@@ -70,13 +70,13 @@
     </div>
     }
     @else {
-    <div class="w-full flex-1">
+    <div class="w-full grow">
       <router-outlet></router-outlet>
     </div>
     }
-    <!-- <div class="row-start-11 row-span-1"> -->
+    <div class=" max-h-[160px] h-[160px]">
       <app-footer />
-    <!-- </div> -->
+    </div>
   </div>
 
 </div>

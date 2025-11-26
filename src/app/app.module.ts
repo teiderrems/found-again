@@ -18,11 +18,14 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { LostObjectComponent } from './lost-object/lost-object.component';
 import { MatMenuContent } from "@angular/material/menu";
+import { ServiceComponent } from './service/service.component';
+import { AboutComponent } from './about/about.component';
+import { ContactComponent } from './contact/contact.component';
 
 registerLocaleData(fr);
 
 @NgModule({
-   declarations: [AppComponent, NotFoundComponent, LostObjectComponent],
+   declarations: [AppComponent, NotFoundComponent, LostObjectComponent, ServiceComponent, AboutComponent, ContactComponent],
    imports: [
     BrowserModule,
     AppRoutingModule,
