@@ -7,12 +7,12 @@
         <div class="flex w-3/5 items-center space-y-4 flex-col">
             <nav class="flex justify-center w-3/5 items-center space-x-9">
                 @for (item of links_; track item.id) {
-                <app-link-item [link]="item" />
+                    <app-link-item [link]="item" />
                 }
             </nav>
             <span class=" text-[#4A4459]">copyright &copy; 2025</span>
         </div>
-        <div class=" flex items-center justify-center w-1/5">
+        <div class=" flex items-center sm:flex-row flex-col justify-center w-1/5">
             @for (item of socials; track item.id) {
             <a [routerLink]="item.url" target="_blank" class=" no-underline h-3/4"><img class=" h-full w-full"
                     [src]="item.icon" [alt]="item.title"></a>

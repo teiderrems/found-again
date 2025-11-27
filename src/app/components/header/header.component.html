@@ -14,24 +14,25 @@
     <div class="w-1/5 flex space-x-2 items-center text-[#009245] font-bold justify-end">
       <mat-icon fontIcon="person_outline"></mat-icon>
       <span>Delphine</span>
-      <button [matMenuTriggerFor]="menu" matIconButton >
-        <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
-      </button>
+      <app-dropdown [options]="userOptions" [selectedValue]="selectedUser" [placement]="'bottom-right'"
+        (selectionChange)="onUserChange($event)">
+        <!-- Trigger personnalisé -->
+        <ng-template #dropdownTrigger let-context>
+          <button matIconButton class="flex items-center  transition-colors duration-200"
+            (click)="context.toggleDropdown()">
+            <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+          </button>
+        </ng-template>
+        <ng-template #dropdownOption let-option let-selected="selected" let-select="select">
+            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                 (click)="select($event)">
+              <div class="flex-1 flex space-x-2">
+                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+                <div class="font-medium text-gray-900">{{ option.label }}</div>
+              </div>
+            </div>
+          </ng-template>
+      </app-dropdown>
     </div>
   </div>
-
-  <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>person</mat-icon>
-      <span>Profil</span>
-    </a>
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>history</mat-icon>
-      <span>Historiques</span>
-    </a>
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>logout</mat-icon>
-      <span>Déconnexion</span>
-    </a>
-  </mat-menu>
 </header>
