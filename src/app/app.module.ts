@@ -13,23 +13,14 @@ import fr from '@angular/common/locales/fr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@angular/router';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
-import { LostObjectComponent } from './lost-object/lost-object.component';
-import { MatMenuContent } from "@angular/material/menu";
-import { ServiceComponent } from './service/service.component';
-import { AboutComponent } from './about/about.component';
-import { ContactComponent } from './contact/contact.component';
 
 registerLocaleData(fr);
 
 @NgModule({
-   declarations: [AppComponent, NotFoundComponent, LostObjectComponent, ServiceComponent, AboutComponent, ContactComponent],
+   declarations: [AppComponent],
    imports: [
     BrowserModule,
     AppRoutingModule,
-    FooterComponent,
     AuthModule,
     ReactiveFormsModule,
     provideFirebaseApp(() => initializeApp({
@@ -43,9 +34,7 @@ registerLocaleData(fr);
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     FormsModule,
-    RouterModule,
-    HeaderComponent,
-    MatMenuContent
+    RouterModule
 ],
    providers: [
       provideAnimationsAsync(),

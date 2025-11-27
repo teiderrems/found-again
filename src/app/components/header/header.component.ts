@@ -1,5 +1,11 @@
-import { Component, inject, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
-import { commercial_modes as Commercial, CustomType } from '@/app/interfaces/dtos/api';
+import {
+   Component,
+   inject,
+   OnDestroy,
+   signal,
+   TemplateRef,
+   ViewChild,
+} from '@angular/core';
 import { AuthService } from '@/app/auth/auth.service';
 import { ApiServiceService } from '@/app/api-service.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -9,7 +15,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { LinkItemComponent } from '../link-item/link-item.component';
 import { MatInputModule } from '@angular/material/input';
-import {MatButtonModule, MatIconButton} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
+import { DropdownComponent } from '../dropdown/dropdown.component';
+import { CommonModule } from '@angular/common';
 
 export type LinkType = {
    id: string;
@@ -23,11 +31,21 @@ export type LinkType = {
    selector: 'app-header',
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
-   imports: [MatMenuModule, MatInputModule, MatIconModule, LinkItemComponent,RouterLink,MatButtonModule],
+   imports: [
+    MatMenuModule,
+    MatInputModule,
+    MatIconModule,
+    LinkItemComponent,
+    RouterLink,
+    MatButtonModule,
+    DropdownComponent,
+    CommonModule
+],
    standalone: true,
 })
 export class HeaderComponent implements OnDestroy {
    @ViewChild(TemplateRef) button: TemplateRef<unknown> | undefined;
+   dropdownOpen = signal<boolean>(false);
 
    constructor(
       private readonly authService: AuthService,
@@ -44,40 +62,16 @@ export class HeaderComponent implements OnDestroy {
 
    public links_: LinkType[] = [
       {
-         id: 'home',
-         title: 'Accueil',
-         url: '/home',
-         is_active: false,
-      },
-      {
-         id: 'found_objet',
+         id: 'rechercher',
          title: 'Déclarer un objet trouvé ',
-         url: '/found-object',
+         url: '/rechercher',
          is_active: false,
       },
       {
-         id: 'found_objet',
+         id: 'déclarer',
          title: 'Déclarer une perte ',
-         url: '/lost-object',
+         url: '/déclarer',
          is_active: false,
-      },
-   ];
-
-
-   public links_auth: LinkType[] = [
-      {
-         id: 'login',
-         title: 'Connexion',
-         url: '/login',
-         is_active: false,
-         icon:'login'
-      },
-      {
-         id: 'register',
-         title: 'Inscription',
-         url: '/register',
-         is_active: false,
-         icon:'person_outline'
       },
    ];
 
@@ -87,11 +81,61 @@ export class HeaderComponent implements OnDestroy {
 
    email: string | null | undefined = 'inconnu';
 
-   trajets2: CustomType[] = [];
+   userOptions = [
+      { value: '1', label: 'John Doe',icon:'settings' },
+      { value: '2', label: 'Jane Smith',icon:'person'  },
+      { value: '3', label: 'Bob Johnson',icon:'home'  },
+   ];
 
-   regions: Commercial[] = [];
-   get getUrl(): string {
-      return this.router.url;
+   statusOptions = [
+      { value: 'active', label: 'Actif' },
+      { value: 'inactive', label: 'Inactif' },
+   ];
+
+   colorOptions = [
+      { value: 'red', label: 'Rouge' },
+      { value: 'blue', label: 'Bleu' },
+      { value: 'green', label: 'Vert' },
+   ];
+
+   allItems = [
+      { value: '1', label: 'Premier élément' },
+      { value: '2', label: 'Deuxième élément' },
+      { value: '3', label: 'Troisième élément' },
+   ];
+
+   selectedUser = '1';
+   selectedStatus = 'active';
+   selectedColor = 'blue';
+   selectedItem: any;
+   // dropdownOpen = false;
+   filteredOptions = [...this.allItems];
+
+   onUserChange(value: any) {
+      console.log('Utilisateur sélectionné:', value);
+      this.selectedUser = value;
+   }
+
+   onStatusChange(value: any) {
+      console.log('Statut sélectionné:', value);
+      this.selectedStatus = value;
+   }
+
+   onColorChange(value: any) {
+      console.log('Couleur sélectionnée:', value);
+      this.selectedColor = value;
+   }
+
+   onItemSelect(value: any) {
+      console.log('Élément sélectionné:', value);
+      this.selectedItem = value;
+   }
+
+   onSearch(event: any) {
+      const searchTerm = event.target.value.toLowerCase();
+      this.filteredOptions = this.allItems.filter((item) =>
+         item.label.toLowerCase().includes(searchTerm),
+      );
    }
 
    async logOut() {
@@ -101,5 +145,10 @@ export class HeaderComponent implements OnDestroy {
       } catch (error) {
          console.log(error);
       }
+   }
+
+   onDropdownToggle(isOpen: boolean) {
+      console.log('Dropdown ouvert:', isOpen);
+      this.dropdownOpen.set(isOpen);
    }
 }

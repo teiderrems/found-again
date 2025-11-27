@@ -33,14 +33,14 @@ const routes: Routes = [
       title: 'Accueil',
       children: [
          {
-            path: 'lost-object',
+            path: 'déclarer',
             component: LostObjectComponent,
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'found-object',
+            path: 'rechercher',
             component: FoundObjectComponent,
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
@@ -70,7 +70,7 @@ const routes: Routes = [
       ],
    },
    {
-      path: 'login',
+      path: 'connexion',
       component: LoginComponent,
       pathMatch: 'full',
       canActivate: [AuthGuard],
@@ -80,16 +80,16 @@ const routes: Routes = [
       title: 'Se connecter',
    },
    {
-      path: 'register',
+      path: 'inscription',
       component: RegisterComponent,
       pathMatch: 'full',
       title: "S'inscrire",
    },
    {
-      path: 'confirm-email',
+      path: 'confirmer-email',
       component: ConfirmEmailComponent,
       pathMatch: 'full',
-      title: 'ConfirmEmail',
+      title: 'Confirmer Email',
    },
    {
       path: '**',
