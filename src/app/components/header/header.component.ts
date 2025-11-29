@@ -32,15 +32,15 @@ export type LinkType = {
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
    imports: [
-    MatMenuModule,
-    MatInputModule,
-    MatIconModule,
-    LinkItemComponent,
-    RouterLink,
-    MatButtonModule,
-    DropdownComponent,
-    CommonModule
-],
+      MatMenuModule,
+      MatInputModule,
+      MatIconModule,
+      LinkItemComponent,
+      RouterLink,
+      MatButtonModule,
+      DropdownComponent,
+      CommonModule,
+   ],
    standalone: true,
 })
 export class HeaderComponent implements OnDestroy {
@@ -82,9 +82,31 @@ export class HeaderComponent implements OnDestroy {
    email: string | null | undefined = 'inconnu';
 
    userOptions = [
-      { value: '1', label: 'John Doe',icon:'settings' },
-      { value: '2', label: 'Jane Smith',icon:'person'  },
-      { value: '3', label: 'Bob Johnson',icon:'home'  },
+      {
+         value: '1',
+         label: 'Profil',
+         icon: 'person',
+         action: ($event:any) => {
+            console.log($event);
+         },
+      },
+      {
+         value: '2',
+         label: 'Paramètre',
+         icon: 'settings',
+         action: ($event:any) => {
+            console.log($event);
+         },
+      },
+      {
+         value: '3',
+         label: 'Se Déconnecter',
+         icon: 'logout',
+         action: async ($event:any) => {
+            await this.auth.signOut();
+            this.router.navigateByUrl('/');
+         },
+      },
    ];
 
    statusOptions = [

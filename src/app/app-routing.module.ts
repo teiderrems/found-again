@@ -17,7 +17,7 @@ import { AboutComponent } from './about/about.component';
 import { ContactComponent } from './contact/contact.component';
 
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
-const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['login']);
+const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['connexion']);
 const routes: Routes = [
    {
       path: 'home',
@@ -26,7 +26,7 @@ const routes: Routes = [
    {
       path: '',
       component: HomeComponent,
-      // canActivate:[AuthGuard],
+      canActivate:[AuthGuard],
       data: {
          authGuardPipe: redirectUnauthorizedToLanding,
       },

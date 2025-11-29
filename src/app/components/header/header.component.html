@@ -1,4 +1,4 @@
-<header class="backdrop-blur-md h-[100px] shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+<header class="backdrop-blur-md h-[120px] mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
   <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
     <div class="flex h-full w-1/5 justify-start items-center">
       <a routerLink="/" class=" no-underline hover:cursor-pointer h-full"><img class=" h-full w-full"
@@ -11,27 +11,31 @@
         }
       </nav>
     </div>
-    <div class="w-1/5 flex space-x-2 items-center text-[#009245] font-bold justify-end">
-      <mat-icon fontIcon="person_outline"></mat-icon>
-      <span>Delphine</span>
+    <div class="w-1/5 flex items-center hover:cursor-pointer text-[#009245] font-bold justify-end">
       <app-dropdown [options]="userOptions" [selectedValue]="selectedUser" [placement]="'bottom-right'"
         (selectionChange)="onUserChange($event)">
         <!-- Trigger personnalisé -->
         <ng-template #dropdownTrigger let-context>
-          <button matIconButton class="flex items-center  transition-colors duration-200"
-            (click)="context.toggleDropdown()">
-            <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+          <button (click)="context.toggleDropdown()" class="flex space-x-2 items-center" >
+            <span class="flex items-center justify-center w-10 h-10 rounded-full border">
+              <!-- <span>
+                TD
+              </span> -->
+              <mat-icon fontIcon="person_outline"></mat-icon>
+            </span>
+            <span>Delphine</span>
           </button>
         </ng-template>
-        <ng-template #dropdownOption let-option let-selected="selected" let-select="select">
-            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                 (click)="select($event)">
-              <div class="flex-1 flex space-x-2">
-                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
-                <div class="font-medium text-gray-900">{{ option.label }}</div>
-              </div>
+        <ng-template #dropdownOption let-option let-selected="selected" let-select="select"  let-closeDropdown="closeDropdown">
+          <div
+            class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            (click)="option.action(option);closeDropdown()">
+            <div class="flex-1 flex space-x-2">
+              <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+              <div class="font-medium text-gray-900">{{ option.label }}</div>
             </div>
-          </ng-template>
+          </div>
+        </ng-template>
       </app-dropdown>
     </div>
   </div>
