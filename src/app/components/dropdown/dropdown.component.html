@@ -67,7 +67,8 @@
                 *ngTemplateOutlet="optionTemplate; context: { 
                   $implicit: option,
                   selected: option.value === selectedValue,
-                  select: selectOption.bind(this, option)
+                  select: selectOption.bind(this, option),
+                  closeDropdown: closeDropdown.bind(this)
                 }">
               </ng-container>
             } @else {
