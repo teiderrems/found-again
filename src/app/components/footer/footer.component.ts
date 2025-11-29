@@ -12,12 +12,12 @@ import { RouterLink } from '@angular/router';
 })
 export class FooterComponent {
    public links_: LinkType[] = [
-      {
-         id: 'home',
-         title: 'Accueil',
-         url: '/',
-         is_active: false,
-      },
+      // {
+      //    id: 'home',
+      //    title: 'Accueil',
+      //    url: '/',
+      //    is_active: false,
+      // },
       {
          id: 'services',
          title: 'Services ',

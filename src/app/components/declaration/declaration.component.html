@@ -1,0 +1,247 @@
+<!-- declaration.component.html -->
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="md:flex">
+            <!-- Section Illustration -->
+            <div class="md:flex-shrink-0 md:w-1/2 flex items-center justify-center p-8"
+                [class]="'bg-gradient-to-br ' + illustrationColor">
+                <div class="text-center max-w-md">
+                    <!-- Illustration dynamique selon le type -->
+                    <div class="mb-6">
+                        <div [ngSwitch]="declarationType">
+                            <!-- Illustration pour objet perdu -->
+                            <div *ngSwitchCase="DeclarationType.LOSS" class="flex justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
+                                    <path fill="#fed7aa"
+                                        d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
+                                    <path fill="#fb923c" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
+                                    <path fill="#f97316" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
+                                    <circle cx="200" cy="110" r="10" fill="#ea580c" />
+                                    <path fill="#fbbf24" d="M180 190h40v40h-40z" />
+                                    <path fill="#f59e0b" d="M180 190h40v10h-40z" />
+                                    <!-- Point d'interrogation pour symboliser la recherche -->
+                                    <path fill="#dc2626" d="M200 230a10 10 0 100 20 10 10 0 000-20z" />
+                                    <path fill="#dc2626" d="M200 260a5 5 0 100 10 5 5 0 000-10z" />
+                                </svg>
+                            </div>
+
+                            <!-- Illustration pour objet retrouvé -->
+                            <div *ngSwitchDefault class="flex justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
+                                    <path fill="#e0f2fe"
+                                        d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
+                                    <path fill="#bae6fd" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
+                                    <path fill="#3b82f6" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
+                                    <circle cx="200" cy="110" r="10" fill="#1e40af" />
+                                    <path fill="#fbbf24" d="M180 190h40v40h-40z" />
+                                    <path fill="#f59e0b" d="M180 190h40v10h-40z" />
+                                    <!-- Coche verte pour symboliser la trouvaille -->
+                                    <path fill="#16a34a" d="M170 240l20 20 40-40" stroke="#16a34a" stroke-width="10"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ currentTexts.illustrationTitle }}</h2>
+                    <p class="text-gray-600">{{ currentTexts.illustrationText }}</p>
+
+                    <!-- Statistiques ou informations contextuelles -->
+                    <div class="mt-6 bg-white/70 rounded-lg p-4 backdrop-blur-sm">
+                        <div class="flex justify-between text-sm">
+                            <div class="text-center">
+                                <div class="font-bold text-lg"
+                                    [class.text-orange-600]="declarationType === DeclarationType.LOSS"
+                                    [class.text-blue-600]="declarationType === DeclarationType.FOUND">
+                                    {{ declarationType === DeclarationType.LOSS ? '72%' : '68%' }}
+                                </div>
+                                <div class="text-gray-600">Taux de restitution</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-gray-700">
+                                    {{ declarationType === DeclarationType.LOSS ? '2.1j' : '3.2j' }}
+                                </div>
+                                <div class="text-gray-600">Délai moyen</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="font-bold text-lg text-gray-700">
+                                    {{ declarationType === DeclarationType.LOSS ? '89%' : '92%' }}
+                                </div>
+                                <div class="text-gray-600">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section Formulaire -->
+            <div class="p-8 md:w-1/2">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ currentTexts.mainTitle }}</h1>
+                <p class="text-gray-600 mb-6">Remplissez ce formulaire pour déclarer votre {{ declarationType ===
+                    DeclarationType.LOSS ? 'perte' : 'objet retrouvé' }}</p>
+
+                <form [formGroup]="declarationForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                    <!-- Titre -->
+                    <div class="flex flex-col space-y-2">
+                        <label for="title" class="text-sm font-medium text-gray-700">Titre *</label>
+                        <input id="title" type="text" formControlName="title" class="form-input rounded-lg"
+                            [placeholder]="'Ex: ' + (declarationType === DeclarationType.LOSS ? 'Portefeuille perdu au centre-ville' : 'Portefeuille noir trouvé au parc')">
+                        <div *ngIf="title?.invalid && title?.touched" class="text-red-500 text-xs mt-1">
+                            <div *ngIf="title?.errors?.['required']">Le titre est obligatoire</div>
+                            <div *ngIf="title?.errors?.['minlength']">Le titre doit contenir au moins 3 caractères</div>
+                        </div>
+                    </div>
+
+                    <!-- Catégorie -->
+                    <app-category-selector [selectedCategoryId]="selectedCategory"
+                        (categorySelected)="onCategorySelected($event)"></app-category-selector>
+
+                    <!-- Description -->
+                    <div class="flex flex-col space-y-2">
+                        <label for="description" class="text-sm font-medium text-gray-700">Description *</label>
+                        <textarea id="description" formControlName="description" class="form-textarea rounded-lg h-32"
+                            [placeholder]="currentTexts.descriptionPlaceholder"></textarea>
+                        <div *ngIf="description?.invalid && description?.touched" class="text-red-500 text-xs mt-1">
+                            <div *ngIf="description?.errors?.['required']">La description est obligatoire</div>
+                            <div *ngIf="description?.errors?.['minlength']">La description doit contenir au moins 10
+                                caractères</div>
+                        </div>
+                    </div>
+
+                    <!-- Section Localisation améliorée -->
+                    <div class="flex flex-col space-y-2">
+                        <label for="location" class="text-sm font-medium text-gray-700">{{
+                            currentTexts.locationLabel }} *</label>
+
+                        <div class="relative">
+                            <!-- Champ de recherche avec suggestions -->
+                            <input id="location" type="text" formControlName="location"
+                                class="form-input rounded-lg border border-gray-300 px-4 py-2 pr-24 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                [placeholder]="declarationType === DeclarationType.LOSS ? 'Où avez-vous perdu l\'objet ?' : 'Où avez-vous trouvé l\'objet ?'"
+                                autocomplete="off">
+
+                            <!-- Bouton de géolocalisation -->
+                            <button type="button" (click)="useCurrentLocation()" [disabled]="isGettingCurrentLocation()"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-100 text-blue-600 hover:bg-blue-200 px-3 py-1 rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
+                                title="Utiliser ma position actuelle">
+                                <span class="material-icons text-sm">
+                                    {{ isGettingCurrentLocation() ? 'refresh' : 'my_location' }}
+                                </span>
+                                <span *ngIf="isGettingCurrentLocation()" class="animate-spin">⟳</span>
+                            </button>
+                        </div>
+
+                        <!-- Suggestions de lieux -->
+                        <div *ngIf="selectedCoordinates==undefined || location==null" class="relative z-0">
+                            <div *ngIf="showSuggestions() && locationSuggestions().length > 0"
+                                class="suggestions-container absolute z-10 w-full overflow-x-hidden mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                <div *ngFor="let suggestion of locationSuggestions()"
+                                    (click)="selectLocationSuggestion(suggestion)"
+                                    class="suggestion-item px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
+                                    <div class="font-medium truncate text-gray-800 text-sm">
+                                        {{ suggestion.display_name }}
+                                    </div>
+                                    <div *ngIf="suggestion.address" class="text-xs text-gray-500 mt-1">
+                                        {{ getAddressString(suggestion.address) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indicateur de coordonnées -->
+                        <div *ngIf="selectedCoordinates" class="text-xs text-green-600 flex items-center mt-1">
+                            <span class="material-icons text-sm mr-1">check_circle</span>
+                            Position enregistrée : {{ selectedCoordinates.lat.toFixed(4) }}, {{
+                            selectedCoordinates.lng.toFixed(4) }}
+                        </div>
+
+                        <div *ngIf="location?.invalid && location?.touched" class="text-red-500 text-xs mt-1">
+                            Le lieu est obligatoire
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="flex flex-col space-y-2">
+                            <label for="date" class="text-sm font-medium text-gray-700">{{ currentTexts.dateLabel }}
+                                *</label>
+                            <input id="date" type="date" formControlName="date" class="form-input rounded-lg">
+                            <div *ngIf="date?.invalid && date?.touched" class="text-red-500 text-xs mt-1">
+                                La date est obligatoire
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations de contact -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex flex-col space-y-2">
+                            <label for="contactEmail" class="text-sm font-medium text-gray-700">Email *</label>
+                            <input id="contactEmail" type="email" formControlName="contactEmail"
+                                class="form-input rounded-lg" placeholder="votre@email.com">
+                            <div *ngIf="contactEmail?.invalid && contactEmail?.touched"
+                                class="text-red-500 text-xs mt-1">
+                                <div *ngIf="contactEmail?.errors?.['required']">L'email est obligatoire</div>
+                                <div *ngIf="contactEmail?.errors?.['email']">Veuillez entrer un email valide</div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col space-y-2">
+                            <label for="contactPhone" class="text-sm font-medium text-gray-700">Téléphone</label>
+                            <input id="contactPhone" type="tel" formControlName="contactPhone"
+                                class="form-input rounded-lg" placeholder="0123456789">
+                            <div *ngIf="contactPhone?.invalid && contactPhone?.touched"
+                                class="text-red-500 text-xs mt-1">
+                                Veuillez entrer un numéro de téléphone valide (10 chiffres)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Téléchargement d'images -->
+                    <div class="flex flex-col space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Images</label>
+
+                        <!-- Input fichier caché -->
+                        <input type="file" id="images" multiple accept="image/*" (change)="onFileSelected($event)"
+                            class="hidden">
+
+                        <!-- Zone de dépôt -->
+                        <div class="flex flex-col justify-center items-center border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer"
+                            (click)="triggerFileInput()">
+                            <span class="material-icons text-4xl text-gray-400 mb-2">cloud_upload</span>
+                            <p class="text-gray-600 text-center">Cliquez pour ajouter des photos ou glissez-déposez</p>
+                            <p class="text-gray-500 text-sm mt-1">Formats supportés: JPG, PNG (max 5MB par image)</p>
+                        </div>
+
+                        <!-- Prévisualisation des images -->
+                        <div *ngIf="imagePreviews.length > 0" class="mt-4">
+                            <p class="text-sm text-gray-700 mb-2">Images sélectionnées:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <div *ngFor="let preview of imagePreviews; let i = index" class="relative">
+                                    <img [src]="preview" class="h-20 w-20 object-cover rounded-lg border">
+                                    <button type="button" (click)="removeImage(i)"
+                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                                        <span class="material-icons text-xs">close</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bouton de soumission -->
+                    <div class="pt-4">
+                        <button type="submit"
+                            class="w-full text-white p-3 text-lg font-medium rounded-lg transition-colors flex items-center justify-center"
+                            [class]="declarationType === DeclarationType.LOSS ? 
+                                'bg-orange-600 hover:bg-orange-700' : 
+                                'bg-blue-600 hover:bg-blue-700'" [class.opacity-50]="declarationForm.invalid"
+                            [disabled]="declarationForm.invalid">
+                            <span class="material-icons mr-2">
+                                {{ declarationType === DeclarationType.LOSS ? 'search' : 'send' }}
+                            </span>
+                            {{ currentTexts.submitButton }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
