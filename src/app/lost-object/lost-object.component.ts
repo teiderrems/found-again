@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DeclarationComponent, DeclarationType } from '../components/declaration/declaration.component';
+import { DeclarationComponent, DeclarationData, DeclarationType } from '../components/declaration/declaration.component';
 
 @Component({
   selector: 'app-lost-object',
@@ -10,4 +10,9 @@ import { DeclarationComponent, DeclarationType } from '../components/declaration
 })
 export class LostObjectComponent {
   DeclarationType=DeclarationType
+  
+  
+  handleSubmit($event: DeclarationData) {
+    console.log($event);
+  }
 }
