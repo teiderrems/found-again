@@ -1,9 +1,7 @@
 <header class="backdrop-blur-md h-[120px] mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
   <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
-    <div class="flex h-full w-1/5 justify-start items-center">
-      <a routerLink="/" class=" no-underline hover:cursor-pointer h-full"><img class=" h-full w-full"
-          src="../../assets/header_logo.png" alt="Your Company"></a>
-    </div>
+    <a routerLink="/" class=" no-underline hover:cursor-pointer h-full"><img class=" h-full w-full"
+        src="../../assets/header_logo.png" alt="Your Company"></a>
     <div class="flex w-3/5 justify-center space-x-9">
       <nav class="flex justify-center items-center space-x-9">
         @for (item of links_; track item.id) {
@@ -12,21 +10,22 @@
       </nav>
     </div>
     <div class="w-1/5 flex items-center hover:cursor-pointer text-[#009245] font-bold justify-end">
-      <app-dropdown [options]="userOptions" [selectedValue]="selectedUser" [placement]="'bottom-right'"
-        (selectionChange)="onUserChange($event)">
+      <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
         <!-- Trigger personnalisé -->
         <ng-template #dropdownTrigger let-context>
-          <button (click)="context.toggleDropdown()" class="flex space-x-2 items-center" >
+          <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center">
             <span class="flex items-center justify-center w-10 h-10 rounded-full border">
-              <!-- <span>
-                TD
-              </span> -->
-              <mat-icon fontIcon="person_outline"></mat-icon>
+              <span class=" font-bold">
+                {{getAvatar()}}
+              </span>
+              <!--  -->
             </span>
-            <span>Delphine</span>
+            <span class="capitalize">{{ getDisplayName()}}</span>
+            <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
           </button>
         </ng-template>
-        <ng-template #dropdownOption let-option let-selected="selected" let-select="select"  let-closeDropdown="closeDropdown">
+        <ng-template #dropdownOption let-option let-selected="selected" let-select="select"
+          let-closeDropdown="closeDropdown">
           <div
             class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
             (click)="option.action(option);closeDropdown()">

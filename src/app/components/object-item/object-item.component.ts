@@ -11,12 +11,12 @@ import { Component, input, signal } from '@angular/core';
 })
 export class ObjectItemComponent {
 
-  item=input<Item>();
+  item=input.required<Item>();
   currentIndex=signal(0);
 
   nextImage( event: Event) {
       event.stopPropagation();
-      if (this.currentIndex() < this.item()!.images.length - 1) {
+      if (this.currentIndex() < this.item().images.length - 1) {
          this.currentIndex.update(value=>value++);
       } else {
          this.currentIndex.set(0);
@@ -28,7 +28,7 @@ export class ObjectItemComponent {
       if (this.currentIndex() > 0) {
         this.currentIndex.update(value=>value--);
       } else {
-         this.currentIndex.set(this.item()!.images.length - 1);
+         this.currentIndex.set(this.item().images.length - 1);
       }
    }
 }

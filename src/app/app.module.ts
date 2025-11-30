@@ -11,7 +11,6 @@ import { requestInterceptor } from './auth.interceptor';
 import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@angular/router';
 
 registerLocaleData(fr);
@@ -21,7 +20,6 @@ registerLocaleData(fr);
    imports: [
     BrowserModule,
     AppRoutingModule,
-    AuthModule,
     ReactiveFormsModule,
     provideFirebaseApp(() => initializeApp({
         apiKey: 'AIzaSyCd84UfFYutkiLklTTS_igwyN9orgWYGro',

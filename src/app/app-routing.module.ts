@@ -1,20 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login.component';
-import { RegisterComponent } from './auth/register/register.component';
 import {
    AuthGuard,
    redirectUnauthorizedTo,
    redirectLoggedInTo,
 } from '@angular/fire/auth-guard';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { ConfirmEmailComponent } from './confirm-email/confirm-email.component';
 import { HomeComponent } from './home/home.component';
-import { LostObjectComponent } from './lost-object/lost-object.component';
-import { FoundObjectComponent } from './found-object/found-object.component';
-import { ServiceComponent } from './service/service.component';
-import { AboutComponent } from './about/about.component';
-import { ContactComponent } from './contact/contact.component';
 
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['connexion']);
@@ -34,35 +25,35 @@ const routes: Routes = [
       children: [
          {
             path: 'déclarer',
-            component: LostObjectComponent,
+            loadComponent:()=>import('./lost-object/lost-object.component').then(c=>c.LostObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'rechercher',
-            component: FoundObjectComponent,
+            loadComponent:()=>import('./found-object/found-object.component').then(c=>c.FoundObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'services',
-            component: ServiceComponent,
+            loadComponent:()=>import('./service/service.component').then(c=>c.ServiceComponent),
             pathMatch: 'full',
             title: 'Nos Services',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'about',
-            component: AboutComponent,
+            loadComponent:()=>import('./about/about.component').then(c=>c.AboutComponent),
             pathMatch: 'full',
             title: 'A propos de nous',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'contact',
-            component: ContactComponent,
+            loadComponent:()=>import('./contact/contact.component').then(c=>c.ContactComponent),
             pathMatch: 'full',
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
@@ -71,7 +62,7 @@ const routes: Routes = [
    },
    {
       path: 'connexion',
-      component: LoginComponent,
+      loadComponent:()=>import('./auth/login/login.component').then(c=>c.LoginComponent),
       pathMatch: 'full',
       canActivate: [AuthGuard],
       data: {
@@ -81,19 +72,19 @@ const routes: Routes = [
    },
    {
       path: 'inscription',
-      component: RegisterComponent,
+      loadComponent:()=>import('./auth/register/register.component').then(c=>c.RegisterComponent),
       pathMatch: 'full',
       title: "S'inscrire",
    },
    {
       path: 'confirmer-email',
-      component: ConfirmEmailComponent,
+      loadComponent:()=>import('./confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
       pathMatch: 'full',
       title: 'Confirmer Email',
    },
    {
       path: '**',
-      component: NotFoundComponent,
+      loadComponent:()=>import('./not-found/not-found.component').then(c=>c.NotFoundComponent),
       pathMatch: 'full',
       title: 'Non trouver',
    },

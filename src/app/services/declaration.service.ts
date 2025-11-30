@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
 
 export interface Declaration {
   id: string;
@@ -57,6 +59,9 @@ export interface PaginatedResponse<T> {
 export class DeclarationService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/declarations`;
+
+  private auth: Auth = inject(Auth);
+  private firestore: Firestore = inject(Firestore);
   
   // Subject pour le state management simple
   private declarationsSubject = new BehaviorSubject<Declaration[]>([]);
