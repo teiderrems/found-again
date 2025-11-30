@@ -18,7 +18,6 @@ export interface DropdownOption {
 })
 export class DropdownComponent {
   @Input() options: DropdownOption[] = [];
-  @Input() selectedValue: any;
   @Input() disabled: boolean = false;
   @Input() placement: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' = 'bottom-left';
   @Input() closeOnSelect: boolean = true;
@@ -49,32 +48,6 @@ export class DropdownComponent {
   closeDropdown() {
     this.isOpen = false;
     this.isOpenChange.emit(this.isOpen);
-  }
-
-  selectOption(option: DropdownOption, event?: MouseEvent) {
-    // Empêche la propagation pour éviter que le clic ne remonte au document
-    if (event) {
-      event.stopPropagation();
-      event.preventDefault();
-    }
-
-    if (!option.disabled) {
-      this.selectedValue = option.value;
-      this.selectionChange.emit(option.value);
-      
-      if (this.closeOnSelect) {
-        this.closeDropdown();
-      }
-    }
-  }
-
-  getSelectedLabel(): string {
-    const selected = this.options.find(opt => opt.value === this.selectedValue);
-    return selected ? selected.label : '';
-  }
-
-  getSelectedOption(): DropdownOption | undefined {
-    return this.options.find(opt => opt.value === this.selectedValue);
   }
 
   getPanelClasses(): string {
