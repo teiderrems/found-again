@@ -22,12 +22,18 @@ registerLocaleData(fr);
     AppRoutingModule,
     ReactiveFormsModule,
     provideFirebaseApp(() => initializeApp({
-        apiKey: 'AIzaSyCd84UfFYutkiLklTTS_igwyN9orgWYGro',
-        authDomain: 'found-again.firebaseapp.com',
-        projectId: 'found-again',
-        storageBucket: 'found-again.firebasestorage.app',
-        messagingSenderId: '372344879955',
-        appId: '1:372344879955:web:86d8a73086486f717dffa6',
+      apiKey: "AIzaSyB8pX5HHUmYMCaUt3YmzD0FyWcqS7_iuEY",
+
+      authDomain: "found-again-4a0e0.firebaseapp.com",
+
+      projectId: "found-again-4a0e0",
+
+      storageBucket: "found-again-4a0e0.firebasestorage.app",
+
+      messagingSenderId: "1019330466468",
+
+      appId: "1:1019330466468:web:9eb199fc069d945827cc31"
+
     })),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
