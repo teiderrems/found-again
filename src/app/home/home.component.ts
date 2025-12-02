@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 // import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../components/header/header.component';
@@ -6,6 +6,8 @@ import { FooterComponent } from '../components/footer/footer.component';
 import { Router, RouterOutlet } from '@angular/router';
 import { ObjectItemComponent } from '../components/object-item/object-item.component';
 import { SearchFieldComponent } from '../components/search-field/search-field.component';
+import { DeclarationService } from '../services/declaration.service';
+import { DeclarationData } from '../types/declaration';
 
 export interface Item {
    title: string;
@@ -120,15 +122,29 @@ const items = [
    ],
    standalone: true,
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+   ngOnInit(): void {
+      this.declarationService.getDeclarations().subscribe({
+         next: (declarations) => {
+            this.initialItems.set(declarations);
+            this.filteredItems.set(declarations);
+         },
+         error: (error) => {
+            console.error('Erreur lors de la récupération des déclarations :', error);
+         },
+      });
+   }
    router = inject(Router);
 
-   filteredItems = signal<Item[]>(items);
+   private declarationService = inject(DeclarationService);
+
+   initialItems = signal<DeclarationData[]>([]);
+   filteredItems = signal<DeclarationData[]>(this.initialItems());
 
    filterItems(searchTerm: string | null) {
       if (searchTerm) {
          const lowerTerm = searchTerm.toLowerCase();
-         const filterResults = this.filteredItems().filter(
+         const filterResults = this.initialItems().filter(
             (item) =>
                item.title.toLowerCase().includes(lowerTerm) ||
                item.description.toLowerCase().includes(lowerTerm) ||
@@ -137,7 +153,7 @@ export class HomeComponent {
          this.filteredItems.set(filterResults);
       }
       else{
-         this.filteredItems.set(items);
+         this.filteredItems.set(this.initialItems());
       }
    }
 }

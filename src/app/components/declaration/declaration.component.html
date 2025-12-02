@@ -131,7 +131,7 @@
                         </div>
 
                         <!-- Suggestions de lieux -->
-                        <div *ngIf="selectedCoordinates==undefined || location==null" class="relative z-0">
+                        <div *ngIf="location==null" class="relative z-0">
                             <div *ngIf="showSuggestions() && locationSuggestions().length > 0"
                                 class="suggestions-container absolute z-10 w-full overflow-x-hidden mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                 <div *ngFor="let suggestion of locationSuggestions()"

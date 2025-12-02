@@ -16,11 +16,12 @@ import {
    where,
 } from '@angular/fire/firestore';
 
-import { SupabaseStorageService } from './supabase-storage.service';
+import { FirebaseStorageService } from './firebase-storage.service';
 import {
    DeclarationCreate,
    DeclarationData,
    DeclarationType,
+   ImageType,
 } from '../types/declaration';
 
 @Injectable({
@@ -28,7 +29,7 @@ import {
 })
 export class DeclarationService {
    private firestore: Firestore = inject(Firestore);
-   private storageService: SupabaseStorageService = inject(SupabaseStorageService);
+   private storageService: FirebaseStorageService = inject(FirebaseStorageService);
 
    private readonly LOSS_COLLECTION = 'loss';
    private readonly FOUND_COLLECTION = 'found';
@@ -36,10 +37,8 @@ export class DeclarationService {
    /**
     * Retourne la référence de collection appropriée basée sur le type.
     */
-   private getCollectionRef(type: DeclarationType) {
-      const path =
-         type === DeclarationType.LOSS ? this.LOSS_COLLECTION : this.FOUND_COLLECTION;
-      return collection(this.firestore, path);
+   private getCollectionRef() {
+      return collection(this.firestore, "declarations");
    }
 
    /**
@@ -49,7 +48,7 @@ export class DeclarationService {
       declaration: DeclarationCreate,
       type: DeclarationType,
    ): Observable<string> {
-      const colRef = this.getCollectionRef(type);
+      const colRef = this.getCollectionRef();
 
       const initialData = {
          ...declaration,
@@ -61,12 +60,12 @@ export class DeclarationService {
          switchMap((docRef: DocumentReference) => {
             const declarationId = docRef.id;
 
-            const uploadTask$ = from(this.storageService.uploadFiles(declaration.images));
+            const uploadTask$ = from(this.storageService.uploadFiles(declaration.images, declarationId));
             const uploadResult$ =
-               declaration.images.length > 0 ? uploadTask$ : from([[] as string[]]);
+               declaration.images.length > 0 ? uploadTask$ : from([[] as ImageType[]]);
 
             return uploadResult$.pipe(
-               switchMap((imageUrls: string[]) => {
+               switchMap((imageUrls: ImageType[]) => {
                   const dataToUpdate = {
                      ...declaration,
                      images: imageUrls,
@@ -89,8 +88,8 @@ export class DeclarationService {
    /**
     * Récupère toutes les déclarations d'un certain type.
     */
-   getDeclarations(type: DeclarationType): Observable<DeclarationData[]> {
-      const colRef = this.getCollectionRef(type);
+   getDeclarations(): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
       return collectionData(colRef, { idField: 'id' }) as Observable<DeclarationData[]>;
    }
 
@@ -101,7 +100,7 @@ export class DeclarationService {
       id: string,
       type: DeclarationType,
    ): Observable<DeclarationData | undefined> {
-      const docRef = doc(this.getCollectionRef(type), id);
+      const docRef = doc(this.getCollectionRef(), id);
 
       return from(getDoc(docRef)).pipe(
          map((snapshot) => {
@@ -125,7 +124,7 @@ export class DeclarationService {
       existingImageUrls: string[],
       type: DeclarationType,
    ): Observable<void> {
-      const colRef = this.getCollectionRef(type);
+      const colRef = this.getCollectionRef();
       const docRef = doc(colRef, id);
 
       const newFilesToUpload = declaration.images;
@@ -133,10 +132,10 @@ export class DeclarationService {
       const uploadTask$ = from(this.storageService.uploadFiles(newFilesToUpload));
 
       const uploadResult$ =
-         newFilesToUpload.length > 0 ? uploadTask$ : from([[] as string[]]);
+         newFilesToUpload.length > 0 ? uploadTask$ : from([[] as ImageType[]]);
 
       return uploadResult$.pipe(
-         switchMap((newImageUrls: string[]) => {
+         switchMap((newImageUrls: ImageType[]) => {
             const finalImageUrls = [...existingImageUrls, ...newImageUrls];
 
             const dataToUpdate = {
@@ -167,7 +166,7 @@ export class DeclarationService {
       type: DeclarationType,
       category: string,
    ): Observable<DeclarationData[]> {
-      const colRef = this.getCollectionRef(type);
+      const colRef = this.getCollectionRef();
       const categoryFilter = where('category', '==', category);
       const declarationsQuery: Query<DeclarationData> = query(
          colRef as Query<DeclarationData>,
@@ -185,9 +184,9 @@ export class DeclarationService {
    deleteDeclaration(
       id: string,
       type: DeclarationType,
-      imageUrls: string[],
+      imageUrls: ImageType[],
    ): Observable<void> {
-      const colRef = this.getCollectionRef(type);
+      const colRef = this.getCollectionRef();
       const docRef = doc(colRef, id);
 
       const deleteStorage$ = from(this.storageService.deleteFiles(imageUrls)).pipe(

@@ -13,7 +13,12 @@ export interface DeclarationCreate {
    contactEmail: string;
    contactPhone: string;
    images: File[];
-   type:DeclarationType;
+   type: DeclarationType;
+}
+
+export interface ImageType {
+   fullPath: string;
+   downloadURL: string;
 }
 
 export interface DeclarationData {
@@ -26,6 +31,6 @@ export interface DeclarationData {
    date: string;
    contactEmail: string;
    contactPhone: string;
-   images: string[];
-   type:DeclarationType;
+   images: ImageType[];
+   type: DeclarationType;
 }

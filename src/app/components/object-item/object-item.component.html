@@ -1,15 +1,15 @@
 <div class="relative h-48 bg-gray-100">
-    <img [src]="item().images[currentIndex()]" [alt]="item().title"
-        class="w-full h-full object-cover transition-opacity duration-300">
+    <img [src]="currentImageUrl" [alt]="item().title"
+        class="w-full h-full object-cover rounded-e-2xl transition-opacity duration-300">
 
-    <button *ngIf="item().images!.length > 1" (click)="prevImage($event)"
+    <button *ngIf="item().images.length > 1" (click)="prevImage($event)"
         class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 rounded-full p-1 backdrop-blur-xs cursor-pointer hover:scale-110 transition-transform">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
     </button>
 
-    <button *ngIf="item().images.length > 1" (click)="nextImage($event)"
+    <button *ngIf="images.length > 1" (click)="nextImage($event)"
         class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 rounded-full p-1 backdrop-blur-xs cursor-pointer hover:scale-110 transition-transform">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

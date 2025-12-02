@@ -22,16 +22,7 @@ export class CategoryService {
     }
 
     // Sinon, essayer de récupérer depuis l'API, sinon utiliser les catégories par défaut
-    return this.http.get<DefaultCategory[]>(this.apiUrl).pipe(
-      tap(categories => {
-        this.categoriesCache = categories;
-      }),
-      catchError(() => {
-        // En cas d'erreur, utiliser les catégories par défaut
-        this.categoriesCache = DEFAULT_CATEGORIES;
-        return of(DEFAULT_CATEGORIES);
-      })
-    );
+    return of(DEFAULT_CATEGORIES);
   }
 
   // Récupérer une catégorie par ID
