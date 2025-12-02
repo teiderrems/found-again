@@ -1,9 +1,8 @@
-// found-object-declaration.component.ts
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DeclarationComponent, DeclarationData, DeclarationType } from '../components/declaration/declaration.component';
+import { DeclarationComponent } from '../components/declaration/declaration.component';
+import { DeclarationCreate, DeclarationType } from '../types/declaration';
 
 @Component({
   selector: 'app-found-object-declaration',
@@ -16,7 +15,7 @@ export class FoundObjectComponent {
   
   DeclarationType=DeclarationType
   
-  handleSubmit($event: DeclarationData) {
+  handleSubmit($event: DeclarationCreate) {
     console.log($event);
   }
 }

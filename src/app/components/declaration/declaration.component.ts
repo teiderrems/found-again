@@ -1,4 +1,3 @@
-// declaration.component.ts
 import {
    Component,
    Input,
@@ -17,23 +16,7 @@ import { DeclarationService } from '@/app/services/declaration.service';
 import { LocationService, LocationSuggestion } from '@/app/services/location.service';
 import { DefaultCategory } from '@/constants/categories.constants';
 import { CategorySelectorComponent } from '../category-selector.component';
-
-export enum DeclarationType {
-   LOSS = 'loss',
-   FOUND = 'found',
-}
-
-export interface DeclarationData {
-   title: string;
-   category: string;
-   description: string;
-   location: string;
-   coordinates?: { lat: number; lng: number };
-   date: string;
-   contactEmail: string;
-   contactPhone: string;
-   images: File[];
-}
+import { DeclarationCreate, DeclarationType } from '@/app/types/declaration';
 
 @Component({
    selector: 'app-declaration',
@@ -44,7 +27,7 @@ export interface DeclarationData {
 })
 export class DeclarationComponent implements OnInit {
    @Input() declarationType: DeclarationType = DeclarationType.FOUND;
-   @Output() declarationSubmit = new EventEmitter<DeclarationData>();
+   @Output() declarationSubmit = new EventEmitter<DeclarationCreate>();
 
    DeclarationType = DeclarationType;
 
@@ -52,14 +35,12 @@ export class DeclarationComponent implements OnInit {
    selectedFiles: File[] = [];
    imagePreviews: string[] = [];
 
-   // Gestion de la localisation
    locationSuggestions = signal<LocationSuggestion[]>([]);
    showSuggestions = signal(false);
    isGettingCurrentLocation = signal(false);
    selectedCoordinates?: { lat: number; lng: number };
    selectedCoordinatesString?: string;
 
-   // Textes dynamiques selon le type de déclaration
    texts = {
       [DeclarationType.LOSS]: {
          title: 'Déclarer un objet perdu',
@@ -117,7 +98,7 @@ export class DeclarationComponent implements OnInit {
          this.categories.set(categories);
       });
 
-      // Surveiller les changements du champ location pour les suggestions
+      
       this.declarationForm.get('location')?.valueChanges.subscribe((value) => {
          this.onLocationInputChange(value);
       });
@@ -139,7 +120,7 @@ export class DeclarationComponent implements OnInit {
          : 'from-blue-50 to-indigo-100';
    }
 
-   // Gestion de la localisation
+   
    onLocationInputChange(query: string): void {
       if (query && query.length > 2) {
          this.locationService.searchLocations(query).subscribe({
@@ -221,7 +202,7 @@ export class DeclarationComponent implements OnInit {
       });
    }
 
-   // Gestion des fichiers
+   
    onFileSelected(event: any): void {
       const files: FileList = event.target.files;
       if (files.length > 0) {
@@ -251,19 +232,20 @@ export class DeclarationComponent implements OnInit {
       fileInput.click();
    }
 
-   // Soumission du formulaire
+   
    onSubmit(): void {
       if (this.declarationForm.valid) {
-         const formData: DeclarationData = {
+         const formData: DeclarationCreate = {
             ...this.declarationForm.value,
             coordinates: this.selectedCoordinates,
             images: this.selectedFiles,
+            type:this.declarationType
          };
 
-         // Émettre les données vers le composant parent
+         
          this.declarationSubmit.emit(formData);
 
-         // Réinitialiser le formulaire
+         
          this.declarationForm.reset();
          this.selectedFiles = [];
          this.imagePreviews = [];
@@ -272,8 +254,8 @@ export class DeclarationComponent implements OnInit {
          this.showSuggestions.set(false);
          this.selectedCategory = '';
 
-         // Message de succès
-         alert(this.currentTexts.successMessage);
+         
+         // alert(this.currentTexts.successMessage);
       } else {
          Object.keys(this.declarationForm.controls).forEach((key) => {
             this.declarationForm.get(key)?.markAsTouched();

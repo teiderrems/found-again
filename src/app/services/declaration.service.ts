@@ -1,177 +1,211 @@
-// services/declaration.service.ts
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, BehaviorSubject } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { doc, Firestore, setDoc } from '@angular/fire/firestore';
-import { Auth } from '@angular/fire/auth';
+import { Observable, from, switchMap, map, catchError } from 'rxjs';
 
-export interface Declaration {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  location: string;
-  date: string;
-  contactEmail: string;
-  contactPhone?: string;
-  images: string[]; // URLs des images
-  type: 'loss' | 'found';
-  status: 'active' | 'resolved' | 'expired';
-  createdAt: string;
-  updatedAt: string;
-  userId?: string;
-}
+import {
+   Firestore,
+   collection,
+   addDoc,
+   collectionData,
+   doc,
+   DocumentReference,
+   setDoc,
+   deleteDoc,
+   getDoc,
+   Query,
+   query,
+   where,
+} from '@angular/fire/firestore';
 
-export interface DeclarationCreate {
-  title: string;
-  category: string;
-  description: string;
-  location: string;
-  date: string;
-  contactEmail: string;
-  contactPhone?: string;
-  images: File[];
-  type: 'loss' | 'found';
-}
-
-export interface DeclarationFilters {
-  type?: 'loss' | 'found';
-  category?: string;
-  location?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  status?: string;
-  search?: string;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import { SupabaseStorageService } from './supabase-storage.service';
+import {
+   DeclarationCreate,
+   DeclarationData,
+   DeclarationType,
+} from '../types/declaration';
 
 @Injectable({
-  providedIn: 'root'
+   providedIn: 'root',
 })
 export class DeclarationService {
-  private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/declarations`;
+   private firestore: Firestore = inject(Firestore);
+   private storageService: SupabaseStorageService = inject(SupabaseStorageService);
 
-  private auth: Auth = inject(Auth);
-  private firestore: Firestore = inject(Firestore);
-  
-  // Subject pour le state management simple
-  private declarationsSubject = new BehaviorSubject<Declaration[]>([]);
-  public declarations$ = this.declarationsSubject.asObservable();
+   private readonly LOSS_COLLECTION = 'loss';
+   private readonly FOUND_COLLECTION = 'found';
 
-  constructor() {
-    this.loadInitialDeclarations();
-  }
+   /**
+    * Retourne la référence de collection appropriée basée sur le type.
+    */
+   private getCollectionRef(type: DeclarationType) {
+      const path =
+         type === DeclarationType.LOSS ? this.LOSS_COLLECTION : this.FOUND_COLLECTION;
+      return collection(this.firestore, path);
+   }
 
-  // Créer une déclaration
-  createDeclaration(declarationData: DeclarationCreate): Observable<Declaration> {
-    const formData = new FormData();
-    
-    // Ajouter les champs texte
-    Object.keys(declarationData).forEach(key => {
-      if (key !== 'images') {
-        formData.append(key, (declarationData as any)[key]);
-      }
-    });
-    
-    // Ajouter les images
-    declarationData.images.forEach((image, index) => {
-      formData.append('images', image, image.name);
-    });
+   /**
+    * Crée une nouvelle déclaration dans Firestore, gère l'upload des images via Supabase Storage.
+    */
+   createDeclaration(
+      declaration: DeclarationCreate,
+      type: DeclarationType,
+   ): Observable<string> {
+      const colRef = this.getCollectionRef(type);
 
-    return this.http.post<Declaration>(this.apiUrl, formData).pipe(
-      map(newDeclaration => {
-        const currentDeclarations = this.declarationsSubject.value;
-        this.declarationsSubject.next([newDeclaration, ...currentDeclarations]);
-        return newDeclaration;
-      })
-    );
-  }
+      const initialData = {
+         ...declaration,
+         images: [],
+         createdAt: new Date().toISOString(),
+      };
 
-  // Récupérer toutes les déclarations avec filtres
-  getDeclarations(filters: DeclarationFilters = {}, page = 1, limit = 20): Observable<PaginatedResponse<Declaration>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+      return from(addDoc(colRef, initialData)).pipe(
+         switchMap((docRef: DocumentReference) => {
+            const declarationId = docRef.id;
 
-    // Ajouter les filtres
-    Object.keys(filters).forEach(key => {
-      const value = (filters as any)[key];
-      if (value) {
-        params = params.set(key, value.toString());
-      }
-    });
+            const uploadTask$ = from(this.storageService.uploadFiles(declaration.images));
+            const uploadResult$ =
+               declaration.images.length > 0 ? uploadTask$ : from([[] as string[]]);
 
-    return this.http.get<PaginatedResponse<Declaration>>(this.apiUrl, { params });
-  }
+            return uploadResult$.pipe(
+               switchMap((imageUrls: string[]) => {
+                  const dataToUpdate = {
+                     ...declaration,
+                     images: imageUrls,
+                  };
 
-  // Récupérer une déclaration par ID
-  getDeclarationById(id: string): Observable<Declaration> {
-    return this.http.get<Declaration>(`${this.apiUrl}/${id}`);
-  }
+                  const docRefUpdate = doc(colRef, declarationId);
+                  return from(setDoc(docRefUpdate, dataToUpdate, { merge: true })).pipe(
+                     map(() => declarationId),
+                  );
+               }),
+            );
+         }),
+         catchError((e) => {
+            console.error('Erreur dans createDeclaration:', e);
+            throw e;
+         }),
+      );
+   }
 
-  // Mettre à jour une déclaration
-  updateDeclaration(id: string, updates: Partial<Declaration>): Observable<Declaration> {
-    return this.http.patch<Declaration>(`${this.apiUrl}/${id}`, updates).pipe(
-      map(updatedDeclaration => {
-        const currentDeclarations = this.declarationsSubject.value;
-        const updatedDeclarations = currentDeclarations.map(decl =>
-          decl.id === id ? updatedDeclaration : decl
-        );
-        this.declarationsSubject.next(updatedDeclarations);
-        return updatedDeclaration;
-      })
-    );
-  }
+   /**
+    * Récupère toutes les déclarations d'un certain type.
+    */
+   getDeclarations(type: DeclarationType): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef(type);
+      return collectionData(colRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+   }
 
-  // Supprimer une déclaration
-  deleteDeclaration(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-      map(() => {
-        const currentDeclarations = this.declarationsSubject.value;
-        const filteredDeclarations = currentDeclarations.filter(decl => decl.id !== id);
-        this.declarationsSubject.next(filteredDeclarations);
-      })
-    );
-  }
+   /**
+    * Récupère une déclaration par son ID.
+    */
+   getDeclarationById(
+      id: string,
+      type: DeclarationType,
+   ): Observable<DeclarationData | undefined> {
+      const docRef = doc(this.getCollectionRef(type), id);
 
-  // Marquer une déclaration comme résolue
-  markAsResolved(id: string): Observable<Declaration> {
-    return this.updateDeclaration(id, { status: 'resolved' });
-  }
+      return from(getDoc(docRef)).pipe(
+         map((snapshot) => {
+            if (snapshot.exists()) {
+               return {
+                  id: snapshot.id,
+                  ...(snapshot.data() as Omit<DeclarationData, 'id'>),
+               } as DeclarationData;
+            }
+            return undefined;
+         }),
+      );
+   }
 
-  // Rechercher des déclarations
-  searchDeclarations(query: string, type?: 'loss' | 'found'): Observable<Declaration[]> {
-    let params = new HttpParams().set('search', query);
-    if (type) {
-      params = params.set('type', type);
-    }
+   /**
+    * Modifie une déclaration existante.
+    */
+   updateDeclaration(
+      id: string,
+      declaration: DeclarationCreate,
+      existingImageUrls: string[],
+      type: DeclarationType,
+   ): Observable<void> {
+      const colRef = this.getCollectionRef(type);
+      const docRef = doc(colRef, id);
 
-    return this.http.get<Declaration[]>(`${this.apiUrl}/search`, { params });
-  }
+      const newFilesToUpload = declaration.images;
 
-  // Charger les déclarations initiales
-  private loadInitialDeclarations(): void {
-    this.getDeclarations({}, 1, 50).subscribe({
-      next: (response) => {
-        this.declarationsSubject.next(response.data);
-      },
-      error: (error) => {
-        console.error('Error loading initial declarations:', error);
-      }
-    });
-  }
+      const uploadTask$ = from(this.storageService.uploadFiles(newFilesToUpload));
 
-  // Getter pour le state actuel (synchrone)
-  getCurrentDeclarations(): Declaration[] {
-    return this.declarationsSubject.value;
-  }
+      const uploadResult$ =
+         newFilesToUpload.length > 0 ? uploadTask$ : from([[] as string[]]);
+
+      return uploadResult$.pipe(
+         switchMap((newImageUrls: string[]) => {
+            const finalImageUrls = [...existingImageUrls, ...newImageUrls];
+
+            const dataToUpdate = {
+               ...declaration,
+               images: finalImageUrls,
+               updatedAt: new Date().toISOString(),
+            };
+
+            return from(setDoc(docRef, dataToUpdate, { merge: true })).pipe(
+               map(() => undefined),
+            );
+         }),
+         catchError((e) => {
+            console.error('Erreur dans updateDeclaration:', e);
+            throw e;
+         }),
+      );
+   }
+
+   /**
+    * Récupère les déclarations d'un certain type, filtrées par catégorie.
+    *
+    * @param type Le type de déclaration (LOSS ou FOUND).
+    * @param category La valeur de la catégorie sur laquelle filtrer (ex: 'Animaux', 'Électronique').
+    * @returns Un Observable de la liste des déclarations filtrées.
+    */
+   getDeclarationsByCategory(
+      type: DeclarationType,
+      category: string,
+   ): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef(type);
+      const categoryFilter = where('category', '==', category);
+      const declarationsQuery: Query<DeclarationData> = query(
+         colRef as Query<DeclarationData>,
+         categoryFilter,
+      );
+
+      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<
+         DeclarationData[]
+      >;
+   }
+
+   /**
+    * Supprime une déclaration (document Firestore) et tous ses fichiers associés (Supabase Storage).
+    */
+   deleteDeclaration(
+      id: string,
+      type: DeclarationType,
+      imageUrls: string[],
+   ): Observable<void> {
+      const colRef = this.getCollectionRef(type);
+      const docRef = doc(colRef, id);
+
+      const deleteStorage$ = from(this.storageService.deleteFiles(imageUrls)).pipe(
+         catchError((storageError) => {
+            console.warn(
+               `Avertissement: Échec lors de la suppression des fichiers Supabase Storage pour ID ${id}.`,
+               storageError,
+            );
+            return [null];
+         }),
+      );
+
+      return deleteStorage$.pipe(
+         switchMap(() => from(deleteDoc(docRef))),
+         catchError((e) => {
+            console.error(`Échec critique de la suppression de la déclaration ${id}:`, e);
+            throw e;
+         }),
+      );
+   }
 }
