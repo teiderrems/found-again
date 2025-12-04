@@ -10,7 +10,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "found-again": {
+    "found-again-4a0e0": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -30,7 +30,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/found-again",
+            "outputPath": "dist/found-again-4a0e0",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -80,10 +80,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "found-again:build:production"
+              "buildTarget": "found-again-4a0e0:build:production"
             },
             "development": {
-              "buildTarget": "found-again:build:development"
+              "buildTarget": "found-again-4a0e0:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -91,7 +91,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "found-again:build"
+            "buildTarget": "found-again-4a0e0:build"
           }
         },
         "test": {
@@ -120,12 +120,12 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "found-again:build:production",
-              "serveTarget": "found-again:serve:production"
+              "buildTarget": "found-again-4a0e0:build:production",
+              "serveTarget": "found-again-4a0e0:serve:production"
             },
             "development": {
-              "buildTarget": "found-again:build:development",
-              "serveTarget": "found-again:serve:development"
+              "buildTarget": "found-again-4a0e0:build:development",
+              "serveTarget": "found-again-4a0e0:serve:development"
             }
           },
           "defaultConfiguration": "production"
