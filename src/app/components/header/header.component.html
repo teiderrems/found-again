@@ -1,9 +1,7 @@
-<header class="backdrop-blur-md h-[160px] shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+<header class="backdrop-blur-md h-[120px] mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
   <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
-    <div class="flex h-full w-1/5 justify-start items-center">
-      <a routerLink="/" class=" no-underline hover:cursor-pointer h-3/4"><img class=" h-full w-full"
-          src="../../assets/header_logo.png" alt="Your Company"></a>
-    </div>
+    <a routerLink="/" class=" no-underline hover:cursor-pointer h-full"><img class=" h-full w-full"
+        src="../../assets/header_logo.png" alt="Your Company"></a>
     <div class="flex w-3/5 justify-center space-x-9">
       <nav class="flex justify-center items-center space-x-9">
         @for (item of links_; track item.id) {
@@ -11,43 +9,33 @@
         }
       </nav>
     </div>
-    <div class="w-1/5 flex space-x-2 items-center text-[#009245] font-bold justify-end">
-      <mat-icon fontIcon="person_outline"></mat-icon>
-      <span>Delphine</span>
-      <button [matMenuTriggerFor]="menu" matIconButton >
-        <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
-      </button>
+    <div class="w-1/5 flex items-center hover:cursor-pointer text-[#009245] font-bold justify-end">
+      <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
+        <!-- Trigger personnalisé -->
+        <ng-template #dropdownTrigger let-context>
+          <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center">
+            <span class="flex items-center justify-center w-10 h-10 rounded-full border">
+              <span class=" font-bold">
+                {{getAvatar()}}
+              </span>
+              <!--  -->
+            </span>
+            <span class="capitalize">{{ getDisplayName()}}</span>
+            <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+          </button>
+        </ng-template>
+        <ng-template #dropdownOption let-option let-selected="selected" let-select="select"
+          let-closeDropdown="closeDropdown">
+          <div
+            class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            (click)="option.action(option);closeDropdown()">
+            <div class="flex-1 flex space-x-2">
+              <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+              <div class="font-medium text-gray-900">{{ option.label }}</div>
+            </div>
+          </div>
+        </ng-template>
+      </app-dropdown>
     </div>
   </div>
-
-  <mat-menu #menu="matMenu" yPosition="below" xPosition="before">
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>person</mat-icon>
-      <span>Profil</span>
-    </a>
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>history</mat-icon>
-      <span>Historiques</span>
-    </a>
-    <a routerLink="#" mat-menu-item>
-      <mat-icon>logout</mat-icon>
-      <span>Déconnexion</span>
-    </a>
-  </mat-menu>
-  <!-- @if (user$) {
-  <div class="hidden lg:relative lg:z-10 lg:ml-4 lg:flex lg:items-center">
-    <div class="relative ml-4 shrink-0">
-      <div>
-        <button mat-button [matMenuTriggerFor]="menu" class="flex items-center space-x-1">
-          <mat-icon fontIcon="person" class="text-yellow-400"></mat-icon>
-          <span class="text-yellow-400">{{email}}</span>
-        </button>
-        <mat-menu #menu="matMenu">
-          <a mat-menu-item routerLink="/profil"><mat-icon fontIcon="manage_accounts"></mat-icon>Profil</a>
-          <li mat-menu-item (click)="logOut()"><mat-icon fontIcon="logout"></mat-icon>Se déconnecter</li>
-        </mat-menu>
-      </div>
-    </div>
-  </div>
-  } -->
 </header>

@@ -1,18 +1,18 @@
-<footer class="backdrop-blur-md h-[160px] shadow-sm bg-[#F5F5F5] w-full">
+<footer class="backdrop-blur-md min-h-[100px] shadow-sm bg-[#F5F5F5] w-full">
     <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
         <div class="flex h-full w-1/5 justify-start items-center">
-            <a routerLink="/" class=" no-underline h-3/4"><img class=" h-full w-full" src="../../assets/header_logo.png"
+            <a routerLink="/" class=" no-underline h-full"><img class=" h-full w-full" src="../../assets/header_logo.png"
                     alt="Your Company"></a>
         </div>
         <div class="flex w-3/5 items-center space-y-4 flex-col">
             <nav class="flex justify-center w-3/5 items-center space-x-9">
                 @for (item of links_; track item.id) {
-                <app-link-item [link]="item" />
+                    <app-link-item [link]="item" />
                 }
             </nav>
             <span class=" text-[#4A4459]">copyright &copy; 2025</span>
         </div>
-        <div class=" flex items-center justify-center w-1/5">
+        <div class=" flex items-center sm:flex-row flex-col justify-center w-1/5">
             @for (item of socials; track item.id) {
             <a [routerLink]="item.url" target="_blank" class=" no-underline h-3/4"><img class=" h-full w-full"
                     [src]="item.icon" [alt]="item.title"></a>

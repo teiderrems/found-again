@@ -1,15 +1,20 @@
-import { Component, inject, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
-import { commercial_modes as Commercial, CustomType } from '@/app/interfaces/dtos/api';
+import {
+   Component,
+   OnInit,
+   signal,
+   TemplateRef,
+   ViewChild,
+} from '@angular/core';
 import { AuthService } from '@/app/auth/auth.service';
-import { ApiServiceService } from '@/app/api-service.service';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Auth, user, User } from '@angular/fire/auth';
-import { Subscription } from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { LinkItemComponent } from '../link-item/link-item.component';
 import { MatInputModule } from '@angular/material/input';
-import {MatButtonModule, MatIconButton} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
+import { DropdownComponent } from '../dropdown/dropdown.component';
+import { CommonModule } from '@angular/common';
+import { UserProfile } from '@/app/types/user';
 
 export type LinkType = {
    id: string;
@@ -23,83 +28,116 @@ export type LinkType = {
    selector: 'app-header',
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
-   imports: [MatMenuModule, MatInputModule, MatIconModule, LinkItemComponent,RouterLink,MatButtonModule],
+   imports: [
+      MatMenuModule,
+      MatInputModule,
+      MatIconModule,
+      LinkItemComponent,
+      RouterLink,
+      MatButtonModule,
+      DropdownComponent,
+      CommonModule,
+   ],
    standalone: true,
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent implements OnInit {
    @ViewChild(TemplateRef) button: TemplateRef<unknown> | undefined;
+   dropdownOpen = signal<boolean>(false);
+   authUser = signal<UserProfile | undefined>(undefined);
 
    constructor(
       private readonly authService: AuthService,
-      private readonly apiService: ApiServiceService,
       public readonly router: Router,
-   ) {
-      this.userSubscription = this.user$.subscribe((aUser: User | null) => {
-         this.email = aUser?.email;
+   ) {}
+
+   ngOnInit(): void {
+      this.authService.getCurrentUserProfile().subscribe({
+         next: (value) => this.authUser.set(value),
+         error: (error) => console.error(error),
+         complete: () => console.log('done'),
       });
    }
-   ngOnDestroy(): void {
-      this.userSubscription.unsubscribe();
+
+   getAvatar() {
+      return (
+         this.authUser()?.lastname ||
+         this.authUser()?.firstname ||
+         this.authUser()?.email ||
+         'Guest'
+      )
+         .at(0)
+         ?.toLocaleUpperCase();
+   }
+
+   onLogout() {
+      this.authService.logOut().subscribe({
+         next: () => {
+            console.log('Déconnexion réussie !');
+            // Rediriger l'utilisateur vers la page de connexion
+            this.router.navigateByUrl('/connexion', {
+               skipLocationChange: true,
+               onSameUrlNavigation: 'reload',
+            });
+         },
+         error: (err) => {
+            console.error('Erreur lors de la déconnexion :', err);
+         },
+      });
+   }
+
+   public getDisplayName() {
+      return (
+         this.authUser()?.lastname ||
+         this.authUser()?.firstname ||
+         this.authUser()?.email ||
+         'Guest'
+      );
    }
 
    public links_: LinkType[] = [
       {
-         id: 'home',
-         title: 'Accueil',
-         url: '/home',
-         is_active: false,
-      },
-      {
-         id: 'found_objet',
+         id: 'rechercher',
          title: 'Déclarer un objet trouvé ',
-         url: '/found-objet',
+         url: '/rechercher',
          is_active: false,
       },
       {
-         id: 'found_objet',
+         id: 'déclarer',
          title: 'Déclarer une perte ',
-         url: '/lost-objet',
+         url: '/déclarer',
          is_active: false,
       },
    ];
 
-
-   public links_auth: LinkType[] = [
+   dropdownMenuItems = [
       {
-         id: 'login',
-         title: 'Connexion',
-         url: '/login',
-         is_active: false,
-         icon:'login'
+         value: '1',
+         label: 'Profil',
+         icon: 'person',
+         action: ($event: any) => {
+            console.log($event);
+         },
       },
       {
-         id: 'register',
-         title: 'Inscription',
-         url: '/register',
-         is_active: false,
-         icon:'person_outline'
+         value: '2',
+         label: 'Paramètre',
+         icon: 'settings',
+         action: ($event: any) => {
+            console.log($event);
+         },
+      },
+      {
+         value: '3',
+         label: 'Se Déconnecter',
+         icon: 'logout',
+         action: ($event: any) => {
+            this.onLogout();
+         },
       },
    ];
 
-   private auth: Auth = inject(Auth);
-   user$ = user(this.auth);
-   userSubscription: Subscription;
-
-   email: string | null | undefined = 'inconnu';
-
-   trajets2: CustomType[] = [];
-
-   regions: Commercial[] = [];
-   get getUrl(): string {
-      return this.router.url;
-   }
-
-   async logOut() {
-      try {
-         await this.authService.logOut();
-         this.router.navigateByUrl('/login');
-      } catch (error) {
-         console.log(error);
-      }
+   onDropdownToggle(isOpen: boolean) {
+      console.log('Dropdown ouvert:', isOpen);
+      this.dropdownOpen.set(isOpen);
    }
 }

@@ -1,14 +1,15 @@
 {
+  "projects": {
+    "default": "found-again-4a0e0"
+  },
   "targets": {
-    "found-again": {
+    "found-again-4a0e0": {
       "hosting": {
-        "found-again": [
-          "found-again"
+        "found-again-4a0e0": [
+          "found-again-4a0e0"
         ]
       }
     }
   },
-  "projects": {
-    "default": "found-again"
-  }
+  "etags": {}
 }

@@ -11,38 +11,35 @@ import { requestInterceptor } from './auth.interceptor';
 import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@angular/router';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
 
 registerLocaleData(fr);
 
 @NgModule({
-   declarations: [AppComponent, NotFoundComponent],
+   declarations: [AppComponent],
    imports: [
-      BrowserModule,
-      AppRoutingModule,
-      FooterComponent,
-      AuthModule,
-      ReactiveFormsModule,
-      provideFirebaseApp(() =>
-         initializeApp({
-            apiKey: 'AIzaSyCd84UfFYutkiLklTTS_igwyN9orgWYGro',
-            authDomain: 'found-again.firebaseapp.com',
-            projectId: 'found-again',
-            storageBucket: 'found-again.firebasestorage.app',
-            messagingSenderId: '372344879955',
-            appId: '1:372344879955:web:86d8a73086486f717dffa6',
-         }),
-      ),
-      provideAuth(() => getAuth()),
-      provideFirestore(() => getFirestore()),
-      FormsModule,
-      RouterModule,
-      HeaderComponent
-   ],
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    provideFirebaseApp(() => initializeApp({
+      apiKey: "AIzaSyB8pX5HHUmYMCaUt3YmzD0FyWcqS7_iuEY",
+
+      authDomain: "found-again-4a0e0.firebaseapp.com",
+
+      projectId: "found-again-4a0e0",
+
+      storageBucket: "found-again-4a0e0.firebasestorage.app",
+
+      messagingSenderId: "1019330466468",
+
+      appId: "1:1019330466468:web:9eb199fc069d945827cc31"
+
+    })),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore()),
+    FormsModule,
+    RouterModule
+],
    providers: [
       provideAnimationsAsync(),
       {
