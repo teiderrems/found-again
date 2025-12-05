@@ -12,7 +12,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '@/app/auth/auth.service';
 import { CategoryService } from '@/app/services/category.service';
-import { DeclarationService } from '@/app/services/declaration.service';
 import { LocationService, LocationSuggestion } from '@/app/services/location.service';
 import { DefaultCategory } from '@/constants/categories.constants';
 import { CategorySelectorComponent } from '../category-selector.component';
@@ -26,6 +25,7 @@ import { DeclarationCreate, DeclarationType } from '@/app/types/declaration';
    imports: [CommonModule, ReactiveFormsModule, CategorySelectorComponent],
 })
 export class DeclarationComponent implements OnInit {
+   
    @Input() declarationType: DeclarationType = DeclarationType.FOUND;
    @Output() declarationSubmit = new EventEmitter<DeclarationCreate>();
 
@@ -36,8 +36,8 @@ export class DeclarationComponent implements OnInit {
    imagePreviews: string[] = [];
 
    locationSuggestions = signal<LocationSuggestion[]>([]);
-   showSuggestions = signal(false);
    isGettingCurrentLocation = signal(false);
+   showSuggestioLocation = signal(false);
    selectedCoordinates?: { lat: number; lng: number };
    selectedCoordinatesString?: string;
 
@@ -71,8 +71,6 @@ export class DeclarationComponent implements OnInit {
          successMessage: 'Votre déclaration a été enregistrée avec succès!',
       },
    };
-
-   private declarationService = inject(DeclarationService);
    private categoryService = inject(CategoryService);
    private authService = inject(AuthService);
    private locationService = inject(LocationService);
@@ -126,17 +124,14 @@ export class DeclarationComponent implements OnInit {
          this.locationService.searchLocations(query).subscribe({
             next: (suggestions) => {
                this.locationSuggestions.set(suggestions);
-               this.showSuggestions.set(suggestions.length > 0);
             },
             error: (error) => {
                console.error('Erreur de recherche de lieux:', error);
                this.locationSuggestions.set([]);
-               this.showSuggestions.set(false);
             },
          });
       } else {
          this.locationSuggestions.set([]);
-         this.showSuggestions.set(false);
       }
    }
 
@@ -148,7 +143,6 @@ export class DeclarationComponent implements OnInit {
          lat: parseFloat(suggestion.lat),
          lng: parseFloat(suggestion.lon),
       };
-      this.showSuggestions.set(false);
       this.locationSuggestions.set([]);
    }
 
@@ -251,7 +245,6 @@ export class DeclarationComponent implements OnInit {
          this.imagePreviews = [];
          this.selectedCoordinates = undefined;
          this.locationSuggestions.set([]);
-         this.showSuggestions.set(false);
          this.selectedCategory = '';
 
          
@@ -261,6 +254,10 @@ export class DeclarationComponent implements OnInit {
             this.declarationForm.get(key)?.markAsTouched();
          });
       }
+   }
+
+   showSuggestion(){
+      return this.location?.value.test(/^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$/g).length==0;
    }
 
    // Helper methods for validation

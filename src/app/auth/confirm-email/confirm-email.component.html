@@ -6,7 +6,7 @@
     </div>
 
     <div class="md:w-1/2 p-8 sm:p-10 flex flex-col justify-center bg-opacity-90 backdrop-blur-md">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Connexion à votre compte</h2>
+      <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Confirmer votre adresse email</h2>
 
       <form class="space-y-6" [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
         <div>
@@ -28,7 +28,7 @@
         <p class="text-red-600 text-sm text-center" *ngIf="errorMessage">{{ errorMessage }}</p>
 
         <button type="submit" class="w-full bg-[#FC4E00] hover:bg-[#d94300] text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200">
-          Se connecter
+          Validez
         </button>
       </form>
 
@@ -36,7 +36,7 @@
 
       <div class="mt-6 text-center text-sm text-gray-600">
         Vous n'avez pas de compte ?
-        <a routerLink="/register" class="text-indigo-600 hover:underline font-medium">Créer un compte</a>
+        <a routerLink="/inscription" class="text-indigo-600 hover:underline font-medium">Créer un compte</a>
       </div>
     </div>
   </div>

@@ -23,7 +23,7 @@ import {
     updateDoc 
 } from '@angular/fire/firestore';
 import { from, lastValueFrom, Observable } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators'; // 👈 Ajout de 'map'
+import { switchMap } from 'rxjs/operators'; // 👈 Ajout de 'map'
 import { UserProfile, UpdateProfileData } from '../types/user'; // Assurez-vous d'importer ces types
 
 @Injectable({

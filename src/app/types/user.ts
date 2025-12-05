@@ -2,16 +2,33 @@
  * Interface pour les données de profil stockées dans Firestore
  */
 export interface UserProfile {
+  uid: string;
   email: string;
   firstname: string;
   lastname: string;
-  createdAt: Date; // Timestamp Firestore stocké comme Date
+  createdAt: Date;
   role: 'standard' | 'admin';
   preferences: {
     theme: 'light' | 'dark';
     notifications: boolean;
   };
+  phone?: string;
+  avatarUrl?: string;
+  location?: string;
+  bio?: string;
 }
+
+/**
+ * Interface pour les données de profil stockées dans Firestore
+ */
+export interface UserStats {
+  totalDeclarations: number;
+  foundDeclarations: number;
+  pendingDeclarations: number;
+  successRate: number;
+  objectsReturned: number;
+}
+
 
 /**
  * Interface pour les données nécessaires à l'inscription (Auth + Firestore)

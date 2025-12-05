@@ -12,6 +12,7 @@ import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import * as env from '@/environments/environment';
 
 registerLocaleData(fr);
 
@@ -21,20 +22,9 @@ registerLocaleData(fr);
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    provideFirebaseApp(() => initializeApp({
-      apiKey: "AIzaSyB8pX5HHUmYMCaUt3YmzD0FyWcqS7_iuEY",
-
-      authDomain: "found-again-4a0e0.firebaseapp.com",
-
-      projectId: "found-again-4a0e0",
-
-      storageBucket: "found-again-4a0e0.firebasestorage.app",
-
-      messagingSenderId: "1019330466468",
-
-      appId: "1:1019330466468:web:9eb199fc069d945827cc31"
-
-    })),
+    provideFirebaseApp(() => initializeApp(
+     {...env.environment.firebaseConfig}
+   )),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     FormsModule,
@@ -47,8 +37,8 @@ registerLocaleData(fr);
          useValue: '55e88c66-cf4c-49cc-a79c-566a72cbc539',
       },
       {
-         provide: 'sncfBaseUrl',
-         useValue: 'https://api.sncf.com/v1',
+         provide: 'openStreetMapUrl',
+         useValue: 'https://nominatim.openstreetmap.org',
       },
       {
          provide: 'API_URL',
