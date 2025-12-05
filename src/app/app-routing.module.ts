@@ -72,6 +72,14 @@ const routes: Routes = [
             title: 'Page d\'aide',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          }
+         ,
+         {
+            path: 'profile',
+            loadComponent:()=>import('./profile/profile.component').then(c=>c.ProfileComponent),
+            pathMatch: 'full',
+            title: 'Profil utilisateur',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         }
       ],
    },
    {
