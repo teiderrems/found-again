@@ -28,10 +28,6 @@ export enum ApiRoutesWithoutPrefix {
     COMMERCIAL_MODES = 'commercial_modes',
     JOURNEYS = 'journeys',
      USERS = '/users',
-    MODULE_TYPES = '/module_types',
-    MODULE_HISTORIES = '/module_histories',
-    MODULE_STATUSES = '/module_statuses',
-    STATISTICS = '/statistics',
     COMMANDS = '/commands',
     LOGIN = '/login',
     VERIFY_RESEND = '/verifies/resend',
@@ -39,15 +35,25 @@ export enum ApiRoutesWithoutPrefix {
     LOGOUT = '/logout',
 }
 
-export enum AdminPages {
-    PROFILES = '/profiles',
+export enum Pages {
+    PROFILE = '/profile',
+    OBJECTS_FOUND_CREATE = '/déclarer-objet-trouvé',
+    OBJECTS_LOST_CREATE = '/déclarer-perte',
     CALENDAR = '/calendar',
-    SIGN_IN = '/signin',
-    SIGN_UP = '/signup',
+    SIGN_IN = '/connexion',
+    SIGN_UP = '/inscription',
     VERIFY = '/verify',
     LOCK = '/lock',
     FORGOT_PASSWORD = '/forgot',
     RESET_PASSWORD = '/reset-password',
+    CONFIRM_EMAIL = '/confirmer-email',
+     ABOUT='/about',
+    SETTINGS='/settings',
+    HOME='/',
+    SERVICES='/services',
+    HELP='/aide',
+    SEARCH='/rechercher',
+    CONTACT='/contact',
 }
 
 type BaseApiFilters = 'search' | 'page';

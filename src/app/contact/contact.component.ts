@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import {Pages} from "@/config/constant";
 
 interface ContactMethod {
   type: string;
@@ -133,10 +134,10 @@ export class ContactComponent implements OnInit {
   onSubmit(): void {
     if (this.contactForm.valid) {
       this.isSubmitting = true;
-      
+
       // Simulation d'envoi
       console.log('Formulaire soumis:', this.contactForm.value);
-      
+
       setTimeout(() => {
         this.isSubmitting = false;
         alert('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
@@ -199,4 +200,6 @@ export class ContactComponent implements OnInit {
   toggleFaq(index: number): void {
     this.faqs[index].expanded = !this.faqs[index].expanded;
   }
+
+  protected readonly Pages = Pages;
 }

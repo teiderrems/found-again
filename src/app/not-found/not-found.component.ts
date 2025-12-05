@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import {Pages} from "@/config/constant";
 
 @Component({
   selector: 'app-not-found',
@@ -10,4 +11,5 @@ import { RouterLink } from '@angular/router';
 })
 export class NotFoundComponent {
 
+  protected readonly Pages = Pages;
 }

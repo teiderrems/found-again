@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { CommonModule } from '@angular/common';
 import { UserProfile } from '@/app/types/user';
+import {Pages} from "@/config/constant";
 
 export type LinkType = {
    id: string;
@@ -73,7 +74,7 @@ export class HeaderComponent implements OnInit {
          next: () => {
             console.log('Déconnexion réussie !');
             // Rediriger l'utilisateur vers la page de connexion
-            this.router.navigateByUrl('/connexion', {
+            this.router.navigateByUrl(Pages.SIGN_IN, {
                skipLocationChange: true,
                onSameUrlNavigation: 'reload',
             });
@@ -83,13 +84,20 @@ export class HeaderComponent implements OnInit {
          },
       });
    }
+   redirectTo(path:string){
+     this.router.navigateByUrl(path, {
+       onSameUrlNavigation: 'reload',
+     });
+
+   }
 
    public getDisplayName() {
+     console.log(this.authUser())
       return (
          this.authUser()?.lastname ||
          this.authUser()?.firstname ||
          this.authUser()?.email ||
-         'Guest'
+         '-'
       );
    }
 
@@ -97,19 +105,19 @@ export class HeaderComponent implements OnInit {
       {
          id: 'déclarer-objet-trouvé',
          title: 'Déclarer un objet trouvé ',
-         url: '/déclarer-objet-trouvé',
+         url: Pages.OBJECTS_FOUND_CREATE,
          icon:'request_page'
       },
       {
          id: 'déclarer-perte',
          title: 'Déclarer une perte ',
-         url: '/déclarer-perte',
+         url: Pages.OBJECTS_LOST_CREATE,
          icon:'assignment_add'
       },
       {
          id: 'rechercher',
          title: 'Rechercher un objet ',
-         url: '/rechercher',
+         url:  Pages.SEARCH,
          icon:'location_searching'
       },
    ];
@@ -121,6 +129,8 @@ export class HeaderComponent implements OnInit {
          icon: 'person',
          action: ($event: any) => {
             console.log($event);
+            this.redirectTo(Pages.PROFILE);
+
          },
       },
       {
@@ -129,6 +139,8 @@ export class HeaderComponent implements OnInit {
          icon: 'settings',
          action: ($event: any) => {
             console.log($event);
+           this.redirectTo(Pages.SETTINGS);
+
          },
       },
       {
