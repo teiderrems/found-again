@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LinkType } from '../header/header.component';
 import { LinkItemComponent } from '../link-item/link-item.component';
 import { RouterLink } from '@angular/router';
+import {Pages} from "@/config/constant";
 
 @Component({
    selector: 'app-footer',
@@ -15,17 +16,17 @@ export class FooterComponent {
       {
          id: 'services',
          title: 'Services ',
-         url: '/services',
+         url: Pages.SERVICES,
       },
       {
          id: 'about',
          title: 'A propos',
-         url: '/about',
+         url: Pages.ABOUT,
       },
       {
          id: 'contact',
          title: 'Contactez nous',
-         url: '/contact',
+         url: Pages.CONTACT ,
       },
    ];
 

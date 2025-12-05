@@ -6,13 +6,15 @@ import {
    redirectLoggedInTo,
 } from '@angular/fire/auth-guard';
 import { HomeComponent } from './home/home.component';
+import {Pages} from "@/config/constant";
+import {preparePathForRouter} from "@/app/utils";
 
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['connexion']);
 const routes: Routes = [
    {
       path: 'home',
-      redirectTo: '/',
+      redirectTo: Pages.HOME,
    },
    {
       path: '',
@@ -24,49 +26,49 @@ const routes: Routes = [
       title: 'Accueil',
       children: [
          {
-            path: 'déclarer-perte',
+            path:  preparePathForRouter(Pages.OBJECTS_LOST_CREATE),
             loadComponent:()=>import('./lost-object/lost-object.component').then(c=>c.LostObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'déclarer-objet-trouvé',
+            path:  preparePathForRouter(Pages.OBJECTS_FOUND_CREATE),
             loadComponent:()=>import('./found-object/found-object.component').then(c=>c.FoundObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'rechercher',
+            path: preparePathForRouter(Pages.SEARCH),
             loadComponent:()=>import('./search/search.component').then(c=>c.SearchComponent),
             pathMatch: 'full',
             title: 'Rechercher un objet',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'services',
+            path: preparePathForRouter(Pages.SERVICES),
             loadComponent:()=>import('./service/service.component').then(c=>c.ServiceComponent),
             pathMatch: 'full',
             title: 'Nos Services',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'about',
+            path: preparePathForRouter(Pages.ABOUT),
             loadComponent:()=>import('./about/about.component').then(c=>c.AboutComponent),
             pathMatch: 'full',
             title: 'A propos de nous',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'contact',
+            path: preparePathForRouter(Pages.CONTACT),
             loadComponent:()=>import('./contact/contact.component').then(c=>c.ContactComponent),
             pathMatch: 'full',
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'aide',
+            path: preparePathForRouter(Pages.HELP),
             loadComponent:()=>import('./help-page/help-page.component').then(c=>c.HelpPageComponent),
             pathMatch: 'full',
             title: 'Page d\'aide',
@@ -74,7 +76,7 @@ const routes: Routes = [
          }
          ,
          {
-            path: 'profile',
+            path: preparePathForRouter(Pages.PROFILE),
             loadComponent:()=>import('./profile/profile.component').then(c=>c.ProfileComponent),
             pathMatch: 'full',
             title: 'Profil utilisateur',
@@ -83,7 +85,7 @@ const routes: Routes = [
       ],
    },
    {
-      path: 'connexion',
+      path: preparePathForRouter(Pages.SIGN_IN),
       loadComponent:()=>import('./auth/login/login.component').then(c=>c.LoginComponent),
       pathMatch: 'full',
       canActivate: [AuthGuard],
@@ -93,13 +95,13 @@ const routes: Routes = [
       title: 'Se connecter',
    },
    {
-      path: 'inscription',
+      path: preparePathForRouter(Pages.SIGN_UP),
       loadComponent:()=>import('./auth/register/register.component').then(c=>c.RegisterComponent),
       pathMatch: 'full',
       title: "S'inscrire",
    },
    {
-      path: 'confirmer-email',
+      path: preparePathForRouter(Pages.CONFIRM_EMAIL),
       loadComponent:()=>import('./confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
       pathMatch: 'full',
       title: 'Confirmer Email',
