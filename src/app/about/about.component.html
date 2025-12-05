@@ -143,20 +143,6 @@
                     <p class="text-gray-600 text-pretty text-sm mb-6 leading-relaxed">
                         {{ member.description }}
                     </p>
-                    <!-- <div class="social-links flex justify-center space-x-3">
-                        <a *ngIf="member.social?.linkedin" [href]="member.social?.linkedin"
-                            class="social-link text-gray-400 hover:text-blue-600 transition-colors">
-                            <span class="material-icons">linkedin</span>
-                        </a>
-                        <a *ngIf="member.social?.twitter" [href]="member.social?.twitter"
-                            class="social-link text-gray-400 hover:text-blue-400 transition-colors">
-                            <span class="material-icons">twitter</span>
-                        </a>
-                        <a *ngIf="member.social?.github" [href]="member.social?.github"
-                            class="social-link text-gray-400 hover:text-gray-600 transition-colors">
-                            <span class="material-icons">code</span>
-                        </a>
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -206,19 +192,19 @@
             <h2 class="text-3xl md:text-4xl font-bold mb-6">
                 Prêt à Rejoindre Notre Communauté ?
             </h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">
+            <p class="text-xl mb-8">
                 Des milliers de personnes utilisent déjà notre plateforme pour s'entraider au quotidien
             </p>
             <div class="flex flex-wrap justify-center gap-4">
-                <button routerLink="/déclarer"
+                <button routerLink="/déclarer-perte"
                     class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
                     <span class="material-icons mr-2">add_circle</span>
-                    Déclarer un objet
+                    Déclarer un objet perdu
                 </button>
-                <button routerLink="/inscription"
-                    class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
-                    <span class="material-icons mr-2">person_add</span>
-                    Créer un compte
+                <button routerLink="/déclarer-perte"
+                    class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
+                    <span class="material-icons mr-2">add_circle</span>
+                    Déclarer un objet retrouvé
                 </button>
             </div>
         </div>

@@ -24,17 +24,24 @@ const routes: Routes = [
       title: 'Accueil',
       children: [
          {
-            path: 'déclarer',
+            path: 'déclarer-perte',
             loadComponent:()=>import('./lost-object/lost-object.component').then(c=>c.LostObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'rechercher',
+            path: 'déclarer-objet-trouvé',
             loadComponent:()=>import('./found-object/found-object.component').then(c=>c.FoundObjectComponent),
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'rechercher',
+            loadComponent:()=>import('./search/search.component').then(c=>c.SearchComponent),
+            pathMatch: 'full',
+            title: 'Rechercher un objet',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
@@ -58,6 +65,13 @@ const routes: Routes = [
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
+         {
+            path: 'aide',
+            loadComponent:()=>import('./help-page/help-page.component').then(c=>c.HelpPageComponent),
+            pathMatch: 'full',
+            title: 'Page d\'aide',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         }
       ],
    },
    {

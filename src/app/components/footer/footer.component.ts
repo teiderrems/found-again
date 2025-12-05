@@ -12,29 +12,20 @@ import { RouterLink } from '@angular/router';
 })
 export class FooterComponent {
    public links_: LinkType[] = [
-      // {
-      //    id: 'home',
-      //    title: 'Accueil',
-      //    url: '/',
-      //    is_active: false,
-      // },
       {
          id: 'services',
          title: 'Services ',
          url: '/services',
-         is_active: false,
       },
       {
          id: 'about',
          title: 'A propos',
          url: '/about',
-         is_active: false,
       },
       {
          id: 'contact',
          title: 'Contactez nous',
          url: '/contact',
-         is_active: false,
       },
    ];
 
@@ -43,21 +34,18 @@ export class FooterComponent {
          id: 'facebook',
          title: 'Facebook',
          url: '#',
-         is_active: false,
          icon: '../../../assets/icons8-facebook-50 1.svg',
       },
       {
          id: 'linkedin',
          title: 'linkedin',
          url: '#',
-         is_active: false,
          icon: '../../../assets/icons8-linkedin-50 1.svg',
       },
       {
          id: 'twitter',
          title: 'twitter',
          url: '#',
-         is_active: false,
          icon: '../../../assets/icons8-twitter-50 1.svg',
       },
    ];

@@ -20,7 +20,6 @@ export type LinkType = {
    id: string;
    title: string;
    url: string;
-   is_active: boolean;
    icon?: string;
 };
 
@@ -96,16 +95,22 @@ export class HeaderComponent implements OnInit {
 
    public links_: LinkType[] = [
       {
-         id: 'rechercher',
+         id: 'déclarer-objet-trouvé',
          title: 'Déclarer un objet trouvé ',
-         url: '/rechercher',
-         is_active: false,
+         url: '/déclarer-objet-trouvé',
+         icon:'request_page'
       },
       {
-         id: 'déclarer',
+         id: 'déclarer-perte',
          title: 'Déclarer une perte ',
-         url: '/déclarer',
-         is_active: false,
+         url: '/déclarer-perte',
+         icon:'assignment_add'
+      },
+      {
+         id: 'rechercher',
+         title: 'Rechercher un objet ',
+         url: '/rechercher',
+         icon:'location_searching'
       },
    ];
 
