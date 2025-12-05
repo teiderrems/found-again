@@ -120,7 +120,7 @@ export class HeaderComponent implements OnInit {
          label: 'Profil',
          icon: 'person',
          action: ($event: any) => {
-            console.log($event);
+            this.router.navigateByUrl('/user/profile');
          },
       },
       {

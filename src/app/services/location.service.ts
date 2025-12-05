@@ -1,5 +1,5 @@
 // services/location.service.ts
-import { Injectable, inject } from '@angular/core';
+import { Inject, Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -32,7 +32,7 @@ export interface Coordinates {
 })
 export class LocationService {
   private http = inject(HttpClient);
-  private nominatimUrl = 'https://nominatim.openstreetmap.org';
+  constructor(@Inject('openStreetMapUrl') private readonly nominatimUrl:string){}
 
   // Obtenir la position actuelle de l'utilisateur
   getCurrentPosition(): Observable<Coordinates> {

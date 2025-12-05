@@ -17,7 +17,7 @@ const routes: Routes = [
    {
       path: '',
       component: HomeComponent,
-      canActivate:[AuthGuard],
+      canActivate: [AuthGuard],
       data: {
          authGuardPipe: redirectUnauthorizedToLanding,
       },
@@ -25,66 +25,70 @@ const routes: Routes = [
       children: [
          {
             path: 'déclarer-perte',
-            loadComponent:()=>import('./lost-object/lost-object.component').then(c=>c.LostObjectComponent),
+            loadComponent: () =>
+               import('./lost-object/lost-object.component').then(
+                  (c) => c.LostObjectComponent,
+               ),
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'déclarer-objet-trouvé',
-            loadComponent:()=>import('./found-object/found-object.component').then(c=>c.FoundObjectComponent),
+            loadComponent: () =>
+               import('./found-object/found-object.component').then(
+                  (c) => c.FoundObjectComponent,
+               ),
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'rechercher',
-            loadComponent:()=>import('./search/search.component').then(c=>c.SearchComponent),
+            loadComponent: () =>
+               import('./search/search.component').then((c) => c.SearchComponent),
             pathMatch: 'full',
             title: 'Rechercher un objet',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'services',
-            loadComponent:()=>import('./service/service.component').then(c=>c.ServiceComponent),
+            loadComponent: () =>
+               import('./service/service.component').then((c) => c.ServiceComponent),
             pathMatch: 'full',
             title: 'Nos Services',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'about',
-            loadComponent:()=>import('./about/about.component').then(c=>c.AboutComponent),
+            loadComponent: () =>
+               import('./about/about.component').then((c) => c.AboutComponent),
             pathMatch: 'full',
             title: 'A propos de nous',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: 'contact',
-            loadComponent:()=>import('./contact/contact.component').then(c=>c.ContactComponent),
+            loadComponent: () =>
+               import('./contact/contact.component').then((c) => c.ContactComponent),
             pathMatch: 'full',
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'aide',
-            loadComponent:()=>import('./help-page/help-page.component').then(c=>c.HelpPageComponent),
-            pathMatch: 'full',
-            title: 'Page d\'aide',
-            runGuardsAndResolvers: (from, to) => from.url === to.url,
-         }
-         ,
-         {
-            path: 'profile',
-            loadComponent:()=>import('./profile/profile.component').then(c=>c.ProfileComponent),
+            path: 'user/profile',
+            loadComponent: () =>
+               import('./profile/profile.component').then((c) => c.UserProfileComponent),
             pathMatch: 'full',
             title: 'Profil utilisateur',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
-         }
+         },
       ],
    },
    {
       path: 'connexion',
-      loadComponent:()=>import('./auth/login/login.component').then(c=>c.LoginComponent),
+      loadComponent: () =>
+         import('./auth/login/login.component').then((c) => c.LoginComponent),
       pathMatch: 'full',
       canActivate: [AuthGuard],
       data: {
@@ -94,19 +98,24 @@ const routes: Routes = [
    },
    {
       path: 'inscription',
-      loadComponent:()=>import('./auth/register/register.component').then(c=>c.RegisterComponent),
+      loadComponent: () =>
+         import('./auth/register/register.component').then((c) => c.RegisterComponent),
       pathMatch: 'full',
       title: "S'inscrire",
    },
    {
       path: 'confirmer-email',
-      loadComponent:()=>import('./confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
+      loadComponent: () =>
+         import('./auth/confirm-email/confirm-email.component').then(
+            (c) => c.ConfirmEmailComponent,
+         ),
       pathMatch: 'full',
       title: 'Confirmer Email',
    },
    {
       path: '**',
-      loadComponent:()=>import('./not-found/not-found.component').then(c=>c.NotFoundComponent),
+      loadComponent: () =>
+         import('./not-found/not-found.component').then((c) => c.NotFoundComponent),
       pathMatch: 'full',
       title: 'Non trouver',
    },
