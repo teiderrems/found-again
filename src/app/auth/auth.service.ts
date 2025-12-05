@@ -2,26 +2,21 @@
 
 import { Injectable } from '@angular/core';
 import * as credentialType from '../types/user';
-import { 
-    Auth, 
-    sendPasswordResetEmail, 
-    signInWithPopup, 
-    user,
-    User, 
-    UserCredential
+import {
+   Auth,
+   sendPasswordResetEmail,
+   signInWithPopup,
+   user,
+   User,
+   UserCredential,
 } from '@angular/fire/auth';
 import {
    createUserWithEmailAndPassword,
    signInWithEmailAndPassword,
+   updatePassword
 } from 'firebase/auth';
 import { GoogleAuthProvider } from '@angular/fire/auth';
-import { 
-    doc, 
-    Firestore, 
-    setDoc, 
-    docData,
-    updateDoc 
-} from '@angular/fire/firestore';
+import { doc, Firestore, setDoc, docData, updateDoc } from '@angular/fire/firestore';
 import { from, lastValueFrom, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators'; // 👈 Ajout de 'map'
 import { UserProfile, UpdateProfileData } from '../types/user'; // Assurez-vous d'importer ces types
@@ -39,30 +34,39 @@ export class AuthService {
       private readonly auth: Auth,
    ) {
       this.currentUser$ = user(auth);
-      this.currentUser$.subscribe(u => {
-          if (u) {
-              // Note: le champ $user n'est plus utilisé/nécessaire. Les composants doivent s'abonner à currentUser$
-              // this.$user = value.email; 
-          }
+      this.currentUser$.subscribe((u) => {
+         if (u) {
+            // Note: le champ $user n'est plus utilisé/nécessaire. Les composants doivent s'abonner à currentUser$
+            // this.$user = value.email;
+         }
       });
    }
 
    // --- Authentification (Méthodes existantes, retournant Observable) ---
 
-   signInGoogle(): Observable<UserCredential> {
+   async signInGoogle(): Promise<boolean> {
       const provider = new GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      return from(signInWithPopup(this.auth, provider));
+      try {
+         const userCredential = await signInWithPopup(this.auth, provider);
+         return await this.registerUser(
+            {
+               email: userCredential.user.email as string,
+               firstname: 'Unknown',
+               lastname: 'Unknown',
+               password: 'user1234',
+            },
+            userCredential.user,
+         );
+      } catch (error) {
+         throw error;
+      }
    }
 
    signIn(credential: credentialType.LoginCredentials): Observable<UserCredential> {
       return from(
-         signInWithEmailAndPassword(
-            this.auth,
-            credential.email!,
-            credential.password!,
-         )
+         signInWithEmailAndPassword(this.auth, credential.email!, credential.password!),
       );
    }
 
@@ -72,7 +76,7 @@ export class AuthService {
             this.auth,
             credential.email!,
             credential.password!,
-         )
+         ),
       );
    }
 
@@ -89,29 +93,53 @@ export class AuthService {
     * (Version asynchrone conservée de votre code)
     * @returns Promise<User> L'utilisateur nouvellement créé.
     */
-   public async registerUser(data: credentialType.RegisterCredentials): Promise<User> {
+   public async registerUser(
+      data: credentialType.RegisterCredentials,
+      user?: User,
+   ): Promise<boolean> {
       try {
-         const userCredential = await lastValueFrom(this.signUp(data)); // Convertir en Promise pour async/await
-         const user = userCredential!.user;
-         const userId = user.uid;
-         const userDocRef = doc(this.firestore, this.userCollectionName, userId);
+         if (!user) {
+            const userCredential = await lastValueFrom(this.signUp(data)); // Convertir en Promise pour async/await
+            const user = userCredential!.user;
+            const userId = user.uid;
+            const userDocRef = doc(this.firestore, this.userCollectionName, userId);
 
-         await setDoc(userDocRef, {
-            email: user.email,
-            firstname: data.firstname,
-            lastname: data.lastname,
-            createdAt: new Date(),
-            role: 'standard',
-            preferences: {
-               theme: 'dark',
-               notifications: true,
-            },
-         } as UserProfile); // Ajouter un cast si nécessaire pour la rigueur TypeScript
+            await setDoc(userDocRef, {
+               email: user.email,
+               firstname: data.firstname,
+               lastname: data.lastname,
+               createdAt: new Date(),
+               role: 'standard',
+               preferences: {
+                  theme: 'dark',
+                  notifications: true,
+               },
+            } as UserProfile); // Ajouter un cast si nécessaire pour la rigueur TypeScript
 
-         console.log(
-            'Utilisateur créé et données supplémentaires enregistrées avec succès !',
-         );
-         return user;
+            console.log(
+               'Utilisateur créé et données supplémentaires enregistrées avec succès !',
+            );
+         } else {
+            const userDocRef = doc(this.firestore, this.userCollectionName, user.uid);
+
+            await setDoc(userDocRef, {
+               email: data.email,
+               firstname: data.firstname,
+               lastname: data.lastname,
+               createdAt: new Date(),
+               role: 'standard',
+               preferences: {
+                  theme: 'dark',
+                  notifications: true,
+               },
+            } as UserProfile); // Ajouter un cast si nécessaire pour la rigueur TypeScript
+            await updatePassword(user,data.password);
+
+            console.log(
+               'Utilisateur créé et données supplémentaires enregistrées avec succès !',
+            );
+         }
+         return true;
       } catch (error: any) {
          console.error(
             "Erreur lors de la création de l'utilisateur ou de l'enregistrement des données :",
@@ -140,13 +168,13 @@ export class AuthService {
       // 1. Attendre l'utilisateur connecté (currentUser$)
       return this.currentUser$.pipe(
          // 2. Utiliser switchMap pour passer à l'Observable du profil
-         switchMap(user => {
+         switchMap((user) => {
             if (user?.uid) {
                return this.getUserProfile(user.uid);
             }
             // 3. Si non connecté, retourner un Observable vide/null
             return new Observable<undefined>();
-         })
+         }),
       );
    }
 

@@ -92,7 +92,6 @@ export class HeaderComponent implements OnInit {
    }
 
    public getDisplayName() {
-     console.log(this.authUser())
       return (
          this.authUser()?.lastname ||
          this.authUser()?.firstname ||

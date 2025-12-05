@@ -80,16 +80,14 @@ export class RegisterComponent {
    }
 
    async signInGoogle() {
-      this.authService.signInGoogle().subscribe({
-         next: (value) => {
-            console.log(value);
+      try {
+         const value= await this.authService.signInGoogle();
+         if (value) {
             this.router.navigateByUrl('/');
-         },
-         error: (error) => {
-            console.error(error);
-         },
-         complete: () => console.log('done'),
-      });
+         }
+      } catch (error) {
+         throw error;
+      }
    }
 
    get lastname() {

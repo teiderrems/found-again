@@ -80,14 +80,15 @@ export class LoginComponent {
    //connexion avec google
 
    async signInGoogle() {
-      this.authService.signInGoogle().subscribe({
-         next: () => {
+      try {
+         const response=await this.authService.signInGoogle();
+         if (response) {
             this.router.navigateByUrl('/');
             this.loginForm.reset();
-         },
-         error: (error) => console.error(error),
-         complete: () => console.log('done'),
-      });
+         }
+      } catch (error) {
+         throw error;
+      }
    }
 
    //Méthode pour la connexion

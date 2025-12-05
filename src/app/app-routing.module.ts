@@ -66,18 +66,11 @@ const routes: Routes = [
             pathMatch: 'full',
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
-         },
-         {
-            path: preparePathForRouter(Pages.HELP),
-            loadComponent:()=>import('./help-page/help-page.component').then(c=>c.HelpPageComponent),
-            pathMatch: 'full',
-            title: 'Page d\'aide',
-            runGuardsAndResolvers: (from, to) => from.url === to.url,
          }
          ,
          {
             path: preparePathForRouter(Pages.PROFILE),
-            loadComponent:()=>import('./profile/profile.component').then(c=>c.ProfileComponent),
+            loadComponent:()=>import('./profile/profile.component').then(c=>c.UserProfileComponent),
             pathMatch: 'full',
             title: 'Profil utilisateur',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
@@ -102,7 +95,7 @@ const routes: Routes = [
    },
    {
       path: preparePathForRouter(Pages.CONFIRM_EMAIL),
-      loadComponent:()=>import('./confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
+      loadComponent:()=>import('./auth/confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
       pathMatch: 'full',
       title: 'Confirmer Email',
    },
