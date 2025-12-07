@@ -35,19 +35,19 @@ export class FooterComponent {
          id: 'facebook',
          title: 'Facebook',
          url: '#',
-         icon: '../../../assets/icons8-facebook-50 1.svg',
+         icon: '/images/icons8-facebook-50 1.svg',
       },
       {
          id: 'linkedin',
          title: 'linkedin',
          url: '#',
-         icon: '../../../assets/icons8-linkedin-50 1.svg',
+         icon: '/images/icons8-linkedin-50 1.svg',
       },
       {
          id: 'twitter',
          title: 'twitter',
          url: '#',
-         icon: '../../../assets/icons8-twitter-50 1.svg',
+         icon: '/images/icons8-twitter-50 1.svg',
       },
    ];
 }
