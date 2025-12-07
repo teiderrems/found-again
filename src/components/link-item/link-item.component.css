@@ -1,4 +1,4 @@
-
+@reference "../../styles.css";
 
 .active{
     @apply text-[#FC4E00]

@@ -1,3 +1,4 @@
+@import "tailwindcss";
 .services-showcase {
    @apply min-h-screen;
 }
@@ -107,3 +108,5 @@
       @apply text-lg;
    }
 }
+
+

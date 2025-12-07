@@ -1,11 +1,13 @@
+/*
 .ng-valid[required], .ng-valid.required  {
-    border-left: 5px solid #42A948; /* green */
+    border-left: 5px solid #42A948;  
   }
   
   .ng-invalid:not(form)  {
-    @apply border border-red-400; /* red */
+    @apply border border-red-400; 
   }
 
   .ng-untouched:not(form){
     @apply border border-gray-500;
   }
+  */

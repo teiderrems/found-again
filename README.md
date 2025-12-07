@@ -1,10 +1,61 @@
-# Route
+# Found Again
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.11.
+Found Again is built on:
 
-## Development server
+* **Angular 20+**
+* **TypeScript**
+* **Tailwind CSS v4**
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Quick Links
+
+- 🚀 [Demo](https://found-again-4a0e0.web.app/)
+---
+
+## Installation
+
+### Prerequisites
+
+Before you start, make sure you have:
+
+* **Node.js 18.x or later** (Node.js 20.x recommended)
+* **Angular CLI** installed globally:
+
+```bash
+npm install -g @angular/cli
+```
+
+---
+
+### Cloning the Repository
+
+Clone the repository:
+
+```bash
+git clone https://github.com/teiderrems/found-again
+```
+
+---
+
+### Install Dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+---
+
+### Start Development Server
+
+```bash
+npm start
+```
+
+Then open:
+👉 `http://localhost:4200`
+
+---
 
 ## Code scaffolding
 

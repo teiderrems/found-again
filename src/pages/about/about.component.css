@@ -1,3 +1,5 @@
+@reference "../../styles.css";
+
 .about-page {
    @apply min-h-screen;
 }
