@@ -14,7 +14,7 @@ import {
    createUserWithEmailAndPassword,
    signInWithEmailAndPassword,
    updatePassword
-} from 'firebase/auth';
+} from '@angular/fire/auth';
 import { GoogleAuthProvider } from '@angular/fire/auth';
 import { doc, Firestore, setDoc, docData, updateDoc } from '@angular/fire/firestore';
 import { from, lastValueFrom, Observable } from 'rxjs';

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getStorage, ref, uploadBytes,deleteObject, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes,deleteObject, getDownloadURL } from '@angular/fire/storage';
 
 import { v4 as uuid } from 'uuid';
 import { ImageType } from '../types/declaration';
