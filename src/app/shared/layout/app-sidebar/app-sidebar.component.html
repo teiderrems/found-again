@@ -26,14 +26,14 @@
       @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) {
       <img
         class="dark:hidden"
-        src="/images/logo/logo.svg"
+        src="/images/header_logo.png"
         alt="Logo"
         width="150"
         height="40"
       />
       <img
         class="hidden dark:block"
-        src="/images/logo/logo-dark.svg"
+        src="/images/header_logo.png"
         alt="Logo"
         width="150"
         height="40"
@@ -58,8 +58,8 @@
               'justify-start': (isExpanded$ | async) || (isHovered$ | async)
             }"
           >
-            @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) 
-            { Menu } 
+            @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async))
+            { Menu }
            @else {
             <svg
               width="1em"
@@ -108,7 +108,7 @@
                   <span class="menu-item-text">
                     {{ nav.name }}
                   </span>
-                  } 
+                  }
                   @if (nav.new && ((isExpanded$ | async) || (isHovered$ |
                   async) || (isMobileOpen$ | async))) {
                   <span
@@ -120,7 +120,7 @@
                   >
                     new
                   </span>
-                  } 
+                  }
                   @if ((isExpanded$ | async) || (isHovered$ | async) ||
                   (isMobileOpen$ | async)) {
                   <svg
@@ -148,8 +148,8 @@
                   class="overflow-hidden transition-all duration-300"
                   [id]="'main-' + i"
                   [style.display]="
-                    (isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async) 
-                      ? 'block' 
+                    (isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)
+                      ? 'block'
                       : 'none'
                   "
                   [ngStyle]="{
@@ -314,7 +314,7 @@
                   <span class="menu-item-text">
                     {{ nav.name }}
                   </span>
-                  } 
+                  }
                   @if (nav.new && ((isExpanded$ | async) || (isHovered$ |
                   async) || (isMobileOpen$ | async))) {
                   <span
@@ -326,7 +326,7 @@
                   >
                     new
                   </span>
-                  } 
+                  }
                   @if ((isExpanded$ | async) || (isHovered$ | async) ||
                   (isMobileOpen$ | async)) {
                   <svg
@@ -354,8 +354,8 @@
                   class="overflow-hidden transition-all duration-300"
                   [id]="'others-' + i"
                   [style.display]="
-                    (isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async) 
-                      ? 'block' 
+                    (isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)
+                      ? 'block'
                       : 'none'
                   "
                   [ngStyle]="{
@@ -450,8 +450,5 @@
         <!-- end other section -->
       </div>
     </nav>
-    @if ((isExpanded$ | async) || (isHovered$ | async) || (isMobileOpen$ | async)) {
-    <app-sidebar-widget />
-    }
   </div>
 </aside>
