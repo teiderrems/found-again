@@ -54,6 +54,7 @@ export enum Pages {
     HELP='/aide',
     SEARCH='/rechercher',
     CONTACT='/contact',
+    DASHBOARD='/dashboard',
 }
 
 type BaseApiFilters = 'search' | 'page';
