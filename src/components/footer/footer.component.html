@@ -1,22 +1,59 @@
-<footer class="backdrop-blur-md min-h-[100px] shadow-sm bg-[#F5F5F5] w-full">
-    <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
-        <div class="flex h-full w-1/5 justify-start items-center">
-            <a routerLink="/" class=" no-underline h-full"><img class=" h-full w-full" src="/images/header_logo.png"
-                    alt="Your Company"></a>
+<footer class="bg-gradient-to-b from-white to-gray-50 border-t border-gray-200/50 mt-16 sm:mt-20 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <!-- Main Footer Content -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <!-- Logo & Branding -->
+      <div class="flex flex-col items-start">
+        <a routerLink="/" class="no-underline hover:opacity-80 transition-opacity duration-200 mb-4">
+          <img class="h-12 w-auto" src="/images/header_logo.png" alt="Found Again">
+        </a>
+        <p class="text-gray-600 text-sm leading-relaxed">
+          Aidez-nous à retrouver les objets perdus et à restituer les objets trouvés.
+        </p>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="flex flex-col space-y-4">
+        <h3 class="text-gray-900 font-semibold text-base">Navigation</h3>
+        <nav class="flex flex-col space-y-3">
+          @for (item of links_; track item.id) {
+            <a [routerLink]="item.url" class="text-gray-600 hover:text-[#009245] text-sm transition-colors duration-200 flex items-center space-x-2 group">
+              @if (item.icon) {
+                <mat-icon [fontIcon]="item.icon" class="text-sm group-hover:translate-x-1 transition-transform duration-200"></mat-icon>
+              }
+              <span>{{ item.title }}</span>
+            </a>
+          }
+        </nav>
+      </div>
+
+      <!-- Social Links -->
+      <div class="flex flex-col space-y-4">
+        <h3 class="text-gray-900 font-semibold text-base">Nous suivre</h3>
+        <div class="flex items-center space-x-4">
+          @for (item of socials; track item.id) {
+            <a [routerLink]="item.url" target="_blank" rel="noopener noreferrer" 
+              class="group p-2 rounded-lg hover:bg-gradient-to-br hover:from-[#009245] hover:to-green-700 transition-all duration-300 hover:shadow-md">
+              <img class="h-5 w-5 opacity-70 group-hover:opacity-100" [src]="item.icon" [alt]="item.title">
+            </a>
+          }
         </div>
-        <div class="flex w-3/5 items-center space-y-4 flex-col">
-            <nav class="flex justify-center w-3/5 items-center space-x-9">
-                @for (item of links_; track item.id) {
-                    <app-link-item [link]="item" />
-                }
-            </nav>
-            <span class=" text-[#4A4459]">copyright &copy; 2025</span>
-        </div>
-        <div class=" flex items-center sm:flex-row flex-col justify-center w-1/5">
-            @for (item of socials; track item.id) {
-            <a [routerLink]="item.url" target="_blank" class=" no-underline h-3/4"><img class=" h-full w-full"
-                    [src]="item.icon" [alt]="item.title"></a>
-            }
-        </div>
+      </div>
     </div>
+
+    <!-- Divider -->
+    <div class="border-t border-gray-200/50 pt-8">
+      <!-- Copyright & Legal -->
+      <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+        <span class="text-gray-500 text-sm">
+          &copy; 2025 Found Again. Tous droits réservés.
+        </span>
+        <div class="flex items-center space-x-6 text-sm">
+          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Confidentialité</a>
+          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Conditions</a>
+          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Contact</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </footer>

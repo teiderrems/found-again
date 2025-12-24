@@ -1,39 +1,134 @@
-<div class="relative h-48 bg-gray-100">
-    <img [src]="currentImageUrl" [alt]="item().title"
-        class="w-full h-full object-cover rounded-e-2xl transition-opacity duration-300">
+<div class="group flex flex-col h-full bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-200/50 overflow-hidden transition-all duration-300 hover:border-[#FC4E00]/30 hover:-translate-y-1">
+    <!-- Image Container with Carousel -->
+    <div class="relative h-32 sm:h-40 bg-gray-100 overflow-hidden cursor-pointer" (click)="openPreview()">
+        <img [src]="currentImageUrl" [alt]="item().title"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
-    <button *ngIf="item().images.length > 1" (click)="prevImage($event)"
-        class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 rounded-full p-1 backdrop-blur-xs cursor-pointer hover:scale-110 transition-transform">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-    </button>
+        <!-- Image Counter Badge -->
+        @if (item().images.length > 1) {
+            <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+                {{ currentIndex + 1 }}/{{ item().images.length }}
+            </div>
+        }
 
-    <button *ngIf="images.length > 1" (click)="nextImage($event)"
-        class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 rounded-full p-1 backdrop-blur-xs cursor-pointer hover:scale-110 transition-transform">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-    </button>
-</div>
+        <!-- Fullscreen Icon on hover -->
+        <div class="absolute top-3 left-3 bg-white/80 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-800" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+            </svg>
+        </div>
 
-<div class="p-5 flex flex-col grow">
-    <h3 class="text-lg font-bold text-gray-800 mb-2">{{ item().title }}</h3>
+        <!-- Previous Button -->
+        @if (item().images.length > 1) {
+            <button (click)="prevImage($event)"
+            class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            </button>
+        }
 
-    <p class="text-xs text-gray-500 leading-relaxed mb-4 grow">
-        {{ item().description }}
-        <br>
-        <span class="block mt-2">Si c'est le vôtre, merci de décrire un détail supplémentaire pour
-            confirmation.</span>
-    </p>
-
-    <div class="mb-4">
-        <span class="text-xs font-bold text-gray-900 block">Trouvé à :</span>
-        <span class="text-xs text-gray-600">{{ item().location }}</span>
+        <!-- Next Button -->
+        @if (item().images.length > 1) {
+            <button (click)="nextImage($event)"
+            class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            </button>
+        }
     </div>
 
-    <button
-        class="w-full bg-[#FC4E00] hover:bg-[#e04600] text-white font-bold py-2.5 rounded-lg text-sm transition duration-200 shadow-sm">
-        C'est peut être à moi
-    </button>
+    <!-- Fullscreen Preview Modal -->
+    @if (isPreviewOpen()) {
+        <div class="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center" (click)="closePreview()">
+            <!-- Image Container -->
+            <div class="relative w-full h-full flex items-center justify-center" (click)="$event.stopPropagation()">
+                <!-- Close Button -->
+                <button (click)="closePreview()"
+                    class="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white rounded-full p-2 backdrop-blur-md cursor-pointer transition-all duration-200 z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Counter -->
+                @if (item().images.length > 1) {
+                    <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-md text-white text-sm font-semibold px-4 py-2 rounded-full">
+                        {{ currentIndex + 1 }}/{{ item().images.length }}
+                    </div>
+                }
+
+                <!-- Image -->
+                <img [src]="currentImageUrl" [alt]="item().title"
+                    class="max-w-full max-h-full object-contain rounded-xl">
+
+                <!-- Previous Button -->
+                @if (item().images.length > 1) {
+                    <button (click)="prevPreviewImage($event)"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    </button>
+                }
+
+                <!-- Next Button -->
+                @if (item().images.length > 1) {
+                    <button (click)="nextPreviewImage($event)"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    </button>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Content -->
+    <div class="p-3 sm:p-4 flex flex-col grow space-y-3">
+        <!-- Date Info -->
+        <div class="flex items-center justify-between text-xs sm:text-sm">
+            <span class="font-medium text-gray-700">{{ item().date | date: 'short' }}</span>
+            <span class="text-gray-500">{{ item().date | date: 'EEEE' }}</span>
+        </div>
+
+        <!-- Title -->
+        <div>
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-[#009245] transition-colors duration-200">
+                {{ item().title }}
+            </h3>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-1">
+            <p class="text-xs sm:text-sm text-gray-700 leading-snug line-clamp-1">
+                {{ item().description }}
+            </p>
+            <p class="text-xs text-gray-600 leading-tight italic">
+                Si c'est le vôtre, merci de décrire un détail supplémentaire.
+            </p>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-start space-x-2 pt-1 border-t border-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mt-0.5 text-[#009245] shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+            </svg>
+            <div class="flex flex-col min-w-0">
+                <span class="font-semibold text-gray-900 text-xs">Trouvé à :</span>
+                <span class="text-gray-600 text-xs leading-tight break-words">{{ item().location }}</span>
+            </div>
+        </div>
+
+        <!-- CTA Button -->
+        <button
+            class="w-full mt-auto bg-gradient-to-r from-[#FC4E00] to-orange-500 hover:from-[#e04600] hover:to-orange-600 text-white font-semibold py-2.5 rounded-xl text-xs sm:text-sm transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            <span>C'est peut-être à moi</span>
+        </button>
+    </div>
 </div>

@@ -94,28 +94,6 @@ export class DeclarationService {
    }
 
    /**
-    * Récupère une déclaration par son ID.
-    */
-   getDeclarationById(
-      id: string,
-      type: DeclarationType,
-   ): Observable<DeclarationData | undefined> {
-      const docRef = doc(this.getCollectionRef(), id);
-
-      return from(getDoc(docRef)).pipe(
-         map((snapshot) => {
-            if (snapshot.exists()) {
-               return {
-                  id: snapshot.id,
-                  ...(snapshot.data() as Omit<DeclarationData, 'id'>),
-               } as DeclarationData;
-            }
-            return undefined;
-         }),
-      );
-   }
-
-   /**
     * Modifie une déclaration existante.
     */
    updateDeclaration(
@@ -205,6 +183,63 @@ export class DeclarationService {
             console.error(`Échec critique de la suppression de la déclaration ${id}:`, e);
             throw e;
          }),
+      );
+   }
+
+   /**
+    * Récupère une déclaration par son ID
+    */
+   getDeclarationById(id: string): Observable<DeclarationData> {
+      return from(getDoc(doc(this.firestore, 'declarations', id))).pipe(
+         map((docSnapshot) => {
+            if (!docSnapshot.exists()) {
+               throw new Error('Déclaration non trouvée');
+            }
+            return {
+               id: docSnapshot.id,
+               ...docSnapshot.data()
+            } as DeclarationData;
+         }),
+         catchError((e) => {
+            console.error(`Erreur lors de la récupération de la déclaration ${id}:`, e);
+            throw e;
+         })
+      );
+   }
+
+   /**
+    * Vérifie l'identité d'un utilisateur qui prétend être propriétaire de l'objet
+    */
+   verifyIdentity(verificationData: {
+      declarationId: string;
+      identityDetails: string;
+      additionalInfo: string;
+      serialNumber?: string | null;
+      timestamp: Date;
+   }): Observable<{ isVerified: boolean; message: string }> {
+      return from(
+         setDoc(
+            doc(this.firestore, 'declarations', verificationData.declarationId, 'verifications', new Date().getTime().toString()),
+            {
+               identityDetails: verificationData.identityDetails,
+               additionalInfo: verificationData.additionalInfo,
+               serialNumber: verificationData.serialNumber || null,
+               timestamp: verificationData.timestamp,
+               status: 'pending'
+            }
+         )
+      ).pipe(
+         map(() => ({
+            isVerified: true,
+            message: 'Vérification enregistrée avec succès'
+         })),
+         catchError((e) => {
+            console.error('Erreur lors de la vérification d\'identité:', e);
+            return from(Promise.resolve({
+               isVerified: false,
+               message: 'Erreur lors de la vérification'
+            }));
+         })
       );
    }
 }

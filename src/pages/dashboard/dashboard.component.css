@@ -1,0 +1,58 @@
+/* Dashboard Component Styles */
+
+/* Smooth transitions for interactive elements */
+button, a {
+  transition: all 0.3s ease;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Table row hover effect */
+tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Stats card hover effect */
+.shadow-md {
+  transition: box-shadow 0.3s ease;
+}
+
+/* Truncate text for long locations */
+.max-w-xs {
+  max-width: 12rem;
+}
+
+/* Chart container styling */
+.chart-container {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container svg {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Quick action cards */
+.group {
+  transition: all 0.3s ease;
+}
+
+.group:hover {
+  transform: translateY(-2px);
+}
+

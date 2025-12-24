@@ -102,6 +102,12 @@ export class HeaderComponent implements OnInit {
 
    public links_: LinkType[] = [
       {
+         id: 'tableau-de-bord',
+         title: 'Tableau de Bord',
+         url: 'tableau-de-bord',
+         icon:'dashboard'
+      },
+      {
          id: 'déclarer-objet-trouvé',
          title: 'Déclarer un objet trouvé ',
          url: Pages.OBJECTS_FOUND_CREATE,

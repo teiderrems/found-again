@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 pb-12">
     <!-- En-tête du profil -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 dark:from-blue-800 dark:to-indigo-900">
+    <div class="bg-linear-to-r from-blue-600 to-indigo-700 dark:from-blue-800 dark:to-indigo-900">
         <div class="container mx-auto px-4 pt-8 pb-16">
             <div class="max-w-6xl mx-auto">
                 <!-- Navigation retour -->
@@ -73,13 +73,13 @@
 
                     <!-- Actions -->
                     <div class="flex gap-3">
-                        <button mat-stroked-button class="!text-white !border-white dark:!border-gray-300"
+                        <button mat-stroked-button class="text-white! border-white! dark:border-gray-300!"
                             (click)="openEditDialog()">
                             <mat-icon>edit</mat-icon>
                             Modifier le profil
                         </button>
                         <button mat-icon-button [matMenuTriggerFor]="menu"
-                            class="!text-white !bg-white/20 dark:!bg-gray-700/50">
+                            class="text-white! bg-white/20! dark:bg-gray-700/50!">
                             <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #menu="matMenu">
@@ -92,7 +92,7 @@
                                 Confidentialité
                             </button>
                             <mat-divider></mat-divider>
-                            <button mat-menu-item class="!text-red-500" (click)="logout()">
+                            <button mat-menu-item class="text-red-500!" (click)="logout()">
                                 <mat-icon>logout</mat-icon>
                                 Déconnexion
                             </button>
@@ -173,7 +173,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <!-- Informations personnelles -->
                             <div class="lg:col-span-2">
-                                <mat-card class="!rounded-2xl dark:bg-gray-800">
+                                <mat-card class="rounded-2xl! dark:bg-gray-800">
                                     <mat-card-header>
                                         <mat-card-title class="flex items-center">
                                             <mat-icon class="mr-2">person</mat-icon>
@@ -237,7 +237,7 @@
 
                             <!-- Préférences -->
                             <div>
-                                <mat-card class="!rounded-2xl dark:bg-gray-800">
+                                <mat-card class="rounded-2xl! dark:bg-gray-800">
                                     <mat-card-header>
                                         <mat-card-title class="flex items-center">
                                             <mat-icon class="mr-2">settings</mat-icon>
@@ -306,7 +306,7 @@
                 <!-- Onglet Activité (admin only) -->
                 <mat-tab *ngIf="profile.role === 'admin'" label="Activité">
                     <div class="py-6">
-                        <mat-card class="!rounded-2xl dark:bg-gray-800">
+                        <mat-card class="rounded-2xl! dark:bg-gray-800">
                             <mat-card-header>
                                 <mat-card-title class="flex items-center">
                                     <mat-icon class="mr-2">admin_panel_settings</mat-icon>
