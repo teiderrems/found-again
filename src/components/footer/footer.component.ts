@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { LinkType } from '../header/header.component';
-import { LinkItemComponent } from '../link-item/link-item.component';
 import { RouterLink } from '@angular/router';
 import {Pages} from "@/config/constant";
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
    selector: 'app-footer',
    templateUrl: './footer.component.html',
    styleUrl: './footer.component.css',
    standalone: true,
-   imports: [LinkItemComponent, RouterLink],
+   imports: [RouterLink, MatIconModule],
 })
 export class FooterComponent {
    public links_: LinkType[] = [

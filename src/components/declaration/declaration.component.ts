@@ -79,6 +79,8 @@ export class DeclarationComponent implements OnInit {
    selectedCategory: string = '';
    categories = signal<DefaultCategory[]>([]);
 
+   isDragOver = signal(false);
+
    constructor() {
       this.declarationForm = this.fb.group({
          title: ['', [Validators.required, Validators.minLength(3)]],
@@ -295,5 +297,45 @@ export class DeclarationComponent implements OnInit {
       if (address.postcode) parts.push(address.postcode);
       this.selectedCoordinatesString=parts.join(', ');
       return this.selectedCoordinatesString;
+   }
+
+   // Drag and Drop methods
+   onDragOver(event: DragEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.isDragOver.set(true);
+   }
+
+   onDragLeave(event: DragEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.isDragOver.set(false);
+   }
+
+   onDrop(event: DragEvent) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.isDragOver.set(false);
+
+      const files = event.dataTransfer?.files;
+      if (files) {
+         const imageFiles = Array.from(files).filter((file) =>
+            file.type.startsWith('image/')
+         );
+         this.processFiles(imageFiles);
+      }
+   }
+
+   private processFiles(files: File[]) {
+      files.forEach((file) => {
+         if (file.size <= 5 * 1024 * 1024) { // 5MB limit
+            this.selectedFiles.push(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+               this.imagePreviews.push(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+         }
+      });
    }
 }

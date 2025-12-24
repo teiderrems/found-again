@@ -13,28 +13,32 @@ import { MatIconModule } from "@angular/material/icon";
       <div class="space-y-4">
          <!-- Sélecteur de catégorie -->
          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-medium text-gray-700">Catégorie *</label>
+            <label class="text-sm font-semibold text-gray-700">Catégorie <span class="text-red-500">*</span></label>
             <select
                [value]="selectedCategoryId"
                (change)="onCategoryChange($event)"
-               class="form-select rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 cursor-pointer font-medium text-gray-700"
             >
                <option value="">Sélectionnez une catégorie</option>
                <option
                   *ngFor="let category of categories"
                   [value]="category.id"
                   [style.color]="category.color"
-                  class=" flex space-x-1 items-center hover:cursor-pointer"
                >
-                  <mat-icon [fontIcon]="category.icon "></mat-icon><span>{{ category.name }}</span>
+                  {{ category.name }}
                </option>
             </select>
          </div>
 
          <!-- Description de la catégorie sélectionnée -->
-         <div *ngIf="selectedCategory" class="mt-4 p-3 bg-gray-50 rounded-lg">
-            <h4 class="font-medium text-gray-800">{{ selectedCategory.name }}</h4>
-            <p class="text-sm text-gray-600 mt-1">{{ selectedCategory.description }}</p>
+         <div *ngIf="selectedCategory" class="mt-4 p-4 bg-linear-to-r from-[#009245]/5 to-green-50 border-l-4 border-[#009245] rounded-lg animate-in fade-in slide-in-from-left-2 duration-300">
+            <div class="flex items-start space-x-3">
+               <mat-icon [fontIcon]="selectedCategory.icon" class="text-[#009245] text-2xl mt-1"></mat-icon>
+               <div class="flex-1">
+                  <h4 class="font-semibold text-gray-900">{{ selectedCategory.name }}</h4>
+                  <p class="text-sm text-gray-600 mt-1">{{ selectedCategory.description }}</p>
+               </div>
+            </div>
          </div>
       </div>
    `,
