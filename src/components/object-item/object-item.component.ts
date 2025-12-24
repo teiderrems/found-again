@@ -13,6 +13,7 @@ export class ObjectItemComponent implements OnInit {
    item = input.required<DeclarationData>();
    currentIndex = 0;
    images: string[] = [];
+   isPreviewOpen = signal(false);
 
    private cacheBusterTimestamp: number = Date.now();
 
@@ -40,5 +41,25 @@ export class ObjectItemComponent implements OnInit {
    prevImage(event: Event) {
       const newIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
       this.updateIndex(newIndex, event);
+   }
+
+   openPreview() {
+      this.isPreviewOpen.set(true);
+      document.body.style.overflow = 'hidden';
+   }
+
+   closePreview() {
+      this.isPreviewOpen.set(false);
+      document.body.style.overflow = 'auto';
+   }
+
+   nextPreviewImage(event: Event) {
+      event.stopPropagation();
+      this.nextImage(event);
+   }
+
+   prevPreviewImage(event: Event) {
+      event.stopPropagation();
+      this.prevImage(event);
    }
 }

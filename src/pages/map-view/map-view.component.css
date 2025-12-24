@@ -1,0 +1,5 @@
+/* Styles pour la page de vue de carte */
+:host {
+  display: block;
+  height: 100%;
+}

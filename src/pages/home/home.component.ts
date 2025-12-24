@@ -9,11 +9,11 @@ import { RouterOutlet } from '@angular/router';
    templateUrl: './home.component.html',
    styleUrl: './home.component.css',
    imports: [
-      CommonModule,
-      HeaderComponent,
-      FooterComponent,
-      RouterOutlet
-   ],
+    CommonModule,
+    HeaderComponent,
+    FooterComponent,
+    RouterOutlet
+],
    standalone: true,
 })
 export class HomeComponent implements OnInit {
@@ -21,3 +21,4 @@ export class HomeComponent implements OnInit {
       
    }
 }
+

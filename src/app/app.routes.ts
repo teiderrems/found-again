@@ -20,6 +20,7 @@ import { SignUpComponent } from './pages/auth-pages/sign-up/sign-up.component';
 import { CalenderComponent } from './pages/calender/calender.component';
 
 import { HomeComponent } from '@/pages/home/home.component';
+import { MapViewComponent } from '@/pages/map-view/map-view.component';
 import {Pages} from "@/config/constant";
 import {preparePathForRouter} from "@/app/utils";
 
@@ -87,6 +88,27 @@ export const routes: Routes = [
             loadComponent:()=>import('@/pages/contact/contact.component').then(c=>c.ContactComponent),
             pathMatch: 'full',
             title: 'Nous contacter',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'map',
+            component: MapViewComponent,
+            pathMatch: 'full',
+            title: 'Carte',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'tableau-de-bord',
+            loadComponent:()=>import('@/pages/dashboard/dashboard.component').then(c=>c.DashboardComponent),
+            pathMatch: 'full',
+            title: 'Tableau de Bord',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'verifier-identite/:id',
+            loadComponent:()=>import('@/pages/verify-identity/verify-identity.component').then(c=>c.VerifyIdentityComponent),
+            pathMatch: 'full',
+            title: 'Vérifier l\'Identité',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          }
          ,

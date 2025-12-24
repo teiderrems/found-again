@@ -1,13 +1,13 @@
-<div class="w-full sticky z-10 top-0 scroll-mt-3 max-w-4xl mx-auto my-8 px-4">
-    <div
-        class="relative flex items-center w-full h-16 rounded-2xl focus-within:shadow-lg bg-white border border-[#FC4E00] shadow-md overflow-hidden transition-shadow duration-300">
+<div class="w-full fixed z-50 top-30 left-0 right-0 py-4 sm:py-6 px-4">
+    <div class="max-w-4xl mx-auto relative flex items-center w-full h-14 sm:h-16 rounded-2xl focus-within:shadow-2xl bg-white border-2 border-[#FC4E00]/30 shadow-lg overflow-hidden transition-all duration-300 focus-within:border-[#FC4E00] focus-within:shadow-2xl hover:border-[#FC4E00]/50">
         <input [formControl]="searchControl"
-            class="peer h-full w-full border-none outline-none focus:ring-0 text-lg text-green-800 placeholder-green-700 font-bold px-6 bg-transparent"
-            type="text" id="search" placeholder="Rechercher un objet" />
+            class="peer h-full w-full border-none outline-none focus:ring-0 text-sm sm:text-lg text-[#009245] placeholder-[#009245]/50 font-medium px-5 sm:px-6 bg-transparent transition-colors duration-200"
+            type="text" 
+            id="search" 
+            placeholder="🔍 Rechercher un objet" />
 
-        <div class="grid place-items-center h-full w-16 text-green-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
+        <div class="grid place-items-center h-full w-16 text-[#009245] pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
