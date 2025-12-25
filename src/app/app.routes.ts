@@ -21,8 +21,8 @@ import { CalenderComponent } from './pages/calender/calender.component';
 
 import { HomeComponent } from '@/pages/home/home.component';
 import { MapViewComponent } from '@/pages/map-view/map-view.component';
-import {Pages} from "@/config/constant";
-import {preparePathForRouter} from "@/app/utils";
+import { Pages } from '@/config/constant';
+import { preparePathForRouter } from '@/app/utils';
 
 import { RouterModule } from '@angular/router';
 import {
@@ -49,43 +49,57 @@ export const routes: Routes = [
       title: 'Accueil',
       children: [
          {
-            path:  preparePathForRouter(Pages.OBJECTS_LOST_CREATE),
-            loadComponent:()=>import('@/pages/lost-object/lost-object.component').then(c=>c.LostObjectComponent),
+            path: preparePathForRouter(Pages.OBJECTS_LOST_CREATE),
+            loadComponent: () =>
+               import('@/pages/lost-object/lost-object.component').then(
+                  (c) => c.LostObjectComponent,
+               ),
             pathMatch: 'full',
             title: 'Déclarer un objet perdu',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path:  preparePathForRouter(Pages.OBJECTS_FOUND_CREATE),
-            loadComponent:()=>import('@/pages/found-object/found-object.component').then(c=>c.FoundObjectComponent),
+            path: preparePathForRouter(Pages.OBJECTS_FOUND_CREATE),
+            loadComponent: () =>
+               import('@/pages/found-object/found-object.component').then(
+                  (c) => c.FoundObjectComponent,
+               ),
             pathMatch: 'full',
             title: 'Déclarer un objet retrouvé',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: preparePathForRouter(Pages.SEARCH),
-            loadComponent:()=>import('@/pages/search/search.component').then(c=>c.SearchComponent),
+            loadComponent: () =>
+               import('@/pages/search/search.component').then((c) => c.SearchComponent),
             pathMatch: 'full',
             title: 'Rechercher un objet',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: preparePathForRouter(Pages.SERVICES),
-            loadComponent:()=>import('@/pages/service/service.component').then(c=>c.ServiceComponent),
+            loadComponent: () =>
+               import('@/pages/service/service.component').then(
+                  (c) => c.ServiceComponent,
+               ),
             pathMatch: 'full',
             title: 'Nos Services',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: preparePathForRouter(Pages.ABOUT),
-            loadComponent:()=>import('@/pages/about/about.component').then(c=>c.AboutComponent),
+            loadComponent: () =>
+               import('@/pages/about/about.component').then((c) => c.AboutComponent),
             pathMatch: 'full',
             title: 'A propos de nous',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
             path: preparePathForRouter(Pages.CONTACT),
-            loadComponent:()=>import('@/pages/contact/contact.component').then(c=>c.ContactComponent),
+            loadComponent: () =>
+               import('@/pages/contact/contact.component').then(
+                  (c) => c.ContactComponent,
+               ),
             pathMatch: 'full',
             title: 'Nous contacter',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
@@ -99,32 +113,77 @@ export const routes: Routes = [
          },
          {
             path: 'tableau-de-bord',
-            loadComponent:()=>import('@/pages/dashboard/dashboard.component').then(c=>c.DashboardComponent),
+            loadComponent: () =>
+               import('@/pages/dashboard/dashboard.component').then(
+                  (c) => c.DashboardComponent,
+               ),
             pathMatch: 'full',
             title: 'Tableau de Bord',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
-            path: 'verifier-identite/:id',
-            loadComponent:()=>import('@/pages/verify-identity/verify-identity.component').then(c=>c.VerifyIdentityComponent),
+            path: 'admin-dashboard',
+            loadComponent: () =>
+               import('@/pages/admin-dashboard/admin-dashboard.component').then(
+                  (c) => c.AdminDashboardComponent,
+               ),
             pathMatch: 'full',
-            title: 'Vérifier l\'Identité',
+            title: 'Tableau de Bord Admin',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
-         }
-         ,
-        //To be removed
-        //  {
-        //     path: preparePathForRouter(Pages.PROFILE),
-        //     loadComponent:()=>import('@/pages/profile/profile.component').then(c=>c.UserProfileComponent),
-        //     pathMatch: 'full',
-        //     title: 'Profil utilisateur',
-        //     runGuardsAndResolvers: (from, to) => from.url === to.url,
-        //  },
+         },
+         {
+            path: 'verifier-identite/:id',
+            loadComponent: () =>
+               import('@/pages/verify-identity/verify-identity.component').then(
+                  (c) => c.VerifyIdentityComponent,
+               ),
+            pathMatch: 'full',
+            title: "Vérifier l'Identité",
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'mes-verifications',
+            loadComponent: () =>
+               import('@/pages/my-verifications/my-verifications.component').then(
+                  (c) => c.MyVerificationsComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Mes Vérifications',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'profile',
+            loadComponent: () =>
+               import('@/pages/profile/profile.component').then(
+                  (c) => c.UserProfileComponent,
+               ),
+            title: 'Profil Utilisateur',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'notifications',
+            loadComponent: () =>
+               import('@/pages/notifications/notification.component').then(
+                  (c) => c.NotificationComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Notifications',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         //To be removed
+         //  {
+         //     path: preparePathForRouter(Pages.PROFILE),
+         //     loadComponent:()=>import('@/pages/profile/profile.component').then(c=>c.UserProfileComponent),
+         //     pathMatch: 'full',
+         //     title: 'Profil utilisateur',
+         //     runGuardsAndResolvers: (from, to) => from.url === to.url,
+         //  },
       ],
    },
    {
       path: preparePathForRouter(Pages.SIGN_IN),
-      loadComponent:()=>import('@/pages/login/login.component').then(c=>c.LoginComponent),
+      loadComponent: () =>
+         import('@/pages/login/login.component').then((c) => c.LoginComponent),
       pathMatch: 'full',
       canActivate: [AuthGuard],
       data: {
@@ -134,100 +193,103 @@ export const routes: Routes = [
    },
    {
       path: preparePathForRouter(Pages.SIGN_UP),
-      loadComponent:()=>import('@/pages/register/register.component').then(c=>c.RegisterComponent),
+      loadComponent: () =>
+         import('@/pages/register/register.component').then((c) => c.RegisterComponent),
       pathMatch: 'full',
       title: "S'inscrire",
    },
    {
       path: preparePathForRouter(Pages.CONFIRM_EMAIL),
-      loadComponent:()=>import('@/pages/confirm-email/confirm-email.component').then(c=>c.ConfirmEmailComponent),
+      loadComponent: () =>
+         import('@/pages/confirm-email/confirm-email.component').then(
+            (c) => c.ConfirmEmailComponent,
+         ),
       pathMatch: 'full',
       title: 'Confirmer Email',
    },
-  {
-    path:'',
-    component:AppLayoutComponent,
-    children:[
-      {
-        path: preparePathForRouter(Pages.DASHBOARD),
-        component: EcommerceComponent,
-        pathMatch: 'full',
-        title:
-          'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
-      },
-      {
-        path:'calendar',
-        component:CalenderComponent,
-        title:'Angular Calender | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'profile',
-        component:ProfileComponent,
-        title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'form-elements',
-        component:FormElementsComponent,
-        title:'Angular Form Elements Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'basic-tables',
-        component:BasicTablesComponent,
-        title:'Angular Basic Tables Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'blank',
-        component:BlankComponent,
-        title:'Angular Blank Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      // support tickets
-      {
-        path:'invoice',
-        component:InvoicesComponent,
-        title:'Angular Invoice Details Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'line-chart',
-        component:LineChartComponent,
-        title:'Angular Line Chart Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'bar-chart',
-        component:BarChartComponent,
-        title:'Angular Bar Chart Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'alerts',
-        component:AlertsComponent,
-        title:'Angular Alerts Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'avatars',
-        component:AvatarElementComponent,
-        title:'Angular Avatars Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'badge',
-        component:BadgesComponent,
-        title:'Angular Badges Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'buttons',
-        component:ButtonsComponent,
-        title:'Angular Buttons Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'images',
-        component:ImagesComponent,
-        title:'Angular Images Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
-        path:'videos',
-        component:VideosComponent,
-        title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-    ]
-  },
+   {
+      path: '',
+      component: AppLayoutComponent,
+      children: [
+         {
+            path: preparePathForRouter(Pages.DASHBOARD),
+            component: EcommerceComponent,
+            pathMatch: 'full',
+            title: 'Angular Ecommerce Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'calendar',
+            component: CalenderComponent,
+            title: 'Angular Calender | TailAdmin - Angular Admin Dashboard Template',
+         },
+         // {
+         //   path:'profile',
+         //   component:ProfileComponent,
+         //   title:'Angular Profile Dashboard | TailAdmin - Angular Admin Dashboard Template'
+         // },
+         {
+            path: 'form-elements',
+            component: FormElementsComponent,
+            title: 'Angular Form Elements Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'basic-tables',
+            component: BasicTablesComponent,
+            title: 'Angular Basic Tables Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'blank',
+            component: BlankComponent,
+            title: 'Angular Blank Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         // support tickets
+         {
+            path: 'invoice',
+            component: InvoicesComponent,
+            title: 'Angular Invoice Details Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'line-chart',
+            component: LineChartComponent,
+            title: 'Angular Line Chart Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'bar-chart',
+            component: BarChartComponent,
+            title: 'Angular Bar Chart Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'alerts',
+            component: AlertsComponent,
+            title: 'Angular Alerts Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'avatars',
+            component: AvatarElementComponent,
+            title: 'Angular Avatars Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'badge',
+            component: BadgesComponent,
+            title: 'Angular Badges Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'buttons',
+            component: ButtonsComponent,
+            title: 'Angular Buttons Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'images',
+            component: ImagesComponent,
+            title: 'Angular Images Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+         {
+            path: 'videos',
+            component: VideosComponent,
+            title: 'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template',
+         },
+      ],
+   },
    {
       path: '**',
       loadComponent: () =>

@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DeclarationService } from '@/services/declaration.service';
+import { VerificationService } from '@/services/verification.service';
+import { AuthService } from '@/services/auth.service';
 import { LocationService } from '@/services/location.service';
 import { DeclarationData } from '@/types/declaration';
 
@@ -20,6 +22,8 @@ export class VerifyIdentityComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private declarationService = inject(DeclarationService);
+  private verificationService = inject(VerificationService);
+  private authService = inject(AuthService);
   private locationService = inject(LocationService);
 
   verifyForm!: FormGroup;
@@ -78,32 +82,38 @@ export class VerifyIdentityComponent implements OnInit {
     }
 
     this.isLoading.set(true);
+    const currentUserId = this.authService.getCurrentUserId();
+    
+    if (!currentUserId) {
+      this.errorMessage.set('Erreur: Utilisateur non authentifié');
+      this.isLoading.set(false);
+      return;
+    }
+
     const verificationData = {
-      declarationId: this.objectDeclaration.id,
       identityDetails: this.verifyForm.get('identityDetails')?.value,
       additionalInfo: this.verifyForm.get('additionalInfo')?.value,
       serialNumber: this.verifyForm.get('serialNumber')?.value || null,
-      timestamp: new Date()
     };
 
-    // Appeler le service pour vérifier l'identité
-    this.declarationService.verifyIdentity(verificationData).subscribe({
-      next: (response) => {
+    // Utiliser le service de vérification
+    this.verificationService.createVerification(
+      this.objectDeclaration.id,
+      currentUserId,
+      verificationData
+    ).subscribe({
+      next: (verificationId) => {
         this.isLoading.set(false);
-        if (response.isVerified) {
-          this.verificationStep.set('success');
-          
-          // Récupérer les coordonnées de l'utilisateur et rediriger vers la map
-          this.getCoordinatesAndNavigateToMap();
-        } else {
-          this.verificationStep.set('failed');
-          this.errorMessage.set('Les informations fournis ne correspondent pas. Veuillez réessayer.');
-        }
+        this.verificationStep.set('success');
+        this.successMessage.set('Votre vérification d\'identité a été enregistrée avec succès. Un administrateur examinera bientôt votre demande.');
+        
+        // Récupérer les coordonnées de l'utilisateur et rediriger vers la map
+        this.getCoordinatesAndNavigateToMap();
       },
       error: (error) => {
         this.isLoading.set(false);
         this.verificationStep.set('failed');
-        this.errorMessage.set('Erreur lors de la vérification. Veuillez réessayer plus tard.');
+        this.errorMessage.set('Erreur lors de l\'enregistrement de la vérification. Veuillez réessayer plus tard.');
         console.error('Erreur:', error);
       }
     });

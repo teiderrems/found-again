@@ -12,6 +12,7 @@ export interface DeclarationCreate {
    date: string;
    contactEmail: string;
    contactPhone: string;
+   userId?: string;
    images: File[];
    type: DeclarationType;
 }
@@ -26,7 +27,9 @@ export interface DeclarationData {
    title: string;
    category: string;
    description: string;
+   createdAt: string;
    location: string;
+   userId?: string;
    coordinates?: { lat: number; lng: number };
    date: string;
    contactEmail: string;

@@ -34,14 +34,14 @@ export class SearchComponent {
 
    filterItems(searchTerm: string | null) {
       if (searchTerm) {
-         const lowerTerm = searchTerm.toLowerCase();
-         const filterResults = this.initialItems().filter(
-            (item) =>
-               item.title.toLowerCase().includes(lowerTerm) ||
-               item.description.toLowerCase().includes(lowerTerm) ||
-               item.location.toLowerCase().includes(lowerTerm),
-         );
-         this.filteredItems.set(filterResults);
+         this.declarationService.getDeclarationsBySearchTerm(searchTerm).subscribe({
+            next: (declarations) => {
+               this.filteredItems.set(declarations);
+            },
+            error: (error) => {
+               console.error('Erreur lors de la récupération des déclarations filtrées :', error);
+            },
+         });
       } else {
          this.filteredItems.set(this.initialItems());
       }

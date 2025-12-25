@@ -14,6 +14,7 @@ import {
    Query,
    query,
    where,
+   or,
 } from '@angular/fire/firestore';
 
 import { FirebaseStorageService } from './firebase-storage.service';
@@ -155,6 +156,110 @@ export class DeclarationService {
          DeclarationData[]
       >;
    }
+
+   /**
+    * Récupère les déclarations d'un certain type, filtrées par ID utilisateur.
+    *
+    * @param userId L'ID de l'utilisateur pour lequel récupérer les déclarations.
+    * @returns Un Observable de la liste des déclarations filtrées par utilisateur.
+    */
+   getDeclarationsByUserId(userId: string): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const userFilter = where('userId', '==', userId);
+      const declarationsQuery: Query<DeclarationData> = query(
+         colRef as Query<DeclarationData>,
+         userFilter,
+      );
+
+      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<
+         DeclarationData[]
+      >;
+   }
+
+   /**
+    * Récupère les déclarations d'un certain type, filtrées par localisation (coordonnées).
+    *
+    * @param type Le type de déclaration (LOSS ou FOUND).
+    * @param lat La latitude pour le filtrage.
+    * @param lng La longitude pour le filtrage.
+    * @returns Un Observable de la liste des déclarations filtrées par localisation.
+    */
+   getDeclarationsByLocation(
+      type: DeclarationType,
+      lat: number,
+      lng: number,
+   ): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const latFilter = where('coordinates.lat', '==', lat);
+      const lngFilter = where('coordinates.lng', '==', lng);
+      const declarationsQuery: Query<DeclarationData> = query(
+         colRef as Query<DeclarationData>,
+         latFilter,
+         lngFilter,
+      );
+
+      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<
+         DeclarationData[]
+      >;
+   }
+
+   /**
+    * Récupère les déclarations d'un certain type, filtrées par date.
+    *
+    * @param type Le type de déclaration (LOSS ou FOUND).
+    * @param date La date (ISO string) pour le filtrage.
+    * @returns Un Observable de la liste des déclarations filtrées par date.
+    */
+   getDeclarationsByDate(
+      type: DeclarationType,
+      date: string,
+   ): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const dateFilter = where('date', '==', date);
+      const declarationsQuery: Query<DeclarationData> = query(
+         colRef as Query<DeclarationData>,
+         dateFilter,
+      );
+
+      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<
+         DeclarationData[]
+      >;
+   }
+
+
+   /**
+    * Récupère les déclarations d'un certain type, filtrées par catégorie ou titre (termes de recherche) ou description.
+    *
+    * @param type Le type de déclaration (LOSS ou FOUND).
+    * @param searchTerm Le terme de recherche pour le filtrage (catégorie, titre ou description).
+    * @returns Un Observable de la liste des déclarations filtrées par terme de recherche.
+    */
+   getDeclarationsBySearchTerm(
+      searchTerm: string,
+   ): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const lowerCaseTerm = searchTerm.toLowerCase().trim();
+      const declarationsQuery: Query<DeclarationData> = query(
+         colRef as Query<DeclarationData>
+      );
+
+      return collectionData(declarationsQuery, { idField: 'id' }).pipe(
+         map((declarations: DeclarationData[]) =>
+            declarations.filter((declaration) => {
+               const inCategory =
+                  declaration.category.toLowerCase().includes(lowerCaseTerm);
+               const inTitle =
+                  declaration.title.toLowerCase().includes(lowerCaseTerm);
+               const inDescription =
+                  declaration.description.toLowerCase().includes(lowerCaseTerm);
+               return inCategory || inTitle || inDescription;
+            }),
+         ),
+      );
+   }
+
+   /**
+    */
 
    /**
     * Supprime une déclaration (document Firestore) et tous ses fichiers associés (Supabase Storage).

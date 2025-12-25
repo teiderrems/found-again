@@ -1,41 +1,112 @@
-<header class="backdrop-blur-md h-30 mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
-  <div class="flex items-center px-2 sm:px-4 h-full lg:px-8">
-    <a routerLink="/" class=" no-underline hover:cursor-pointer h-full"><img class=" h-full w-full"
-        src="/images/header_logo.png" alt="Your Company"></a>
-    <div class="flex w-3/5 justify-center space-x-9">
-      <nav class="flex justify-center items-center space-x-9">
-        @for (item of links_; track item.id) {
-        <app-link-item [link]="item" />
-        }
-      </nav>
-    </div>
-    <div class="w-1/5 flex items-center hover:cursor-pointer text-[#009245] font-bold justify-end">
-      <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
-        <!-- Trigger personnalisé -->
-        <ng-template #dropdownTrigger let-context>
-          <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center">
-            <span class="flex items-center justify-center w-10 h-10 rounded-full border">
-              <span class=" font-bold">
+<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+  <div class="flex items-center px-4 lg:px-8 h-full justify-between">
+    <!-- Logo -->
+    <a routerLink="/" class="no-underline hover:cursor-pointer h-full flex items-center">
+      <img class="h-full max-h-14 md:max-h-30 w-auto" src="/images/header_logo.png" alt="Your Company">
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden lg:flex justify-center items-center space-x-6">
+      @for (item of links_; track item.id) {
+      <app-link-item [link]="item" />
+      }
+    </nav>
+
+    <!-- User Menu & Actions -->
+    <div class="flex items-center space-x-4">
+      <!-- Notifications Panel (Desktop) -->
+      <div class="hidden lg:block">
+        <app-notification-panel></app-notification-panel>
+      </div>
+
+      <!-- Desktop Dropdown Menu -->
+      <div class="hidden lg:block">
+        <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
+          <ng-template #dropdownTrigger let-context>
+            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center hover:bg-gray-50 transition-colors hover:cursor-pointer">
+              <span class="flex items-center justify-center w-10 h-10 rounded-full border bg-[#009245] text-white font-bold">
                 {{getAvatar()}}
               </span>
-              <!--  -->
-            </span>
-            <span class="capitalize">{{ getDisplayName()}}</span>
-            <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
-          </button>
-        </ng-template>
-        <ng-template #dropdownOption let-option let-selected="selected" let-select="select"
-          let-closeDropdown="closeDropdown">
-          <div
-            class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-            (click)="option.action(option);closeDropdown()">
-            <div class="flex-1 flex space-x-2">
-              <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
-              <div class="font-medium text-gray-900">{{ option.label }}</div>
+              <span class="capitalize font-medium">{{ getDisplayName()}}</span>
+              <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+            </button>
+          </ng-template>
+          <ng-template #dropdownOption let-option let-selected="selected" let-select="select" let-closeDropdown="closeDropdown">
+            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              (click)="option.action(option);closeDropdown()">
+              <div class="flex-1 flex space-x-2">
+                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+                <div class="font-medium text-gray-900">{{ option.label }}</div>
+              </div>
             </div>
-          </div>
-        </ng-template>
-      </app-dropdown>
+          </ng-template>
+        </app-dropdown>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button 
+        class="lg:hidden p-2 rounded-md hover:bg-gray-200 transition-colors hover:cursor-pointer"
+        (click)="toggleMobileMenu()"
+        [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+        [attr.aria-expanded]="mobileMenuOpen()">
+        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700"></mat-icon>
+      </button>
     </div>
   </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+  <nav class="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+    <div class="flex flex-col p-4 space-y-2">
+      @for (item of links_; track item.id) {
+      <a 
+        [routerLink]="item.url"
+        (click)="closeMobileMenu()"
+        class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] no-underline">
+        <mat-icon *ngIf="item.icon" [fontIcon]="item.icon" class="text-xl"></mat-icon>
+        <span class="font-medium">{{ item.title }}</span>
+      </a>
+      }
+      
+      <div class="border-t border-gray-200 my-2 pt-2">
+        <!-- Mobile Notifications -->
+        <button 
+          (click)="closeMobileMenu(); redirectTo('/notifications')"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+          <mat-icon fontIcon="notifications" class="text-xl"></mat-icon>
+          <span class="font-medium">Notifications</span>
+        </button>
+        
+        <!-- Mobile User Profile -->
+        <button 
+          (click)="closeMobileMenu(); redirectTo('/profil')"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+          <mat-icon fontIcon="person" class="text-xl"></mat-icon>
+          <span class="font-medium">Profil</span>
+        </button>
+        
+        <!-- Mobile Verifications -->
+        <button 
+          (click)="closeMobileMenu(); redirectTo('/mes-verifications')"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+          <mat-icon fontIcon="verified_user" class="text-xl"></mat-icon>
+          <span class="font-medium">Mes Vérifications</span>
+        </button>
+        
+        <button 
+          (click)="closeMobileMenu(); redirectTo('/parametres')"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+          <mat-icon fontIcon="settings" class="text-xl"></mat-icon>
+          <span class="font-medium">Paramètre</span>
+        </button>
+        <button 
+          (click)="closeMobileMenu(); onLogout()"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 transition-colors text-red-600 hover:text-red-700 hover:cursor-pointer">
+          <mat-icon fontIcon="logout" class="text-xl"></mat-icon>
+          <span class="font-medium">Se Déconnecter</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+  }
 </header>

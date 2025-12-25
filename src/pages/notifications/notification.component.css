@@ -1,0 +1,42 @@
+/* Notifications Component Styles */
+
+:host {
+  display: block;
+}
+
+/* Animation pour le chargement */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Effet hover pour les notifications */
+.bg-white:hover {
+  transform: translateY(-1px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .space-x-1 > button {
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .flex.space-x-4 {
+    flex-direction: column;
+    space-x: 0;
+  }
+  
+  .flex.space-x-4 > * + * {
+    margin-top: 1rem;
+    margin-left: 0;
+  }
+}

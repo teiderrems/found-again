@@ -1,4 +1,18 @@
 /**
+ * Interface pour une déclaration (objet perdu/trouvé)
+ */
+export interface Declaration {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  location: string;
+  type: 'lost' | 'found';
+  createdAt: Date;
+  userId: string;
+}
+
+/**
  * Interface pour les données de profil stockées dans Firestore
  */
 export interface UserProfile {
@@ -16,6 +30,7 @@ export interface UserProfile {
   avatarUrl?: string;
   location?: string;
   bio?: string;
+  declarations?: Declaration[];
 }
 
 /**

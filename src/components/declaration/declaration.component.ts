@@ -233,6 +233,7 @@ export class DeclarationComponent implements OnInit {
       if (this.declarationForm.valid) {
          const formData: DeclarationCreate = {
             ...this.declarationForm.value,
+            userId: this.authService.getCurrentUserId(),
             coordinates: this.selectedCoordinates,
             images: this.selectedFiles,
             type:this.declarationType

@@ -1,0 +1,56 @@
+/* Admin Dashboard Styles */
+
+:host {
+  display: block;
+}
+
+/* Table hover effect */
+table tbody tr:hover {
+  transition: background-color 0.2s ease;
+}
+
+/* Card hover effect */
+.border-l-4 {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.border-l-4:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Tab styles */
+button[class*='border-b-2'] {
+  transition: all 0.2s ease;
+}
+
+/* Badge styles */
+span[class*='bg-'] {
+  font-weight: 600;
+}
+
+/* Icon alignment */
+mat-icon {
+  vertical-align: middle;
+}
+
+/* Loading state */
+.opacity-50 {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    font-size: 0.875rem;
+  }
+
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}

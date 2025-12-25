@@ -18,7 +18,7 @@ import {
 import { GoogleAuthProvider } from '@angular/fire/auth';
 import { doc, Firestore, setDoc, docData, updateDoc } from '@angular/fire/firestore';
 import { from, lastValueFrom, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators'; // 👈 Ajout de 'map'
+import { switchMap } from 'rxjs/operators'; // Ajout de 'map'
 import { UserProfile, UpdateProfileData } from '../types/user'; // Assurez-vous d'importer ces types
 
 @Injectable({
@@ -103,22 +103,32 @@ export class AuthService {
             const user = userCredential!.user;
             const userId = user.uid;
             const userDocRef = doc(this.firestore, this.userCollectionName, userId);
+            const alreadyExists = await lastValueFrom(
+               docData(userDocRef),
+            ).then((docData) => !!docData);
 
-            await setDoc(userDocRef, {
-               email: user.email,
-               firstname: data.firstname,
-               lastname: data.lastname,
-               createdAt: new Date(),
-               role: 'standard',
-               preferences: {
-                  theme: 'dark',
-                  notifications: true,
-               },
-            } as UserProfile); // Ajouter un cast si nécessaire pour la rigueur TypeScript
+            if (alreadyExists) {
+               console.log('Le profil utilisateur existe déjà dans Firestore.');
+               return true;
+            }
+            else {
+               await setDoc(userDocRef, {
+                  email: data.email,
+                  firstname: data.firstname,
+                  lastname: data.lastname,
+                  createdAt: new Date(),
+                  role: 'standard',
+                  preferences: {
+                     theme: 'dark',
+                     notifications: true,
+                  },
+               } as UserProfile); // Ajouter un cast si nécessaire pour la rigueur TypeScript
 
-            console.log(
-               'Utilisateur créé et données supplémentaires enregistrées avec succès !',
-            );
+               console.log(
+                  'Utilisateur créé et données supplémentaires enregistrées avec succès !',
+               );
+            }
+            return true;
          } else {
             const userDocRef = doc(this.firestore, this.userCollectionName, user.uid);
 
@@ -188,5 +198,14 @@ export class AuthService {
       const userDocRef = doc(this.firestore, this.userCollectionName, userId);
       // updateDoc retourne une Promise<void>, que nous enveloppons dans from()
       return from(updateDoc(userDocRef, data as { [key: string]: any }));
+   }
+
+   /**
+    * Récupère l'UID de l'utilisateur actuellement connecté.
+    * @returns string | null
+    */
+   public getCurrentUserId(): string | null {
+      const currentUser = this.auth.currentUser;
+      return currentUser ? currentUser.uid : null;
    }
 }

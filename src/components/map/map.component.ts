@@ -148,11 +148,12 @@ export class MapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Utiliser la méthode standard de chargement
+    // Utiliser la méthode standard de chargement avec configuration pour éviter les requêtes de tracking
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=geometry&callback=initGoogleMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&loading=async&libraries=geometry&callback=initGoogleMap&v=weekly`;
     script.async = true;
     script.defer = true;
+    script.nonce = 'maps-nonce'; // Prévenir les requêtes CSP diagnostic
 
     (window as any).initGoogleMap = () => {
       this.initializeMap();

@@ -1,6 +1,7 @@
-import { DeclarationData } from '@/types/declaration';
+import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { CommonModule } from '@angular/common';
-import { Component, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
    selector: 'app-object-item',
@@ -14,13 +15,41 @@ export class ObjectItemComponent implements OnInit {
    currentIndex = 0;
    images: string[] = [];
    isPreviewOpen = signal(false);
-
+   
+   private readonly router = inject(Router); 
    private cacheBusterTimestamp: number = Date.now();
-
+   
    ngOnInit(): void {
       this.images = this.item().images.map((img) => img.downloadURL);
    }
+   
+   goToVerify() {
+      //verifier-identite
+      this.router.navigate(['/verifier-identite',this.item().id]);
+   }
 
+   isLost(): boolean {
+      return this.item().type === DeclarationType.LOSS;
+   }
+
+   isFound(): boolean {
+      return this.item().type === DeclarationType.FOUND;
+   }
+
+   getLocationLabel(): string {
+      return this.isLost() ? 'Perdu à :' : 'Trouvé à :';
+   }
+
+   getHelpText(): string {
+      if (this.isLost()) {
+         return 'Si vous l\'avez vu, merci de partager toute information utile.';
+      }
+      return 'Si c\'est le vôtre, merci de décrire un détail supplémentaire.';
+   }
+
+   getButtonText(): string {
+      return this.isLost() ? 'J\'ai peut-être des infos' : 'C\'est peut-être à moi';
+   }
    
    public get currentImageUrl(): string {
       const url = this.images[this.currentIndex];
