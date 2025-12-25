@@ -18,6 +18,7 @@ import ApexCharts from 'apexcharts';
 export class DashboardComponent implements OnInit, AfterViewInit {
   private declarationService = inject(DeclarationService);
   private authService = inject(AuthService);
+  private userId = this.authService.getCurrentUserId();
 
   @ViewChild('typeChart') typeChart!: ElementRef;
   @ViewChild('timelineChart') timelineChart!: ElementRef;
@@ -35,7 +36,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   DeclarationType = DeclarationType;
 
   ngOnInit() {
-    this.loadUserDeclarations();
+    if (this.userId) {
+      this.loadUserDeclarations(this.userId);
+    }
   }
 
   ngAfterViewInit() {
@@ -44,9 +47,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private loadUserDeclarations() {
+  private loadUserDeclarations( userId?: string) {
     this.isLoading.set(true);
-    this.declarationService.getDeclarations().subscribe({
+    this.declarationService.getDeclarationsByUserId(userId!).subscribe({
       next: (declarations) => {
         this.userDeclarations.set(declarations);
         this.calculateStats(declarations);
@@ -143,7 +146,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     // Remplir avec les déclarations
     declarations.forEach(decl => {
-      const declDate = new Date(decl.date);
+      const declDate = new Date(decl.createdAt);
       const key = declDate.toLocaleString('fr-FR', { month: 'short', year: '2-digit' });
       if (monthData.hasOwnProperty(key)) {
         monthData[key]++;

@@ -1,0 +1,32 @@
+{
+  "name": "Found Again",
+  "short_name": "Found Again",
+  "description": "Application de déclaration d'objets trouvés et perdus",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#009245",
+  "background_color": "#ffffff",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/logo/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["utilities", "social"],
+  "permissions": [
+    "notifications"
+  ],
+  "gcm_sender_id": "1019330466468"
+}

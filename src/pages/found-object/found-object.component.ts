@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { DeclarationComponent } from '../../components/declaration/declaration.component';
 import { DeclarationCreate, DeclarationType } from '../../types/declaration';
@@ -10,7 +10,7 @@ import { DeclarationService } from '../../services/declaration.service';
   templateUrl: './found-object.component.html',
   styleUrls: ['./found-object.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,DeclarationComponent]
+  imports: [ReactiveFormsModule, DeclarationComponent]
 })
 export class FoundObjectComponent {
   

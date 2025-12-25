@@ -20,8 +20,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { requestInterceptor } from "./auth.interceptor";
 import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { getMessaging, provideMessaging } from "@angular/fire/messaging";
 
 registerLocaleData(fr);
 
@@ -69,6 +68,7 @@ export const appConfig: ApplicationConfig = {
         ScreenTrackingService,
         UserTrackingService,
         provideDatabase(() => getDatabase()),
+        provideMessaging(() => getMessaging()),
         
     ],
 };

@@ -1,4 +1,4 @@
-<footer class="bg-gradient-to-b from-white to-gray-50 border-t border-gray-200/50 mt-16 sm:mt-20 transition-all duration-300">
+<footer class="bg-linear-to-b from-white to-gray-50 border-t border-gray-200/50 transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
     <!-- Main Footer Content -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -33,7 +33,7 @@
         <div class="flex items-center space-x-4">
           @for (item of socials; track item.id) {
             <a [routerLink]="item.url" target="_blank" rel="noopener noreferrer" 
-              class="group p-2 rounded-lg hover:bg-gradient-to-br hover:from-[#009245] hover:to-green-700 transition-all duration-300 hover:shadow-md">
+              class="group p-2 rounded-lg hover:bg-linear-to-br hover:from-[#009245] hover:to-green-700 transition-all duration-300 hover:shadow-md">
               <img class="h-5 w-5 opacity-70 group-hover:opacity-100" [src]="item.icon" [alt]="item.title">
             </a>
           }

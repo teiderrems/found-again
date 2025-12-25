@@ -81,7 +81,7 @@
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Declare Lost -->
-        <a routerLink="/declarer-une-perte"
+        <a routerLink="/déclarer-perte"
           class="group bg-white border-2 border-orange-200 hover:border-orange-500 rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:bg-orange-50">
           <div class="flex flex-col items-center text-center space-y-3">
             <div class="bg-orange-100 group-hover:bg-orange-200 p-4 rounded-full transition-colors">
@@ -97,7 +97,7 @@
         </a>
 
         <!-- Declare Found -->
-        <a routerLink="/declarer-un-objet-retrouve"
+        <a routerLink="/déclarer-objet-trouvé"
           class="group bg-white border-2 border-blue-200 hover:border-blue-500 rounded-xl p-6 transition-all duration-200 hover:shadow-lg hover:bg-blue-50">
           <div class="flex flex-col items-center text-center space-y-3">
             <div class="bg-blue-100 group-hover:bg-blue-200 p-4 rounded-full transition-colors">
@@ -150,24 +150,25 @@
   </div>
 
   <!-- Charts Section -->
-  <div *ngIf="userDeclarations().length > 0" class="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">Analyse</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Type Distribution Chart -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Distribution par Type</h3>
-          <div #typeChart class="chart-container"></div>
-        </div>
-
-        <!-- Timeline Chart -->
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Déclarations par Mois</h3>
-          <div #timelineChart class="chart-container"></div>
+  @if (userDeclarations().length > 0) {
+    <div class="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Analyse</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Type Distribution Chart -->
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Distribution par Type</h3>
+            <div #typeChart class="chart-container"></div>
+          </div>
+          <!-- Timeline Chart -->
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-6">Déclarations par Mois</h3>
+            <div #timelineChart class="chart-container"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 
   <!-- Main Content -->
   <div class="py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-white">
@@ -180,75 +181,87 @@
         </div>
 
         <!-- Loading State -->
-        <div *ngIf="isLoading()" class="p-8 text-center">
-          <div class="inline-flex items-center space-x-3">
-            <div class="w-5 h-5 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-            <span class="text-gray-600">Chargement...</span>
+        @if (isLoading()) {
+          <div class="p-8 text-center">
+            <div class="inline-flex items-center space-x-3">
+              <div class="w-5 h-5 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span class="text-gray-600">Chargement...</span>
+            </div>
           </div>
-        </div>
+        }
 
         <!-- Empty State -->
-        <div *ngIf="!isLoading() && userDeclarations().length === 0" class="p-12 text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <p class="text-gray-600 text-lg font-medium">Aucune déclaration</p>
-          <p class="text-gray-500 text-sm mt-2">Créez votre première déclaration pour commencer</p>
-        </div>
+        @if (!isLoading() && userDeclarations().length === 0) {
+          <div class="p-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-gray-600 text-lg font-medium">Aucune déclaration</p>
+            <p class="text-gray-500 text-sm mt-2">Créez votre première déclaration pour commencer</p>
+          </div>
+        }
 
         <!-- Declarations Grid -->
-        <div *ngIf="!isLoading() && userDeclarations().length > 0" class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Objet</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Type</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Lieu</th>
-                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date</th>
-                <th class="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let declaration of userDeclarations()" class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="flex items-center space-x-3">
-                    <div *ngIf="declaration.images && declaration.images.length > 0" class="h-10 w-10 rounded-lg overflow-hidden">
-                      <img [src]="declaration.images[0].downloadURL" [alt]="declaration.title" class="h-full w-full object-cover">
-                    </div>
-                    <div *ngIf="!declaration.images || declaration.images.length === 0" class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-medium text-gray-900">{{ declaration.title }}</p>
-                      <p class="text-xs text-gray-500">{{ declaration.category }}</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <span [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + (declaration.type === DeclarationType.FOUND ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700')">
-                    {{ getTypeLabel(declaration.type) }}
-                  </span>
-                </td>
-                <td class="px-6 py-4">
-                  <p class="text-sm text-gray-600 max-w-xs truncate">{{ declaration.location }}</p>
-                </td>
-                <td class="px-6 py-4">
-                  <p class="text-sm text-gray-600">{{ declaration.date | date: 'dd/MM/yyyy' }}</p>
-                </td>
-                <td class="px-6 py-4 text-right space-x-2 flex items-center justify-end">
-                  <button (click)="deleteDeclaration(declaration.id, declaration.type, declaration.images)"
-                    class="inline-flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        @if (!isLoading() && userDeclarations().length > 0) {
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Objet</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Type</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Lieu</th>
+                  <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date</th>
+                  <th class="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (declaration of userDeclarations(); track declaration) {
+                  <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                      <div class="flex items-center space-x-3">
+                        @if (declaration.images && declaration.images.length > 0) {
+                          <div class="h-10 w-10 rounded-lg overflow-hidden">
+                            <img [src]="declaration.images[0].downloadURL" [alt]="declaration.title" class="h-full w-full object-cover">
+                          </div>
+                        }
+                        @if (!declaration.images || declaration.images.length === 0) {
+                          <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        }
+                        <div>
+                          <p class="font-medium text-gray-900">{{ declaration.title }}</p>
+                          <p class="text-xs text-gray-500">{{ declaration.category }}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <span [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + (declaration.type === DeclarationType.FOUND ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700')">
+                        {{ getTypeLabel(declaration.type) }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <p class="text-sm text-gray-600 max-w-xs truncate">{{ declaration.location }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                      <p class="text-sm text-gray-600">{{ declaration.date | date: 'dd/MM/yyyy' }}</p>
+                    </td>
+                    <td class="px-6 py-4 text-right space-x-2 flex items-center justify-end">
+                      <button (click)="deleteDeclaration(declaration.id, declaration.type, declaration.images)"
+                        class="inline-flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
     </div>
   </div>

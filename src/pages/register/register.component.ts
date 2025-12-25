@@ -8,14 +8,14 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
    selector: 'app-register',
    templateUrl: './register.component.html',
    styleUrl: './register.component.css',
    standalone: true,
-   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+   imports: [ReactiveFormsModule, FormsModule, RouterModule],
 })
 export class RegisterComponent {
    registerForm: FormGroup;
@@ -85,8 +85,18 @@ export class RegisterComponent {
          if (value) {
             this.router.navigateByUrl('/');
          }
-      } catch (error) {
-         throw error;
+      } catch (error: any) {
+         const errorCode = error?.code || '';
+         
+         // Ignorer silencieusement si l'utilisateur ferme la popup
+         if (errorCode === 'auth/popup-closed-by-user') {
+            console.log('Authentification Google annulée par l\'utilisateur');
+            return;
+         }
+         
+         // Pour les autres erreurs, les logger et afficher un message
+         console.error('Erreur lors de la connexion Google:', error);
+         // Vous pouvez ajouter ici une notification visuelle à l'utilisateur
       }
    }
 

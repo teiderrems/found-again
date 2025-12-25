@@ -8,7 +8,7 @@ import {
    signal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '@/services/auth.service';
 import { CategoryService } from '@/services/category.service';
@@ -22,7 +22,7 @@ import { DeclarationCreate, DeclarationType } from '@/types/declaration';
    templateUrl: './declaration.component.html',
    styleUrls: ['./declaration.component.css'],
    standalone: true,
-   imports: [CommonModule, ReactiveFormsModule, CategorySelectorComponent],
+   imports: [ReactiveFormsModule, CategorySelectorComponent],
 })
 export class DeclarationComponent implements OnInit {
    
@@ -233,6 +233,7 @@ export class DeclarationComponent implements OnInit {
       if (this.declarationForm.valid) {
          const formData: DeclarationCreate = {
             ...this.declarationForm.value,
+            userId: this.authService.getCurrentUserId(),
             coordinates: this.selectedCoordinates,
             images: this.selectedFiles,
             type:this.declarationType

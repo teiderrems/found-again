@@ -8,13 +8,13 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
    selector: 'app-confirm-email',
    templateUrl: './confirm-email.component.html',
    styleUrl: './confirm-email.component.css',
-   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+   imports: [ReactiveFormsModule, FormsModule, RouterModule],
    standalone: true,
 })
 export class ConfirmEmailComponent {

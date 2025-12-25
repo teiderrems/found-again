@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalService } from '../../../services/modal.service';
-import { CommonModule } from '@angular/common';
+
 import { InputFieldComponent } from '../../form/input/input-field.component';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { LabelComponent } from '../../form/label/label.component';
@@ -9,12 +9,11 @@ import { ModalComponent } from '../../ui/modal/modal.component';
 @Component({
   selector: 'app-user-info-card',
   imports: [
-    CommonModule,
     InputFieldComponent,
     ButtonComponent,
     LabelComponent,
-    ModalComponent,
-  ],
+    ModalComponent
+],
   templateUrl: './user-info-card.component.html',
   styles: ``
 })

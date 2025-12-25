@@ -1,6 +1,6 @@
 // edit-profile-dialog.component.ts
 import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,6 @@ import { UserProfile } from '../types/user';
   selector: 'app-edit-profile-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
@@ -21,107 +20,104 @@ import { UserProfile } from '../types/user';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule
-  ],
+],
   template: `
-    <div class="p-8">
-      <div class="flex items-center space-x-3 mb-6">
-        <div class="p-3 bg-linear-to-br from-[#009245] to-green-700 rounded-xl">
-          <mat-icon class="text-white text-2xl">edit</mat-icon>
+    <div class=" p-6 w-full">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 bg-[#009245] rounded-lg">
+          <mat-icon class="text-white">edit</mat-icon>
         </div>
-        <h2 mat-dialog-title class="text-3xl font-bold text-gray-900 dark:text-white m-0">
-          Modifier le profil
-        </h2>
+        <h2 class="text-2xl font-bold text-gray-900">Modifier le profil</h2>
       </div>
-
-      <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
-        <mat-dialog-content class="space-y-5 max-w-md">
-          <!-- Prénom -->
-          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Prénom <span class="text-red-500">*</span></label>
-            <div class="relative">
-              <mat-icon matPrefix class="absolute left-4 top-1/2 -translate-y-1/2 text-[#009245] text-lg pointer-events-none">person</mat-icon>
-              <input matInput 
-                formControlName="firstname" 
-                class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                placeholder="Votre prénom">
-            </div>
-            <mat-error *ngIf="editForm.get('firstname')?.hasError('required')" class="text-red-500 text-xs mt-1">
+    
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-4  flex flex-col justify-center">
+        <!-- Prénom -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">
+            Prénom <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="firstname"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
+            placeholder="Votre prénom">
+          @if (editForm.get('firstname')?.hasError('required') && editForm.get('firstname')?.touched) {
+            <div class="text-red-500 text-xs">
               Le prénom est requis
-            </mat-error>
-          </div>
-
-          <!-- Nom -->
-          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Nom <span class="text-red-500">*</span></label>
-            <div class="relative">
-              <mat-icon matPrefix class="absolute left-4 top-1/2 -translate-y-1/2 text-[#009245] text-lg pointer-events-none">person_outline</mat-icon>
-              <input matInput 
-                formControlName="lastname" 
-                class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                placeholder="Votre nom">
             </div>
-            <mat-error *ngIf="editForm.get('lastname')?.hasError('required')" class="text-red-500 text-xs mt-1">
+          }
+        </div>
+    
+        <!-- Nom -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">
+            Nom <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            formControlName="lastname"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
+            placeholder="Votre nom">
+          @if (editForm.get('lastname')?.hasError('required') && editForm.get('lastname')?.touched) {
+            <div class="text-red-500 text-xs">
               Le nom est requis
-            </mat-error>
-          </div>
-
-          <!-- Téléphone -->
-          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Téléphone</label>
-            <div class="relative">
-              <mat-icon matPrefix class="absolute left-4 top-1/2 -translate-y-1/2 text-[#009245] text-lg pointer-events-none">phone</mat-icon>
-              <input matInput 
-                formControlName="phone" 
-                type="tel"
-                class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                placeholder="0123456789">
             </div>
-          </div>
-
-          <!-- Localisation -->
-          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Localisation</label>
-            <div class="relative">
-              <mat-icon matPrefix class="absolute left-4 top-1/2 -translate-y-1/2 text-[#009245] text-lg pointer-events-none">location_on</mat-icon>
-              <input matInput 
-                formControlName="location"
-                class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                placeholder="Votre localisation">
-            </div>
-          </div>
-
-          <!-- Bio -->
-          <div class="flex flex-col space-y-2">
-            <label class="text-sm font-semibold text-gray-700">Bio</label>
-            <textarea 
-              matInput 
-              formControlName="bio" 
-              rows="4"
-              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 resize-none"
-              placeholder="Parlez un peu de vous..."></textarea>
-          </div>
-        </mat-dialog-content>
-
-        <mat-dialog-actions align="end" class="mt-8 flex gap-3 justify-end">
-          <button 
-            mat-button 
-            type="button" 
+          }
+        </div>
+    
+        <!-- Téléphone -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">Téléphone</label>
+          <input
+            type="tel"
+            formControlName="phone"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
+            placeholder="0123456789">
+        </div>
+    
+        <!-- Localisation -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">Localisation</label>
+          <input
+            type="text"
+            formControlName="location"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
+            placeholder="Votre localisation">
+        </div>
+    
+        <!-- Bio -->
+        <div class="space-y-2">
+          <label class="block text-sm font-semibold text-gray-700">Bio</label>
+          <textarea
+            formControlName="bio"
+            rows="4"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] resize-none"
+          placeholder="Parlez un peu de vous..."></textarea>
+        </div>
+    
+        <!-- Boutons -->
+        <div class="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
             (click)="onCancel()"
-            class="px-6 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+            class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
             Annuler
           </button>
-          <button 
-            mat-raised-button 
+          <button
             type="submit"
             [disabled]="!editForm.valid || editForm.pristine"
-            class="px-6 py-2.5 bg-linear-to-r from-[#009245] to-green-700 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-            <mat-icon class="mr-2">save</mat-icon>
+            class="px-4 py-2 bg-[#009245] text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             Enregistrer
           </button>
-        </mat-dialog-actions>
+        </div>
       </form>
     </div>
-  `
+    `,
+  styles: [`
+    :host {
+      display: block;
+    }
+  `]
 })
 export class EditProfileDialogComponent {
   editForm: FormGroup;

@@ -1,0 +1,92 @@
+/* Animations et styles personnalisés */
+
+:host {
+  --primary-color: #009245;
+  --primary-light: #f0fdf4;
+  --primary-dark: #065f34;
+}
+
+/* Arrière-plan animé */
+.bg-linear-to-br {
+  background: linear-gradient(135deg, #f0fdf4, #ffffff, #f3f4f6);
+}
+
+/* Cartes avec effet de survol */
+:host ::ng-deep .mat-mdc-tab {
+  font-weight: 500;
+}
+
+:host ::ng-deep .mat-mdc-tab-labels {
+  background: linear-gradient(135deg, rgba(0, 146, 69, 0.05), transparent);
+  border-bottom: 2px solid rgba(0, 146, 69, 0.1);
+}
+
+:host ::ng-deep .mat-mdc-tab.mat-mdc-tab-active {
+  background: linear-gradient(135deg, rgba(0, 146, 69, 0.1), transparent);
+}
+
+/* Boutons */
+:host ::ng-deep .mdc-button {
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host ::ng-deep .mdc-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 146, 69, 0.2);
+}
+
+/* Cartes de statistiques */
+.stat-card {
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Icônes */
+:host ::ng-deep .mat-icon {
+  transition: color 0.2s ease;
+}
+
+/* Déclarations */
+.declaration-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.declaration-item:hover {
+  border-left-color: var(--primary-color);
+  box-shadow: 0 8px 16px rgba(0, 146, 69, 0.1);
+}
+
+/* Slide-in animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideInUp 0.4s ease-out;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-color), #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Scroll smooth */
+:host {
+  scroll-behavior: smooth;
+}

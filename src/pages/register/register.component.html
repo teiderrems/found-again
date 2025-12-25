@@ -18,11 +18,17 @@
             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
             placeholder="Entrer votre nom"
             required
-          />
-          <p class="text-red-500 text-xs mt-1" *ngIf="firstname?.invalid && (firstname?.dirty || firstname?.touched)">
-            <span *ngIf="firstname?.errors?.['required']">Le nom est requis.</span>
-            <span *ngIf="firstname?.errors?.['firstname'] || firstname?.errors?.['pattern']">Format de nom invalide.</span>
-          </p>
+            />
+          @if (firstname?.invalid && (firstname?.dirty || firstname?.touched)) {
+            <p class="text-red-500 text-xs mt-1">
+              @if (firstname?.errors?.['required']) {
+                <span>Le nom est requis.</span>
+              }
+              @if (firstname?.errors?.['firstname'] || firstname?.errors?.['pattern']) {
+                <span>Format de nom invalide.</span>
+              }
+            </p>
+          }
         </div>
 
         <div>
@@ -34,11 +40,17 @@
             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
             placeholder="Entrer votre prenom"
             required
-          />
-          <p class="text-red-500 text-xs mt-1" *ngIf="lastname?.invalid && (lastname?.dirty || lastname?.touched)">
-            <span *ngIf="lastname?.errors?.['required']">Le prenom est requis.</span>
-            <span *ngIf="lastname?.errors?.['lastname'] || lastname?.errors?.['pattern']">Format de prénom invalide.</span>
-          </p>
+            />
+          @if (lastname?.invalid && (lastname?.dirty || lastname?.touched)) {
+            <p class="text-red-500 text-xs mt-1">
+              @if (lastname?.errors?.['required']) {
+                <span>Le prenom est requis.</span>
+              }
+              @if (lastname?.errors?.['lastname'] || lastname?.errors?.['pattern']) {
+                <span>Format de prénom invalide.</span>
+              }
+            </p>
+          }
         </div>
 
         <div>
@@ -50,11 +62,17 @@
             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
             placeholder="votre@email.com"
             required
-          />
-          <p class="text-red-500 text-xs mt-1" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
-            <span *ngIf="email?.errors?.['required']">L'email est requis.</span>
-            <span *ngIf="email?.errors?.['email'] || email?.errors?.['pattern']">Format d'email invalide.</span>
-          </p>
+            />
+          @if (email?.invalid && (email?.dirty || email?.touched)) {
+            <p class="text-red-500 text-xs mt-1">
+              @if (email?.errors?.['required']) {
+                <span>L'email est requis.</span>
+              }
+              @if (email?.errors?.['email'] || email?.errors?.['pattern']) {
+                <span>Format d'email invalide.</span>
+              }
+            </p>
+          }
         </div>
 
         <div>
@@ -66,15 +84,25 @@
             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
             placeholder="••••••••"
             required
-          />
-          <p class="text-red-500 text-xs mt-1" *ngIf="password?.invalid && (password?.dirty || password?.touched)">
-            <span *ngIf="password?.errors?.['required']">Le mot de passe est requis.</span>
-            <span *ngIf="password?.errors?.['minlength'] || password?.errors?.['maxlength']">Entre 4 et 10 caractères.</span>
-            <span *ngIf="password?.errors?.['pattern']">Doit contenir au moins une lettre et un chiffre.</span>
-          </p>
+            />
+          @if (password?.invalid && (password?.dirty || password?.touched)) {
+            <p class="text-red-500 text-xs mt-1">
+              @if (password?.errors?.['required']) {
+                <span>Le mot de passe est requis.</span>
+              }
+              @if (password?.errors?.['minlength'] || password?.errors?.['maxlength']) {
+                <span>Entre 4 et 10 caractères.</span>
+              }
+              @if (password?.errors?.['pattern']) {
+                <span>Doit contenir au moins une lettre et un chiffre.</span>
+              }
+            </p>
+          }
         </div>
 
-        <p class="text-red-600 text-sm text-center" *ngIf="errorMessage">{{ errorMessage }}</p>
+        @if (errorMessage) {
+          <p class="text-red-600 text-sm text-center">{{ errorMessage }}</p>
+        }
 
         <button type="submit" class="w-full bg-[#FC4E00] hover:bg-[#d94300] text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200">
           S'inscrire

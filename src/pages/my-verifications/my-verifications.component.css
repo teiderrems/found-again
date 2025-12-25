@@ -1,0 +1,48 @@
+/* My Verifications Component Styles */
+
+:host {
+  display: block;
+}
+
+/* Card hover effect */
+.shadow {
+  transition: box-shadow 0.2s ease;
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Timeline animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status badge animation */
+span[class*='bg-'] {
+  transition: all 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .flex-col {
+    font-size: 0.875rem;
+  }
+
+  .p-6 {
+    padding: 1rem;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+  }
+}

@@ -8,14 +8,14 @@ import {
    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
    selector: 'app-login',
    templateUrl: './login.component.html',
    styleUrls: ['./login.component.css'],
    standalone: true,
-   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+   imports: [ReactiveFormsModule, FormsModule, RouterModule],
 })
 export class LoginComponent {
    loginForm: FormGroup;
@@ -86,8 +86,18 @@ export class LoginComponent {
             this.router.navigateByUrl('/');
             this.loginForm.reset();
          }
-      } catch (error) {
-         throw error;
+      } catch (error: any) {
+         const errorCode = error?.code || '';
+         
+         // Ignorer silencieusement si l'utilisateur ferme la popup
+         if (errorCode === 'auth/popup-closed-by-user') {
+            console.log('Authentification Google annulée par l\'utilisateur');
+            return;
+         }
+         
+         // Pour les autres erreurs, les logger et afficher un message
+         console.error('Erreur lors de la connexion Google:', error);
+         // Vous pouvez ajouter ici une notification visuelle à l'utilisateur
       }
    }
 

@@ -1,0 +1,135 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Mes Vérifications d'Identité</h1>
+      <p class="text-gray-600 mt-2">Suivi de l'état de vos vérifications d'identité</p>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-12">
+        <div class="animate-spin">
+          <mat-icon class="text-4xl text-blue-500">hourglass_empty</mat-icon>
+        </div>
+      </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading() && verifications().length === 0) {
+      <div class="bg-white rounded-lg shadow p-12 text-center">
+        <mat-icon class="text-6xl text-gray-400 mx-auto mb-4">assignment_turned_in</mat-icon>
+        <p class="text-gray-600 text-lg">Aucune vérification d'identité</p>
+        <p class="text-gray-400 text-sm mt-2">Vous n'avez pas encore soumis de vérification d'identité</p>
+      </div>
+    }
+
+    <!-- Verifications List -->
+    @if (!isLoading() && verifications().length > 0) {
+      <div class="space-y-4">
+        @for (verification of verifications(); track verification) {
+          <div class="bg-white rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+            <div class="p-6">
+              <!-- Header -->
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900">
+                    Vérification #{{ verification.id.substring(0, 8) }}
+                  </h3>
+                  <p class="text-sm text-gray-600 mt-1">
+                    Créée le {{ verification.timestamp | date: 'medium' }}
+                  </p>
+                </div>
+                <span [class]="'px-4 py-2 rounded-full text-sm font-semibold ' + getStatusClasses(verification.status)">
+                  {{ getStatusLabel(verification.status) }}
+                </span>
+              </div>
+              <!-- Status Timeline -->
+              <div class="mb-6">
+                <div class="flex items-center space-x-4">
+                  <!-- Submitted -->
+                  <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                      <mat-icon class="text-green-600">check</mat-icon>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">Soumis</p>
+                  </div>
+                  <!-- Divider -->
+                  <div class="flex-1 h-1 bg-gray-200"></div>
+                  <!-- In Review -->
+                  <div class="flex flex-col items-center">
+                <div [class]="'w-10 h-10 rounded-full flex items-center justify-center ' + 
+                             (verification.status === 'pending' ? 'bg-yellow-100' : 'bg-green-100')">
+                      <mat-icon [class]="verification.status === 'pending' ? 'text-yellow-600' : 'text-green-600'">
+                        {{ verification.status === 'pending' ? 'schedule' : 'check' }}
+                      </mat-icon>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">En révision</p>
+                  </div>
+                  <!-- Divider -->
+                  <div class="flex-1 h-1 bg-gray-200"></div>
+                  <!-- Verified -->
+                  <div class="flex flex-col items-center">
+                <div [class]="'w-10 h-10 rounded-full flex items-center justify-center ' + 
+                             (verification.status === 'verified' ? 'bg-green-100' : 'bg-gray-100')">
+                      <mat-icon [class]="verification.status === 'verified' ? 'text-green-600' : 'text-gray-400'">
+                        verified_user
+                      </mat-icon>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-2">Vérifié</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Details -->
+              <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <h4 class="font-semibold text-gray-900 mb-3">Détails de la vérification</h4>
+                <div class="space-y-3 text-sm">
+                  <div>
+                    <p class="text-gray-600">Détails d'identité fournis:</p>
+                    <p class="text-gray-900 mt-1">{{ verification.identityDetails }}</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-600">Informations supplémentaires:</p>
+                    <p class="text-gray-900 mt-1">{{ verification.additionalInfo }}</p>
+                  </div>
+                  @if (verification.serialNumber) {
+                    <div>
+                      <p class="text-gray-600">Numéro de série:</p>
+                      <p class="text-gray-900 mt-1">{{ verification.serialNumber }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+              <!-- Admin Notes -->
+              @if (verification.adminNotes) {
+                <div class="bg-blue-50 rounded-lg p-4 mb-4 border-l-4 border-blue-500">
+                  <p class="text-sm text-gray-600 font-semibold">Notes administrateur:</p>
+                  <p class="text-gray-900 mt-2">{{ verification.adminNotes }}</p>
+                </div>
+              }
+              <!-- Rejection Reason -->
+              @if (verification.status === 'rejected' && verification.rejectionReason) {
+                <div class="bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
+                  <p class="text-sm text-gray-600 font-semibold">Raison du rejet:</p>
+                  <p class="text-gray-900 mt-2">{{ verification.rejectionReason }}</p>
+                  <button
+                    (click)="retryVerification(verification.declarationId)"
+                    class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Soumettre une nouvelle vérification
+                  </button>
+                </div>
+              }
+              <!-- Timestamps -->
+              <div class="flex justify-between text-xs text-gray-500 pt-4 border-t border-gray-200">
+                <span>Créée: {{ verification.timestamp | date: 'short' }}</span>
+                @if (verification.updatedAt) {
+                  <span>Mise à jour: {{ verification.updatedAt | date: 'short' }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
