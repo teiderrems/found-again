@@ -1,212 +1,224 @@
 <div class="about-page">
-    <!-- Hero Section -->
-    <section class="hero-section bg-linear-to-br from-blue-600 to-indigo-700 text-white py-20">
-        <div class="container mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">
-                Notre Mission : Rendre l'Entraide
-                <span class="text-yellow-300">Accessible à Tous</span>
-            </h1>
-            <p class="text-xl md:text-2xl mb-8 leading-relaxed">
-                Nous croyons en une communauté solidaire où chaque objet perdu peut retrouver son propriétaire
+  <!-- Hero Section -->
+  <section class="hero-section bg-linear-to-br from-blue-600 to-indigo-700 text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">
+        Notre Mission : Rendre l'Entraide
+        <span class="text-yellow-300">Accessible à Tous</span>
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 leading-relaxed">
+        Nous croyons en une communauté solidaire où chaque objet perdu peut retrouver son propriétaire
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button routerLink="/déclarer"
+          class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
+          <span class="material-icons mr-2">add_circle</span>
+          Commencer maintenant
+        </button>
+        <button (click)="scrollToStory()"
+          class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
+          <span class="material-icons mr-2">history_edu</span>
+          Découvrir notre histoire
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chiffres clés -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        @for (stat of stats; track stat) {
+          <div class="stat-item">
+            <div class="stat-value text-3xl md:text-4xl font-bold text-blue-600 mb-2">
+              {{ stat.value }}
+            </div>
+            <div class="stat-label text-gray-600 font-medium">
+              {{ stat.label }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Notre histoire -->
+  <section #storySection class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Notre Histoire
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          D'une simple idée à une plateforme nationale d'entraide
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto">
+        <div class="space-y-12">
+          @for (milestone of milestones; track milestone; let i = $index) {
+            <div
+              class="milestone-item flex flex-col md:flex-row items-start"
+              [class.md:flex-row-reverse]="i % 2 === 1">
+              <div class="md:w-1/2 mb-6 md:mb-0 md:px-8">
+                <div class="milestone-icon inline-flex items-center justify-center w-16 h-16 rounded-full text-white text-2xl mb-4"
+                  [style.backgroundColor]="getMilestoneColor(i)">
+                  <span class="material-icons">{{ milestone.icon }}</span>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                  {{ milestone.year }} - {{ milestone.title }}
+                </h3>
+                <p class="text-gray-600 leading-relaxed">
+                  {{ milestone.description }}
+                </p>
+              </div>
+              <div class="md:w-1/2 md:px-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+                  <div
+                    class="aspect-w-16 aspect-h-9 bg-linear-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center">
+                    <span class="material-icons text-4xl text-blue-600">{{ milestone.icon }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nos valeurs -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Nos Valeurs
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Les principes qui guident chacune de nos actions
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        @for (value of values; track value) {
+          <div
+            class="value-card group p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300">
+            <div class="value-icon inline-flex items-center justify-center w-16 h-16 rounded-xl text-white text-2xl mb-6"
+              [style.backgroundColor]="value.color">
+              <span class="material-icons">{{ value.icon }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+              {{ value.title }}
+            </h3>
+            <p class="text-gray-600 leading-relaxed">
+              {{ value.description }}
             </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button routerLink="/déclarer"
-                    class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
-                    <span class="material-icons mr-2">add_circle</span>
-                    Commencer maintenant
-                </button>
-                <button (click)="scrollToStory()"
-                    class="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
-                    <span class="material-icons mr-2">history_edu</span>
-                    Découvrir notre histoire
-                </button>
-            </div>
-        </div>
-    </section>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
 
-    <!-- Chiffres clés -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div *ngFor="let stat of stats" class="stat-item">
-                    <div class="stat-value text-3xl md:text-4xl font-bold text-blue-600 mb-2">
-                        {{ stat.value }}
-                    </div>
-                    <div class="stat-label text-gray-600 font-medium">
-                        {{ stat.label }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- L'équipe -->
+  <section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Rencontrez Notre Équipe
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Des passionnés déterminés à faciliter l'entraide entre citoyens
+        </p>
+      </div>
 
-    <!-- Notre histoire -->
-    <section #storySection class="py-20 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                    Notre Histoire
-                </h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    D'une simple idée à une plateforme nationale d'entraide
-                </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+        @for (member of teamMembers; track member) {
+          <div
+            class="team-card bg-white rounded-xl p-6 text-center shadow-sm hover:shadow-lg transition-all duration-300">
+            <div class="avatar-container mb-6">
+              <div
+                class="avatar-placeholder w-24 h-24 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center mx-auto text-blue-600 text-2xl">
+                <span class="material-icons">person</span>
+              </div>
             </div>
-
-            <div class="max-w-4xl mx-auto">
-                <div class="space-y-12">
-                    <div *ngFor="let milestone of milestones; let i = index"
-                        class="milestone-item flex flex-col md:flex-row items-start"
-                        [class.md:flex-row-reverse]="i % 2 === 1">
-                        <div class="md:w-1/2 mb-6 md:mb-0 md:px-8">
-                            <div class="milestone-icon inline-flex items-center justify-center w-16 h-16 rounded-full text-white text-2xl mb-4"
-                                [style.backgroundColor]="getMilestoneColor(i)">
-                                <span class="material-icons">{{ milestone.icon }}</span>
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-3">
-                                {{ milestone.year }} - {{ milestone.title }}
-                            </h3>
-                            <p class="text-gray-600 leading-relaxed">
-                                {{ milestone.description }}
-                            </p>
-                        </div>
-                        <div class="md:w-1/2 md:px-8">
-                            <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                                <div
-                                    class="aspect-w-16 aspect-h-9 bg-linear-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center">
-                                    <span class="material-icons text-4xl text-blue-600">{{ milestone.icon }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+              {{ member.name }}
+            </h3>
+            <div class="text-blue-600 font-medium mb-4">
+              {{ member.role }}
             </div>
-        </div>
-    </section>
-
-    <!-- Nos valeurs -->
-    <section class="py-20 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                    Nos Valeurs
-                </h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Les principes qui guident chacune de nos actions
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div *ngFor="let value of values"
-                    class="value-card group p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300">
-                    <div class="value-icon inline-flex items-center justify-center w-16 h-16 rounded-xl text-white text-2xl mb-6"
-                        [style.backgroundColor]="value.color">
-                        <span class="material-icons">{{ value.icon }}</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">
-                        {{ value.title }}
-                    </h3>
-                    <p class="text-gray-600 leading-relaxed">
-                        {{ value.description }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- L'équipe -->
-    <section class="py-20 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                    Rencontrez Notre Équipe
-                </h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Des passionnés déterminés à faciliter l'entraide entre citoyens
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-                <div *ngFor="let member of teamMembers"
-                    class="team-card bg-white rounded-xl p-6 text-center shadow-sm hover:shadow-lg transition-all duration-300">
-                    <div class="avatar-container mb-6">
-                        <div
-                            class="avatar-placeholder w-24 h-24 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 flex items-center justify-center mx-auto text-blue-600 text-2xl">
-                            <span class="material-icons">person</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">
-                        {{ member.name }}
-                    </h3>
-                    <div class="text-blue-600 font-medium mb-4">
-                        {{ member.role }}
-                    </div>
-                    <p class="text-gray-600 text-pretty text-sm mb-6 leading-relaxed">
-                        {{ member.description }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Témoignages -->
-    <section class="py-20 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-                    Ils Nous Font Confiance
-                </h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Découvrez les expériences de nos utilisateurs
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <div *ngFor="let testimonial of testimonials"
-                    class="testimonial-card bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
-                    <div class="flex items-center mb-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
-                            <span class="material-icons">person</span>
-                        </div>
-                        <div>
-                            <div class="font-semibold text-gray-800">{{ testimonial.name }}</div>
-                            <div class="text-sm text-gray-600">{{ testimonial.location }}</div>
-                        </div>
-                    </div>
-                    <p class="text-gray-700 italic leading-relaxed">
-                        "{{ testimonial.content }}"
-                    </p>
-                    <div class="mt-4 flex text-yellow-400">
-                        <span *ngFor="let star of [1,2,3,4,5]" class="material-icons text-sm">
-                            star
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Final -->
-    <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">
-                Prêt à Rejoindre Notre Communauté ?
-            </h2>
-            <p class="text-xl mb-8">
-                Des milliers de personnes utilisent déjà notre plateforme pour s'entraider au quotidien
+            <p class="text-gray-600 text-pretty text-sm mb-6 leading-relaxed">
+              {{ member.description }}
             </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button routerLink="/déclarer-perte"
-                    class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
-                    <span class="material-icons mr-2">add_circle</span>
-                    Déclarer un objet perdu
-                </button>
-                <button routerLink="/déclarer-perte"
-                    class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
-                    <span class="material-icons mr-2">add_circle</span>
-                    Déclarer un objet retrouvé
-                </button>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Témoignages -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+          Ils Nous Font Confiance
+        </h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Découvrez les expériences de nos utilisateurs
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        @for (testimonial of testimonials; track testimonial) {
+          <div
+            class="testimonial-card bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4">
+                <span class="material-icons">person</span>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-800">{{ testimonial.name }}</div>
+                <div class="text-sm text-gray-600">{{ testimonial.location }}</div>
+              </div>
             </div>
-        </div>
-    </section>
+            <p class="text-gray-700 italic leading-relaxed">
+              "{{ testimonial.content }}"
+            </p>
+            <div class="mt-4 flex text-yellow-400">
+              @for (star of [1,2,3,4,5]; track star) {
+                <span class="material-icons text-sm">
+                  star
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6">
+        Prêt à Rejoindre Notre Communauté ?
+      </h2>
+      <p class="text-xl mb-8">
+        Des milliers de personnes utilisent déjà notre plateforme pour s'entraider au quotidien
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button routerLink="/déclarer-perte"
+          class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
+          <span class="material-icons mr-2">add_circle</span>
+          Déclarer un objet perdu
+        </button>
+        <button routerLink="/déclarer-perte"
+          class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center">
+          <span class="material-icons mr-2">add_circle</span>
+          Déclarer un objet retrouvé
+        </button>
+      </div>
+    </div>
+  </section>
 </div>

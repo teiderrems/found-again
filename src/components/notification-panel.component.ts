@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -12,86 +12,90 @@ import { FirebaseDatePipe } from '../pipes/firebase-date.pipe';
   selector: 'app-notification-panel',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatIconModule, 
-    MatButtonModule, 
-    MatBadgeModule, 
-    MatMenuModule, 
+    MatIconModule,
+    MatButtonModule,
+    MatBadgeModule,
+    MatMenuModule,
     RouterModule,
     FirebaseDatePipe
-  ],
+],
   template: `
     <div class="relative">
       <!-- Bouton de notification -->
-      <button 
-        mat-icon-button 
+      <button
+        mat-icon-button
         [matMenuTriggerFor]="notificationMenu"
         class="relative">
-        <mat-icon 
-          [matBadge]="unreadCount()" 
+        <mat-icon
+          [matBadge]="unreadCount()"
           [matBadgeHidden]="unreadCount() === 0"
           matBadgeColor="warn"
           matBadgeSize="small">
           notifications
         </mat-icon>
       </button>
-
+    
       <!-- Menu des notifications -->
       <mat-menu #notificationMenu="matMenu" class="notification-menu">
         <div class="w-80 max-h-96 overflow-hidden">
           <!-- En-tête -->
           <div class="flex items-center justify-between p-4 border-b">
             <h3 class="font-semibold text-gray-900">Notifications</h3>
-            <button 
-              *ngIf="unreadCount() > 0"
-              (click)="markAllAsRead()"
-              class="text-sm text-blue-600 hover:text-blue-800">
-              Tout marquer comme lu
-            </button>
+            @if (unreadCount() > 0) {
+              <button
+                (click)="markAllAsRead()"
+                class="text-sm text-blue-600 hover:text-blue-800">
+                Tout marquer comme lu
+              </button>
+            }
           </div>
-
+    
           <!-- Liste des notifications -->
           <div class="overflow-y-auto max-h-80">
-            <div *ngIf="notifications().length === 0" class="p-4 text-center text-gray-500">
-              <mat-icon class="text-4xl mb-2">notifications_none</mat-icon>
-              <p>Aucune notification</p>
-            </div>
-
-            <div *ngFor="let notification of notifications()" 
-                 class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
-                 (click)="onNotificationClick(notification)">
-              <div class="p-4" [class.bg-blue-50]="!notification.read">
-                <div class="flex items-start space-x-3">
-                  <!-- Icône du type -->
-                  <div [class]="getIconClasses(notification.type)">
-                    <mat-icon>{{ getIcon(notification.type) }}</mat-icon>
-                  </div>
-
-                  <!-- Contenu -->
-                  <div class="flex-1 min-w-0">
-                    <h4 class="text-sm font-medium text-gray-900 truncate">
-                      {{ notification.title }}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">
-                      {{ notification.message }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-2">
-                      {{ notification.createdAt | firebaseDate:'full' }}
-                    </p>
-                  </div>
-
-                  <!-- Indicateur non lu -->
-                  <div *ngIf="!notification.read" 
-                       class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0">
+            @if (notifications().length === 0) {
+              <div class="p-4 text-center text-gray-500">
+                <mat-icon class="text-4xl mb-2">notifications_none</mat-icon>
+                <p>Aucune notification</p>
+              </div>
+            }
+    
+            @for (notification of notifications(); track notification) {
+              <div
+                class="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                (click)="onNotificationClick(notification)">
+                <div class="p-4" [class.bg-blue-50]="!notification.read">
+                  <div class="flex items-start space-x-3">
+                    <!-- Icône du type -->
+                    <div [class]="getIconClasses(notification.type)">
+                      <mat-icon>{{ getIcon(notification.type) }}</mat-icon>
+                    </div>
+                    <!-- Contenu -->
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-sm font-medium text-gray-900 truncate">
+                        {{ notification.title }}
+                      </h4>
+                      <p class="text-xs text-gray-600 mt-1 line-clamp-2">
+                        {{ notification.message }}
+                      </p>
+                      <p class="text-xs text-gray-400 mt-2">
+                        {{ notification.createdAt | firebaseDate:'full' }}
+                      </p>
+                    </div>
+                    <!-- Indicateur non lu -->
+                    @if (!notification.read) {
+                      <div
+                        class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0">
+                      </div>
+                    }
                   </div>
                 </div>
               </div>
-            </div>
+            }
           </div>
-
+    
           <!-- Pied du menu -->
           <div class="p-4 border-t bg-gray-50">
-            <button 
+            <button
               routerLink="/notifications"
               class="w-full text-center text-sm text-gray-600 hover:text-gray-900">
               Voir toutes les notifications
@@ -100,7 +104,7 @@ import { FirebaseDatePipe } from '../pipes/firebase-date.pipe';
         </div>
       </mat-menu>
     </div>
-  `,
+    `,
   styles: [`
     :host {
       display: block;

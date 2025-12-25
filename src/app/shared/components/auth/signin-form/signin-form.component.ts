@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { LabelComponent } from '../../form/label/label.component';
 import { CheckboxComponent } from '../../form/input/checkbox.component';
@@ -10,14 +10,13 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-signin-form',
   imports: [
-    CommonModule,
     LabelComponent,
     CheckboxComponent,
     ButtonComponent,
     InputFieldComponent,
     RouterModule,
-    FormsModule,
-  ],
+    FormsModule
+],
   templateUrl: './signin-form.component.html',
   styles: ``
 })

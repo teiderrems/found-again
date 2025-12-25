@@ -112,7 +112,18 @@ export class NotificationService {
         this.updateUnreadCount(notifications);
       },
       error: (error: any) => {
-        console.error('Erreur lors du chargement des notifications:', error);
+        // Vérifier si l'erreur est due à un index manquant
+        if (error?.code === 'failed-precondition' && error?.message?.includes('index')) {
+          console.warn('Index Firestore manquant pour la collection notifications');
+          console.warn('Créez l\'index à: https://console.firebase.google.com/v1/r/project/found-again-4a0e0/firestore/indexes');
+          console.warn('L\'index requis: userId (Ascending), createdAt (Descending)');
+          // Retourner une liste vide pour ne pas bloquer l'application
+          this.notificationsSubject.next([]);
+        } else {
+          console.error('Erreur lors du chargement des notifications:', error);
+          // Retourner une liste vide en cas d'erreur
+          this.notificationsSubject.next([]);
+        }
       }
     });
   }

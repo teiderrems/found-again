@@ -1,260 +1,301 @@
 <!-- declaration.component.html -->
 <div class="min-h-screen bg-linear-to-br from-gray-50 to-white py-8 sm:py-12 px-4">
-    <div class="max-w-6xl mx-auto">
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200/50">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <!-- Left Side - Illustration & Stats -->
+  <div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200/50">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
+        <!-- Left Side - Illustration & Stats -->
                 <div class="lg:flex items-center justify-center p-8 lg:p-12 bg-linear-to-br 
                     {{ declarationType === DeclarationType.LOSS 
                         ? 'from-orange-50 via-orange-50 to-amber-50' 
                         : 'from-blue-50 via-cyan-50 to-blue-50' }} hidden lg:flex">
-                    <div class="text-center max-w-md">
-                        <div class="mb-8">
-                            <div [ngSwitch]="declarationType">
-                                <div *ngSwitchCase="DeclarationType.LOSS" class="flex justify-center animate-bounce">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
-                                        <path fill="#fed7aa"
-                                            d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
-                                        <path fill="#fb923c" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
-                                        <path fill="#f97316" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
-                                        <circle cx="200" cy="110" r="10" fill="#ea580c" />
-                                        <path fill="#fbbf24" d="M180 190h40v40h-40z" />
-                                        <path fill="#f59e0b" d="M180 190h40v10h-40z" />
-                                        <path fill="#dc2626" d="M200 230a10 10 0 100 20 10 10 0 000-20z" />
-                                        <path fill="#dc2626" d="M200 260a5 5 0 100 10 5 5 0 000-10z" />
-                                    </svg>
-                                </div>
-
-                                <div *ngSwitchDefault class="flex justify-center animate-bounce">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
-                                        <path fill="#e0f2fe"
-                                            d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
-                                        <path fill="#bae6fd" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
-                                        <path fill="#3b82f6" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
-                                        <circle cx="200" cy="110" r="10" fill="#1e40af" />
-                                        <path fill="#fbbf24" d="M180 190h40v40h-40z" />
-                                        <path fill="#f59e0b" d="M180 190h40v10h-40z" />
-                                        <path fill="#16a34a" d="M170 240l20 20 40-40" stroke="#16a34a" stroke-width="10"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
+          <div class="text-center max-w-md">
+            <div class="mb-8">
+              <div>
+                @switch (declarationType) {
+                  @case (DeclarationType.LOSS) {
+                    <div class="flex justify-center animate-bounce">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
+                        <path fill="#fed7aa"
+                          d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
+                        <path fill="#fb923c" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
+                        <path fill="#f97316" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
+                        <circle cx="200" cy="110" r="10" fill="#ea580c" />
+                        <path fill="#fbbf24" d="M180 190h40v40h-40z" />
+                        <path fill="#f59e0b" d="M180 190h40v10h-40z" />
+                        <path fill="#dc2626" d="M200 230a10 10 0 100 20 10 10 0 000-20z" />
+                        <path fill="#dc2626" d="M200 260a5 5 0 100 10 5 5 0 000-10z" />
+                      </svg>
+                    </div>
+                  }
+                  @default {
+                    <div class="flex justify-center animate-bounce">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" class="w-full h-64">
+                        <path fill="#e0f2fe"
+                          d="M200 50c-82.8 0-150 67.2-150 150s67.2 150 150 150 150-67.2 150-150S282.8 50 200 50z" />
+                        <path fill="#bae6fd" d="M200 50c82.8 0 150 67.2 150 150s-67.2 150-150 150" />
+                        <path fill="#3b82f6" d="M250 140h-20v-20h-60v20h-20l-30 60h140l-30-60z" />
+                        <circle cx="200" cy="110" r="10" fill="#1e40af" />
+                        <path fill="#fbbf24" d="M180 190h40v40h-40z" />
+                        <path fill="#f59e0b" d="M180 190h40v10h-40z" />
+                        <path fill="#16a34a" d="M170 240l20 20 40-40" stroke="#16a34a" stroke-width="10"
+                          stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
                         <h2 class="text-2xl lg:text-3xl font-bold 
                             {{ declarationType === DeclarationType.LOSS ? 'text-orange-900' : 'text-blue-900' }} mb-3">
-                            {{ currentTexts.illustrationTitle }}</h2>
+            {{ currentTexts.illustrationTitle }}</h2>
                         <p class="
                             {{ declarationType === DeclarationType.LOSS ? 'text-orange-700' : 'text-blue-700' }} text-sm leading-relaxed mb-6">
-                            {{ currentTexts.illustrationText }}</p>
+            {{ currentTexts.illustrationText }}</p>
                         <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border 
                             {{ declarationType === DeclarationType.LOSS ? 'border-orange-200' : 'border-blue-200' }}">
-                            <div class="grid grid-cols-3 gap-4 text-sm">
-                                <div class="text-center">
+              <div class="grid grid-cols-3 gap-4 text-sm">
+                <div class="text-center">
                                     <div class="font-bold text-lg
                                         {{ declarationType === DeclarationType.LOSS ? 'text-orange-600' : 'text-blue-600' }}">
-                                        {{ declarationType === DeclarationType.LOSS ? '72%' : '68%' }}
-                                    </div>
-                                    <div class="text-gray-600 text-xs">Taux restitution</div>
-                                </div>
-                                <div class="text-center border-l border-r border-gray-300">
-                                    <div class="font-bold text-lg text-gray-700">
-                                        {{ declarationType === DeclarationType.LOSS ? '2.1j' : '3.2j' }}
-                                    </div>
-                                    <div class="text-gray-600 text-xs">Délai moyen</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="font-bold text-lg text-gray-700">
-                                        {{ declarationType === DeclarationType.LOSS ? '89%' : '92%' }}
-                                    </div>
-                                    <div class="text-gray-600 text-xs">Satisfaction</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {{ declarationType === DeclarationType.LOSS ? '72%' : '68%' }}
+                  </div>
+                  <div class="text-gray-600 text-xs">Taux restitution</div>
                 </div>
-
-                <!-- Right Side - Form -->
-                <div class="p-8 lg:p-12">
-                    <div class="mb-8">
-                        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{{ currentTexts.mainTitle }}</h1>
-                        <p class="text-gray-600">Remplissez ce formulaire pour déclarer votre 
-                            {{ declarationType === DeclarationType.LOSS ? 'perte' : 'objet retrouvé' }}</p>
-                    </div>
-
-                    <form [formGroup]="declarationForm" (ngSubmit)="onSubmit()" class="space-y-6">
-                        <!-- Titre -->
-                        <div class="flex flex-col space-y-2">
-                            <label for="title" class="text-sm font-semibold text-gray-700">Titre <span class="text-red-500">*</span></label>
-                            <input id="title" type="text" formControlName="title" 
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                                [placeholder]="'Ex: ' + (declarationType === DeclarationType.LOSS ? 'Portefeuille perdu au centre-ville' : 'Portefeuille noir trouvé au parc')">
-                            <div *ngIf="title?.invalid && title?.touched" class="text-red-500 text-xs mt-1 flex items-center space-x-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                                <span>
-                                    <div *ngIf="title?.errors?.['required']">Le titre est obligatoire</div>
-                                    <div *ngIf="title?.errors?.['minlength']">Au moins 3 caractères requis</div>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Category -->
-                        <app-category-selector [selectedCategoryId]="selectedCategory"
-                            (categorySelected)="onCategorySelected($event)"></app-category-selector>
-
-                        <!-- Description -->
-                        <div class="flex flex-col space-y-2">
-                            <label for="description" class="text-sm font-semibold text-gray-700">Description <span class="text-red-500">*</span></label>
-                            <textarea id="description" formControlName="description" 
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 resize-none h-32"
-                                [placeholder]="currentTexts.descriptionPlaceholder"></textarea>
-                            <div *ngIf="description?.invalid && description?.touched" class="text-red-500 text-xs mt-1 flex items-center space-x-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                                <span>
-                                    <div *ngIf="description?.errors?.['required']">La description est obligatoire</div>
-                                    <div *ngIf="description?.errors?.['minlength']">Au minimum 10 caractères requis</div>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Location -->
-                        <div class="flex flex-col space-y-2">
-                            <label for="location" class="text-sm font-semibold text-gray-700">{{ currentTexts.locationLabel }} <span class="text-red-500">*</span></label>
-                            <div class="relative">
-                                <input id="location" (input)="showSuggestioLocation.set(true)" type="text" formControlName="location"
-                                    class="w-full px-4 py-3 pr-24 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                                    [placeholder]="declarationType === DeclarationType.LOSS ? 'Où avez-vous perdu l\'objet ?' : 'Où avez-vous trouvé l\'objet ?'"
-                                    autocomplete="off">
-                                <button type="button" (click)="useCurrentLocation()" [disabled]="isGettingCurrentLocation()"
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#009245]/10 text-[#009245] hover:bg-[#009245]/20 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="relative z-10" *ngIf="showSuggestioLocation() || location==null">
-                                <div class="absolute z-20 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                                    <div *ngFor="let suggestion of locationSuggestions()"
-                                        (click)="selectLocationSuggestion(suggestion);showSuggestioLocation.set(false)"
-                                        class="px-4 py-3 hover:bg-[#009245]/5 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
-                                        <div class="font-medium text-gray-900 text-sm truncate">
-                                            {{ suggestion.display_name }}
-                                        </div>
-                                        <div *ngIf="suggestion.address" class="text-xs text-gray-500 mt-1">
-                                            {{ getAddressString(suggestion.address) }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div *ngIf="selectedCoordinates" class="text-xs text-[#009245] flex items-center mt-2 bg-[#009245]/5 p-2 rounded-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                Position: {{ selectedCoordinates.lat.toFixed(4) }}, {{ selectedCoordinates.lng.toFixed(4) }}
-                            </div>
-                            <div *ngIf="location?.invalid && location?.touched" class="text-red-500 text-xs mt-1 flex items-center space-x-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Le lieu est obligatoire</span>
-                            </div>
-                        </div>
-
-                        <!-- Date -->
-                        <div class="flex flex-col space-y-2">
-                            <label for="date" class="text-sm font-semibold text-gray-700">{{ currentTexts.dateLabel }} <span class="text-red-500">*</span></label>
-                            <input id="date" type="date" formControlName="date" 
-                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
-                            <div *ngIf="date?.invalid && date?.touched" class="text-red-500 text-xs mt-1">
-                                La date est obligatoire
-                            </div>
-                        </div>
-
-                        <!-- Contact Info -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="flex flex-col space-y-2">
-                                <label for="contactEmail" class="text-sm font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
-                                <input id="contactEmail" type="email" formControlName="contactEmail"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                                    placeholder="votre@email.com">
-                                <div *ngIf="contactEmail?.invalid && contactEmail?.touched"
-                                    class="text-red-500 text-xs mt-1">
-                                    <div *ngIf="contactEmail?.errors?.['required']">L'email est obligatoire</div>
-                                    <div *ngIf="contactEmail?.errors?.['email']">Email invalide</div>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col space-y-2">
-                                <label for="contactPhone" class="text-sm font-semibold text-gray-700">Téléphone</label>
-                                <input id="contactPhone" type="tel" formControlName="contactPhone"
-                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
-                                    placeholder="0123456789">
-                                <div *ngIf="contactPhone?.invalid && contactPhone?.touched"
-                                    class="text-red-500 text-xs mt-1">
-                                    Numéro invalide (10 chiffres)
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Images -->
-                        <div class="flex flex-col space-y-2">
-                            <label class="text-sm font-semibold text-gray-700">Images</label>
-                            <input type="file" id="images" multiple accept="image/*" (change)="onFileSelected($event)" class="hidden">
-                            <div class="flex flex-col justify-center items-center border-2 border-dashed rounded-2xl p-8 transition-all duration-200 cursor-pointer"
-                                [class.border-[#009245]]="isDragOver()"
-                                [class.bg-[#009245]/10]="isDragOver()"
-                                [class.border-[#009245]/30]="!isDragOver()"
-                                [class.hover:border-[#009245]]="!isDragOver()"
-                                [class.hover:bg-[#009245]/5]="!isDragOver()"
-                                (click)="triggerFileInput()"
-                                (dragover)="onDragOver($event)"
-                                (dragleave)="onDragLeave($event)"
-                                (drop)="onDrop($event)">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#009245]/40 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                </svg>
-                                <p class="text-gray-700 text-center font-medium">
-                                    {{ isDragOver() ? 'Déposez vos images ici' : 'Ajouter des photos' }}
-                                </p>
-                                <p class="text-gray-500 text-sm mt-1">JPG, PNG (max 5MB) - Glissez-déposez ou cliquez</p>
-                            </div>
-
-                            <div *ngIf="imagePreviews.length > 0" class="mt-4">
-                                <p class="text-sm font-medium text-gray-700 mb-3">Images sélectionnées:</p>
-                                <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                                    <div *ngFor="let preview of imagePreviews; let i = index" class="relative group">
-                                        <img [src]="preview" class="h-24 w-24 object-cover rounded-lg border-2 border-gray-200 group-hover:border-[#009245]">
-                                        <button type="button" (click)="removeImage(i)"
-                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs hover:bg-red-600 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="pt-6">
-                            <button type="submit"
-                                class="w-full text-white px-6 py-4 text-lg font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                                [class]="declarationType === DeclarationType.LOSS 
-                                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
-                                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'"
-                                [disabled]="declarationForm.invalid">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
-                                </svg>
-                                <span>{{ currentTexts.submitButton }}</span>
-                            </button>
-                        </div>
-                    </form>
+                <div class="text-center border-l border-r border-gray-300">
+                  <div class="font-bold text-lg text-gray-700">
+                    {{ declarationType === DeclarationType.LOSS ? '2.1j' : '3.2j' }}
+                  </div>
+                  <div class="text-gray-600 text-xs">Délai moyen</div>
                 </div>
+                <div class="text-center">
+                  <div class="font-bold text-lg text-gray-700">
+                    {{ declarationType === DeclarationType.LOSS ? '89%' : '92%' }}
+                  </div>
+                  <div class="text-gray-600 text-xs">Satisfaction</div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+
+        <!-- Right Side - Form -->
+        <div class="p-8 lg:p-12">
+          <div class="mb-8">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{{ currentTexts.mainTitle }}</h1>
+            <p class="text-gray-600">Remplissez ce formulaire pour déclarer votre
+            {{ declarationType === DeclarationType.LOSS ? 'perte' : 'objet retrouvé' }}</p>
+          </div>
+
+          <form [formGroup]="declarationForm" (ngSubmit)="onSubmit()" class="space-y-6">
+            <!-- Titre -->
+            <div class="flex flex-col space-y-2">
+              <label for="title" class="text-sm font-semibold text-gray-700">Titre <span class="text-red-500">*</span></label>
+              <input id="title" type="text" formControlName="title"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                [placeholder]="'Ex: ' + (declarationType === DeclarationType.LOSS ? 'Portefeuille perdu au centre-ville' : 'Portefeuille noir trouvé au parc')">
+              @if (title?.invalid && title?.touched) {
+                <div class="text-red-500 text-xs mt-1 flex items-center space-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <span>
+                    @if (title?.errors?.['required']) {
+                      <div>Le titre est obligatoire</div>
+                    }
+                    @if (title?.errors?.['minlength']) {
+                      <div>Au moins 3 caractères requis</div>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+
+            <!-- Category -->
+            <app-category-selector [selectedCategoryId]="selectedCategory"
+            (categorySelected)="onCategorySelected($event)"></app-category-selector>
+
+            <!-- Description -->
+            <div class="flex flex-col space-y-2">
+              <label for="description" class="text-sm font-semibold text-gray-700">Description <span class="text-red-500">*</span></label>
+              <textarea id="description" formControlName="description"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 resize-none h-32"
+              [placeholder]="currentTexts.descriptionPlaceholder"></textarea>
+              @if (description?.invalid && description?.touched) {
+                <div class="text-red-500 text-xs mt-1 flex items-center space-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <span>
+                    @if (description?.errors?.['required']) {
+                      <div>La description est obligatoire</div>
+                    }
+                    @if (description?.errors?.['minlength']) {
+                      <div>Au minimum 10 caractères requis</div>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+
+            <!-- Location -->
+            <div class="flex flex-col space-y-2">
+              <label for="location" class="text-sm font-semibold text-gray-700">{{ currentTexts.locationLabel }} <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <input id="location" (input)="showSuggestioLocation.set(true)" type="text" formControlName="location"
+                  class="w-full px-4 py-3 pr-24 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                  [placeholder]="declarationType === DeclarationType.LOSS ? 'Où avez-vous perdu l\'objet ?' : 'Où avez-vous trouvé l\'objet ?'"
+                  autocomplete="off">
+                <button type="button" (click)="useCurrentLocation()" [disabled]="isGettingCurrentLocation()"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 bg-[#009245]/10 text-[#009245] hover:bg-[#009245]/20 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+              @if (showSuggestioLocation() || location==null) {
+                <div class="relative z-10">
+                  <div class="absolute z-20 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                    @for (suggestion of locationSuggestions(); track suggestion) {
+                      <div
+                        (click)="selectLocationSuggestion(suggestion);showSuggestioLocation.set(false)"
+                        class="px-4 py-3 hover:bg-[#009245]/5 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
+                        <div class="font-medium text-gray-900 text-sm truncate">
+                          {{ suggestion.display_name }}
+                        </div>
+                        @if (suggestion.address) {
+                          <div class="text-xs text-gray-500 mt-1">
+                            {{ getAddressString(suggestion.address) }}
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+              @if (selectedCoordinates) {
+                <div class="text-xs text-[#009245] flex items-center mt-2 bg-[#009245]/5 p-2 rounded-lg">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  Position: {{ selectedCoordinates.lat.toFixed(4) }}, {{ selectedCoordinates.lng.toFixed(4) }}
+                </div>
+              }
+              @if (location?.invalid && location?.touched) {
+                <div class="text-red-500 text-xs mt-1 flex items-center space-x-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Le lieu est obligatoire</span>
+                </div>
+              }
+            </div>
+
+            <!-- Date -->
+            <div class="flex flex-col space-y-2">
+              <label for="date" class="text-sm font-semibold text-gray-700">{{ currentTexts.dateLabel }} <span class="text-red-500">*</span></label>
+              <input id="date" type="date" formControlName="date"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+                @if (date?.invalid && date?.touched) {
+                  <div class="text-red-500 text-xs mt-1">
+                    La date est obligatoire
+                  </div>
+                }
+              </div>
+
+              <!-- Contact Info -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col space-y-2">
+                  <label for="contactEmail" class="text-sm font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
+                  <input id="contactEmail" type="email" formControlName="contactEmail"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                    placeholder="votre@email.com">
+                  @if (contactEmail?.invalid && contactEmail?.touched) {
+                    <div
+                      class="text-red-500 text-xs mt-1">
+                      @if (contactEmail?.errors?.['required']) {
+                        <div>L'email est obligatoire</div>
+                      }
+                      @if (contactEmail?.errors?.['email']) {
+                        <div>Email invalide</div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                  <label for="contactPhone" class="text-sm font-semibold text-gray-700">Téléphone</label>
+                  <input id="contactPhone" type="tel" formControlName="contactPhone"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                    placeholder="0123456789">
+                  @if (contactPhone?.invalid && contactPhone?.touched) {
+                    <div
+                      class="text-red-500 text-xs mt-1">
+                      Numéro invalide (10 chiffres)
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Images -->
+              <div class="flex flex-col space-y-2">
+                <label class="text-sm font-semibold text-gray-700">Images</label>
+                <input type="file" id="images" multiple accept="image/*" (change)="onFileSelected($event)" class="hidden">
+                <div class="flex flex-col justify-center items-center border-2 border-dashed rounded-2xl p-8 transition-all duration-200 cursor-pointer"
+                  [class.border-[#009245]]="isDragOver()"
+                  [class.bg-[#009245]/10]="isDragOver()"
+                  [class.border-[#009245]/30]="!isDragOver()"
+                  [class.hover:border-[#009245]]="!isDragOver()"
+                  [class.hover:bg-[#009245]/5]="!isDragOver()"
+                  (click)="triggerFileInput()"
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#009245]/40 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <p class="text-gray-700 text-center font-medium">
+                    {{ isDragOver() ? 'Déposez vos images ici' : 'Ajouter des photos' }}
+                  </p>
+                  <p class="text-gray-500 text-sm mt-1">JPG, PNG (max 5MB) - Glissez-déposez ou cliquez</p>
+                </div>
+
+                @if (imagePreviews.length > 0) {
+                  <div class="mt-4">
+                    <p class="text-sm font-medium text-gray-700 mb-3">Images sélectionnées:</p>
+                    <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                      @for (preview of imagePreviews; track preview; let i = $index) {
+                        <div class="relative group">
+                          <img [src]="preview" class="h-24 w-24 object-cover rounded-lg border-2 border-gray-200 group-hover:border-[#009245]">
+                          <button type="button" (click)="removeImage(i)"
+                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs hover:bg-red-600 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Submit Button -->
+              <div class="pt-6">
+                <button type="submit"
+                  class="w-full text-white px-6 py-4 text-lg font-semibold rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                [class]="declarationType === DeclarationType.LOSS 
+                                    ? 'bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
+                                    : 'bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'"
+                  [disabled]="declarationForm.invalid">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                  </svg>
+                  <span>{{ currentTexts.submitButton }}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>

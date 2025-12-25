@@ -190,7 +190,7 @@ import { LinkItemComponent } from '../link-item/link-item.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { DropdownComponent } from '../dropdown/dropdown.component';
-import { CommonModule } from '@angular/common';
+
 import { UserProfile } from '@/types/user';
 import { Pages } from "@/config/constant";
 import { NotificationPanelComponent } from '../notification-panel.component';
@@ -207,16 +207,15 @@ export type LinkType = {
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
    imports: [
-      MatMenuModule,
-      MatInputModule,
-      MatIconModule,
-      LinkItemComponent,
-      RouterLink,
-      MatButtonModule,
-      DropdownComponent,
-      CommonModule,
-      NotificationPanelComponent,
-   ],
+    MatMenuModule,
+    MatInputModule,
+    MatIconModule,
+    LinkItemComponent,
+    RouterLink,
+    MatButtonModule,
+    DropdownComponent,
+    NotificationPanelComponent
+],
    standalone: true,
 })
 export class HeaderComponent implements OnInit {

@@ -1,6 +1,6 @@
 // edit-profile-dialog.component.ts
 import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,6 @@ import { UserProfile } from '../types/user';
   selector: 'app-edit-profile-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
@@ -21,7 +20,7 @@ import { UserProfile } from '../types/user';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule
-  ],
+],
   template: `
     <div class=" p-6 w-full">
       <div class="flex items-center gap-3 mb-6">
@@ -30,77 +29,81 @@ import { UserProfile } from '../types/user';
         </div>
         <h2 class="text-2xl font-bold text-gray-900">Modifier le profil</h2>
       </div>
-
+    
       <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-4  flex flex-col justify-center">
         <!-- Prénom -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">
             Prénom <span class="text-red-500">*</span>
           </label>
-          <input 
+          <input
             type="text"
-            formControlName="firstname" 
+            formControlName="firstname"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
             placeholder="Votre prénom">
-          <div *ngIf="editForm.get('firstname')?.hasError('required') && editForm.get('firstname')?.touched" class="text-red-500 text-xs">
-            Le prénom est requis
-          </div>
+          @if (editForm.get('firstname')?.hasError('required') && editForm.get('firstname')?.touched) {
+            <div class="text-red-500 text-xs">
+              Le prénom est requis
+            </div>
+          }
         </div>
-
+    
         <!-- Nom -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">
             Nom <span class="text-red-500">*</span>
           </label>
-          <input 
+          <input
             type="text"
-            formControlName="lastname" 
+            formControlName="lastname"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
             placeholder="Votre nom">
-          <div *ngIf="editForm.get('lastname')?.hasError('required') && editForm.get('lastname')?.touched" class="text-red-500 text-xs">
-            Le nom est requis
-          </div>
+          @if (editForm.get('lastname')?.hasError('required') && editForm.get('lastname')?.touched) {
+            <div class="text-red-500 text-xs">
+              Le nom est requis
+            </div>
+          }
         </div>
-
+    
         <!-- Téléphone -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">Téléphone</label>
-          <input 
+          <input
             type="tel"
-            formControlName="phone" 
+            formControlName="phone"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
             placeholder="0123456789">
         </div>
-
+    
         <!-- Localisation -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">Localisation</label>
-          <input 
+          <input
             type="text"
             formControlName="location"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245]"
             placeholder="Votre localisation">
         </div>
-
+    
         <!-- Bio -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">Bio</label>
-          <textarea 
-            formControlName="bio" 
+          <textarea
+            formControlName="bio"
             rows="4"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] resize-none"
-            placeholder="Parlez un peu de vous..."></textarea>
+          placeholder="Parlez un peu de vous..."></textarea>
         </div>
-
+    
         <!-- Boutons -->
         <div class="flex justify-end gap-3 mt-6">
-          <button 
-            type="button" 
+          <button
+            type="button"
             (click)="onCancel()"
             class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
             Annuler
           </button>
-          <button 
+          <button
             type="submit"
             [disabled]="!editForm.valid || editForm.pristine"
             class="px-4 py-2 bg-[#009245] text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
@@ -109,7 +112,7 @@ import { UserProfile } from '../types/user';
         </div>
       </form>
     </div>
-  `,
+    `,
   styles: [`
     :host {
       display: block;

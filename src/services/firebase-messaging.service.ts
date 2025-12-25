@@ -24,23 +24,35 @@ export class FirebaseMessagingService {
   public token$ = this.tokenSubject.asObservable();
 
   constructor() {
-    this.initializeMessaging();
+    // Vérifier si l'environnement supporte les notifications
+    if ('Notification' in window && navigator.serviceWorker) {
+      this.initializeMessaging();
+    } else {
+      console.warn('Les notifications ne sont pas supportées sur cet appareil/navigateur');
+    }
   }
 
   private async initializeMessaging() {
     try {
-      // Demander la permission pour les notifications
-      const permission = await Notification.requestPermission();
+      // Vérifier la permission de notification
+      const permission = Notification.permission;
       
       if (permission === 'granted') {
         console.log('Permission de notification accordée');
         await this.getMessagingToken();
         this.listenForMessages();
-      } else {
-        console.log('Permission de notification refusée');
+      } else if (permission !== 'denied') {
+        // Demander la permission seulement si elle n'a pas déjà été refusée
+        const result = await Notification.requestPermission();
+        if (result === 'granted') {
+          console.log('Permission de notification accordée');
+          await this.getMessagingToken();
+          this.listenForMessages();
+        }
       }
     } catch (error) {
-      console.error('Erreur lors de l\'initialisation des notifications:', error);
+      console.warn('Erreur lors de l\'initialisation des notifications:', error);
+      // Ne pas bloquer l'application si les notifications échouent
     }
   }
 
@@ -60,11 +72,12 @@ export class FirebaseMessagingService {
         this.tokenSubject.next(token);
         return token;
       } else {
-        console.log('Impossible de récupérer le token FCM');
+        console.warn('Impossible de récupérer le token FCM');
         return null;
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération du token:', error);
+      console.warn('Erreur lors de la récupération du token FCM:', error);
+      // Retourner null au lieu de lever une erreur pour ne pas bloquer l'app
       return null;
     }
   }
@@ -74,7 +87,7 @@ export class FirebaseMessagingService {
    */
   private listenForMessages() {
     try {
-      onMessage(this.messaging, (payload) => {
+      onMessage(this.messaging, (payload:any) => {
         console.log('Message reçu en foreground:', payload);
         this.messageSubject.next(payload);
         

@@ -135,7 +135,7 @@
                 <div class="py-8">
                     @if (hasDeclarations()) {
                         <div class="grid gap-4">
-                            @for (declaration of userProfile()?.declarations || []; track declaration.id) {
+                            @for (declaration of userDeclarations() || []; track $index) {
                                 <div class="bg-linear-to-b from-white to-gray-50 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 p-6">
                                     <div class="flex items-start justify-between mb-4">
                                         <div>
@@ -143,8 +143,8 @@
                                             <p class="text-sm text-gray-500 mt-1">{{ declaration.category }}</p>
                                         </div>
                                         <span class="px-3 py-1 text-xs font-semibold rounded-full"
-                                            [ngClass]="declaration.type === 'lost' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'">
-                                            {{ declaration.type === 'lost' ? 'Recherché' : 'Trouvé' }}
+                                            [ngClass]="declaration.type === 'loss' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'">
+                                            {{ declaration.type === 'loss' ? 'Recherché' : 'Trouvé' }}
                                         </span>
                                     </div>
                                     <p class="text-gray-600 hover:text-[#009245] text-sm mb-3">{{ declaration.description | slice:0:100 }}...</p>
@@ -222,15 +222,27 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Notifications par email</span>
-                                <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+                                <mat-slide-toggle 
+                                    [checked]="preferences().emailNotifications"
+                                    (change)="toggleEmailNotifications($event)"
+                                    [disabled]="isSavingPreferences()">
+                                </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Mises à jour de déclarations</span>
-                                <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+                                <mat-slide-toggle 
+                                    [checked]="preferences().declarationUpdates"
+                                    (change)="toggleDeclarationUpdates($event)"
+                                    [disabled]="isSavingPreferences()">
+                                </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Alertes de correspondance</span>
-                                <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+                                <mat-slide-toggle 
+                                    [checked]="preferences().matchAlerts"
+                                    (change)="toggleMatchAlerts($event)"
+                                    [disabled]="isSavingPreferences()">
+                                </mat-slide-toggle>
                             </div>
                         </div>
                     </div>
@@ -244,11 +256,19 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Profil public</span>
-                                <mat-slide-toggle [checked]="false"></mat-slide-toggle>
+                                <mat-slide-toggle 
+                                    [checked]="preferences().publicProfile"
+                                    (change)="togglePublicProfile($event)"
+                                    [disabled]="isSavingPreferences()">
+                                </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Montrer mes déclarations</span>
-                                <mat-slide-toggle [checked]="true"></mat-slide-toggle>
+                                <mat-slide-toggle 
+                                    [checked]="preferences().showDeclarations"
+                                    (change)="toggleShowDeclarations($event)"
+                                    [disabled]="isSavingPreferences()">
+                                </mat-slide-toggle>
                             </div>
                         </div>
                     </div>
@@ -260,9 +280,20 @@
                             Zone de Danger
                         </h3>
                         <p class="text-red-700 text-sm mb-4">Attention : Ces actions sont irréversibles.</p>
-                        <button mat-stroked-button class="border-red-500! text-red-600! hover:bg-gray-100!">
-                            <mat-icon>delete</mat-icon>
-                            Supprimer mon compte
+                        <button 
+                            mat-stroked-button 
+                            class="border-red-500! text-red-600! hover:bg-gray-100!"
+                            (click)="deleteAccount()"
+                            [disabled]="isDeleting()">
+                            @if (isDeleting()) {
+                                <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                                Suppression en cours...
+                            } @else {
+                                <ng-container>
+                                    <mat-icon fontIcon="delete">delete</mat-icon>
+                                    Supprimer mon compte
+                                </ng-container>
+                            }
                         </button>
                     </div>
                 </div>

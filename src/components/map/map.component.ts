@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatIconModule } from '@angular/material/icon';
 
 declare global {
@@ -86,7 +86,7 @@ export const TRAVEL_MODE_ICONS: Record<TravelMode, string> = {
   templateUrl: './map.component.html',
   styleUrl: './map.component.css',
   standalone: true,
-  imports: [CommonModule, MatIconModule]
+  imports: [MatIconModule]
 })
 export class MapComponent implements OnInit, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef;

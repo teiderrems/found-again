@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ModalService } from '../../../services/modal.service';
-import { CommonModule } from '@angular/common';
+
 import { InputFieldComponent } from '../../form/input/input-field.component';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { LabelComponent } from '../../form/label/label.component';
@@ -10,13 +10,12 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-user-address-card',
   imports: [
-    CommonModule,
     InputFieldComponent,
     ButtonComponent,
     LabelComponent,
     ModalComponent,
-    FormsModule,
-  ],
+    FormsModule
+],
   templateUrl: './user-address-card.component.html',
   styles: ``
 })

@@ -17,245 +17,258 @@
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isLoading()" class="text-center py-12">
-      <div class="inline-flex items-center space-x-3">
-        <div class="w-5 h-5 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <span class="text-gray-600">Chargement...</span>
+    @if (isLoading()) {
+      <div class="text-center py-12">
+        <div class="inline-flex items-center space-x-3">
+          <div class="w-5 h-5 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <span class="text-gray-600">Chargement...</span>
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Main Content -->
-    <div *ngIf="!isLoading()" class="space-y-6">
-      <!-- Object Details Card -->
-      <div *ngIf="objectDeclaration" class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-8 sm:p-10">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Objet à Vérifier</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <!-- Image -->
-          <div class="flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden h-64">
-            <img *ngIf="objectDeclaration.images && objectDeclaration.images.length > 0"
-              [src]="objectDeclaration.images[0].downloadURL"
-              alt="Object"
-              class="w-full h-full object-cover">
-            <div *ngIf="!objectDeclaration.images || objectDeclaration.images.length === 0"
-              class="text-gray-400 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p>Pas d'image</p>
-            </div>
-          </div>
-
-          <!-- Details -->
-          <div class="flex flex-col space-y-6">
-            <div>
-              <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ objectDeclaration.title }}</h3>
-              <p class="text-gray-600 text-sm leading-relaxed">{{ objectDeclaration.description }}</p>
-            </div>
-
-            <div class="border-l-4 border-blue-500 pl-4 py-2">
-              <div class="flex items-center space-x-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-                <span class="font-semibold text-gray-900">Lieu de découverte</span>
+    @if (!isLoading()) {
+      <div class="space-y-6">
+        <!-- Object Details Card -->
+        @if (objectDeclaration) {
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 p-8 sm:p-10">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Objet à Vérifier</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Image -->
+              <div class="flex items-center justify-center bg-linear-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden h-64">
+                @if (objectDeclaration.images && objectDeclaration.images.length > 0) {
+                  <img
+                    [src]="objectDeclaration.images[0].downloadURL"
+                    alt="Object"
+                    class="w-full h-full object-cover">
+                }
+                @if (!objectDeclaration.images || objectDeclaration.images.length === 0) {
+                  <div
+                    class="text-gray-400 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p>Pas d'image</p>
+                  </div>
+                }
               </div>
-              <p class="text-gray-600">{{ objectDeclaration.location }}</p>
-            </div>
-
-            <div class="border-l-4 border-green-500 pl-4 py-2">
-              <div class="flex items-center space-x-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
-                </svg>
-                <span class="font-semibold text-gray-900">Date de découverte</span>
-              </div>
-              <p class="text-gray-600">{{ objectDeclaration.date | date: 'dd/MM/yyyy' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Verification Section -->
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
-        <!-- Initial State -->
-        <div *ngIf="verificationStep() === 'initial'" class="p-8 sm:p-10">
-          <div class="text-center mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h2 class="text-2xl font-bold text-gray-900 mb-3">Confirmer la Propriété</h2>
-            <p class="text-gray-600 max-w-md mx-auto">
-              Veuillez confirmer que cet objet vous appartient en décrivant des détails spécifiques qui seulement le propriétaire connaîtrait.
-            </p>
-          </div>
-
-          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div class="flex space-x-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <p class="font-semibold text-blue-900 mb-1">Important</p>
-                <p class="text-blue-800 text-sm">Seules des informations que vous avez déclarées dans la perte de votre objet seront acceptées comme preuve.</p>
+              <!-- Details -->
+              <div class="flex flex-col space-y-6">
+                <div>
+                  <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ objectDeclaration.title }}</h3>
+                  <p class="text-gray-600 text-sm leading-relaxed">{{ objectDeclaration.description }}</p>
+                </div>
+                <div class="border-l-4 border-blue-500 pl-4 py-2">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="font-semibold text-gray-900">Lieu de découverte</span>
+                  </div>
+                  <p class="text-gray-600">{{ objectDeclaration.location }}</p>
+                </div>
+                <div class="border-l-4 border-green-500 pl-4 py-2">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.3A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
+                    </svg>
+                    <span class="font-semibold text-gray-900">Date de découverte</span>
+                  </div>
+                  <p class="text-gray-600">{{ objectDeclaration.date | date: 'dd/MM/yyyy' }}</p>
+                </div>
               </div>
             </div>
           </div>
-
-          <button
-            (click)="startVerification()"
-            class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-            <span class="flex items-center justify-center space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L7.707 9.707a1 1 0 01-1.414-1.414l4-4z" clip-rule="evenodd" />
-              </svg>
-              <span>Commencer la Vérification</span>
-            </span>
-          </button>
-        </div>
-
-        <!-- Verification Form -->
-        <div *ngIf="verificationStep() === 'verification'" class="p-8 sm:p-10">
-          <h2 class="text-2xl font-bold text-gray-900 mb-8">Formulaire de Vérification</h2>
-
-          <form [formGroup]="verifyForm" (ngSubmit)="submitVerification()" class="space-y-6">
-            <!-- Identity Details -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-3">
-                Détails d'Identité <span class="text-red-500">*</span>
-              </label>
-              <p class="text-sm text-gray-500 mb-3">Décrivez des caractéristiques uniques de l'objet (marques, dommages, particularités)</p>
-              <textarea
-                formControlName="identityDetails"
-                rows="4"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200 resize-none"
-                placeholder="Ex: Le portefeuille a une rayure en haut à droite, contient un billet de 50€, etc.">
-              </textarea>
-              <div *ngIf="verifyForm.get('identityDetails')?.invalid && verifyForm.get('identityDetails')?.touched"
-                class="text-red-500 text-sm mt-2 flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        }
+        <!-- Verification Section -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200/50 overflow-hidden">
+          <!-- Initial State -->
+          @if (verificationStep() === 'initial') {
+            <div class="p-8 sm:p-10">
+              <div class="text-center mb-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Minimum 10 caractères requis</span>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">Confirmer la Propriété</h2>
+                <p class="text-gray-600 max-w-md mx-auto">
+                  Veuillez confirmer que cet objet vous appartient en décrivant des détails spécifiques qui seulement le propriétaire connaîtrait.
+                </p>
               </div>
-            </div>
-
-            <!-- Additional Info -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-3">
-                Informations Supplémentaires <span class="text-red-500">*</span>
-              </label>
-              <p class="text-sm text-gray-500 mb-3">Confirmez votre identité (qui vous êtes, contact, etc.)</p>
-              <textarea
-                formControlName="additionalInfo"
-                rows="4"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200 resize-none"
-                placeholder="Ex: Je suis Jean Dupont, propriétaire du portefeuille, mon numéro de téléphone est...">
-              </textarea>
-              <div *ngIf="verifyForm.get('additionalInfo')?.invalid && verifyForm.get('additionalInfo')?.touched"
-                class="text-red-500 text-sm mt-2 flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                </svg>
-                <span>Minimum 20 caractères requis</span>
+              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex space-x-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                    <p class="font-semibold text-blue-900 mb-1">Important</p>
+                    <p class="text-blue-800 text-sm">Seules des informations que vous avez déclarées dans la perte de votre objet seront acceptées comme preuve.</p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <!-- Serial Number (Optional) -->
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-3">
-                Numéro de Série (si applicable)
-              </label>
-              <p class="text-sm text-gray-500 mb-3">Entrez le numéro de série de l'appareil si vous le possédez</p>
-              <input
-                type="text"
-                formControlName="serialNumber"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200"
-                placeholder="Ex: SN123456789">
-            </div>
-
-            <!-- Terms Agreement -->
-            <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-              <input
-                type="checkbox"
-                formControlName="agreeTerms"
-                id="agreeTerms"
-                class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
-              <label for="agreeTerms" class="cursor-pointer">
-                <span class="text-sm text-gray-700">Je confirme que les informations fournies sont exactes et que je suis propriétaire de cet objet</span>
-              </label>
-            </div>
-
-            <!-- Error Message -->
-            <div *ngIf="errorMessage()" class="bg-red-50 border border-red-200 rounded-lg p-4 flex space-x-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
-              <span class="text-red-800 text-sm">{{ errorMessage() }}</span>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex gap-4">
               <button
-                type="button"
-                (click)="resetForm()"
-                class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
-                Annuler
-              </button>
-              <button
-                type="submit"
-                [disabled]="verifyForm.invalid || isLoading()"
-                class="flex-1 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed">
+                (click)="startVerification()"
+                class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
                 <span class="flex items-center justify-center space-x-2">
-                  <span *ngIf="!isLoading()">Soumettre la Vérification</span>
-                  <span *ngIf="isLoading()" class="flex items-center space-x-2">
-                    <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Vérification...</span>
-                  </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L7.707 9.707a1 1 0 01-1.414-1.414l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Commencer la Vérification</span>
                 </span>
               </button>
             </div>
-          </form>
-        </div>
-
-        <!-- Success State -->
-        <div *ngIf="verificationStep() === 'success'" class="p-8 sm:p-10">
-          <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
+          }
+          <!-- Verification Form -->
+          @if (verificationStep() === 'verification') {
+            <div class="p-8 sm:p-10">
+              <h2 class="text-2xl font-bold text-gray-900 mb-8">Formulaire de Vérification</h2>
+              <form [formGroup]="verifyForm" (ngSubmit)="submitVerification()" class="space-y-6">
+                <!-- Identity Details -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-3">
+                    Détails d'Identité <span class="text-red-500">*</span>
+                  </label>
+                  <p class="text-sm text-gray-500 mb-3">Décrivez des caractéristiques uniques de l'objet (marques, dommages, particularités)</p>
+                  <textarea
+                    formControlName="identityDetails"
+                    rows="4"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200 resize-none"
+                    placeholder="Ex: Le portefeuille a une rayure en haut à droite, contient un billet de 50€, etc.">
+                  </textarea>
+                  @if (verifyForm.get('identityDetails')?.invalid && verifyForm.get('identityDetails')?.touched) {
+                    <div
+                      class="text-red-500 text-sm mt-2 flex items-center space-x-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                      </svg>
+                      <span>Minimum 10 caractères requis</span>
+                    </div>
+                  }
+                </div>
+                <!-- Additional Info -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-3">
+                    Informations Supplémentaires <span class="text-red-500">*</span>
+                  </label>
+                  <p class="text-sm text-gray-500 mb-3">Confirmez votre identité (qui vous êtes, contact, etc.)</p>
+                  <textarea
+                    formControlName="additionalInfo"
+                    rows="4"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200 resize-none"
+                    placeholder="Ex: Je suis Jean Dupont, propriétaire du portefeuille, mon numéro de téléphone est...">
+                  </textarea>
+                  @if (verifyForm.get('additionalInfo')?.invalid && verifyForm.get('additionalInfo')?.touched) {
+                    <div
+                      class="text-red-500 text-sm mt-2 flex items-center space-x-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-2a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                      </svg>
+                      <span>Minimum 20 caractères requis</span>
+                    </div>
+                  }
+                </div>
+                <!-- Serial Number (Optional) -->
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-3">
+                    Numéro de Série (si applicable)
+                  </label>
+                  <p class="text-sm text-gray-500 mb-3">Entrez le numéro de série de l'appareil si vous le possédez</p>
+                  <input
+                    type="text"
+                    formControlName="serialNumber"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all duration-200"
+                    placeholder="Ex: SN123456789">
+                </div>
+                <!-- Terms Agreement -->
+                <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                  <input
+                    type="checkbox"
+                    formControlName="agreeTerms"
+                    id="agreeTerms"
+                    class="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                  <label for="agreeTerms" class="cursor-pointer">
+                    <span class="text-sm text-gray-700">Je confirme que les informations fournies sont exactes et que je suis propriétaire de cet objet</span>
+                  </label>
+                </div>
+                <!-- Error Message -->
+                @if (errorMessage()) {
+                  <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex space-x-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-red-800 text-sm">{{ errorMessage() }}</span>
+                  </div>
+                }
+                <!-- Buttons -->
+                <div class="flex gap-4">
+                  <button
+                    type="button"
+                    (click)="resetForm()"
+                    class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    [disabled]="verifyForm.invalid || isLoading()"
+                    class="flex-1 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed">
+                    <span class="flex items-center justify-center space-x-2">
+                      @if (!isLoading()) {
+                        <span>Soumettre la Vérification</span>
+                      }
+                      @if (isLoading()) {
+                        <span class="flex items-center space-x-2">
+                          <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <span>Vérification...</span>
+                        </span>
+                      }
+                    </span>
+                  </button>
+                </div>
+              </form>
             </div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-3">Vérification Réussie!</h2>
-            <p class="text-gray-600 mb-6 max-w-md mx-auto">{{ successMessage() }}</p>
-            <p class="text-sm text-gray-500">Vous allez être redirigé vers la page d'accueil...</p>
-          </div>
-        </div>
-
-        <!-- Failed State -->
-        <div *ngIf="verificationStep() === 'failed'" class="p-8 sm:p-10">
-          <div class="text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
+          }
+          <!-- Success State -->
+          @if (verificationStep() === 'success') {
+            <div class="p-8 sm:p-10">
+              <div class="text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Vérification Réussie!</h2>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">{{ successMessage() }}</p>
+                <p class="text-sm text-gray-500">Vous allez être redirigé vers la page d'accueil...</p>
+              </div>
             </div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-3">Vérification Échouée</h2>
-            <p class="text-gray-600 mb-8 max-w-md mx-auto">{{ errorMessage() }}</p>
-            <div class="flex gap-4 justify-center">
-              <button
-                (click)="resetForm()"
-                class="px-6 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-                Réessayer
-              </button>
-              <button
-                (click)="goBack()"
-                class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
-                Retour à l'accueil
-              </button>
+          }
+          <!-- Failed State -->
+          @if (verificationStep() === 'failed') {
+            <div class="p-8 sm:p-10">
+              <div class="text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Vérification Échouée</h2>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">{{ errorMessage() }}</p>
+                <div class="flex gap-4 justify-center">
+                  <button
+                    (click)="resetForm()"
+                    class="px-6 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                    Réessayer
+                  </button>
+                  <button
+                    (click)="goBack()"
+                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    Retour à l'accueil
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </div>
-    </div>
+    }
   </div>
 </div>

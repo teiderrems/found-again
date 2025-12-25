@@ -1,7 +1,7 @@
 // components/contact.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import {Pages} from "@/config/constant";
 
@@ -23,7 +23,7 @@ interface FAQItem {
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule],
   templateUrl:'./contact.component.html',
   styleUrl:'./contact.component.css'
 })

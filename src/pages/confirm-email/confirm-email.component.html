@@ -18,14 +18,22 @@
             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
             placeholder="votre@email.com"
             required
-          />
-          <p class="text-red-500 text-xs mt-1" *ngIf="email?.invalid && (email?.dirty || email?.touched)">
-            <span *ngIf="email?.errors?.['required']">L'email est requis.</span>
-            <span *ngIf="email?.errors?.['email'] || email?.errors?.['pattern']">Format d'email invalide.</span>
-          </p>
+            />
+          @if (email?.invalid && (email?.dirty || email?.touched)) {
+            <p class="text-red-500 text-xs mt-1">
+              @if (email?.errors?.['required']) {
+                <span>L'email est requis.</span>
+              }
+              @if (email?.errors?.['email'] || email?.errors?.['pattern']) {
+                <span>Format d'email invalide.</span>
+              }
+            </p>
+          }
         </div>
 
-        <p class="text-red-600 text-sm text-center" *ngIf="errorMessage">{{ errorMessage }}</p>
+        @if (errorMessage) {
+          <p class="text-red-600 text-sm text-center">{{ errorMessage }}</p>
+        }
 
         <button type="submit" class="w-full bg-[#FC4E00] hover:bg-[#d94300] text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200">
           Validez

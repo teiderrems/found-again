@@ -1,14 +1,16 @@
 // user-profile.service.ts
 import { Injectable, signal, computed } from '@angular/core';
-import { Auth, user } from '@angular/fire/auth';
+import { Auth, user, deleteUser } from '@angular/fire/auth';
 import { 
   Firestore, 
   doc, 
   docData, 
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from '@angular/fire/firestore';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, map, tap, switchMap } from 'rxjs';
 import { UserProfile, UserStats } from '../types/user';
+import { DeclarationService } from './declaration.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +25,8 @@ export class UserProfileService {
   
   constructor(
     private auth: Auth,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private declarationService: DeclarationService
   ) {
     // Récupérer l'utilisateur connecté
     const authUser = user(this.auth);
@@ -145,18 +148,90 @@ export class UserProfileService {
     return `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
   }
 
-  // Récupérer les statistiques de l'utilisateur
+  // Récupérer les statistiques de l'utilisateur (calculées à partir des déclarations)
   getUserStats(uid: string): Observable<UserStats> {
-    const statsDoc = doc(this.firestore, `userStats/${uid}`);
-    return docData(statsDoc).pipe(
+    return this.declarationService.getDeclarationsByUserId(uid).pipe(
+      map((declarations: any[]) => {
+        // Calculer les stats en fonction des déclarations
+        const totalDeclarations = declarations.length;
+        const foundDeclarations = declarations.filter((d: any) => d.type === 'found').length;
+        const lostDeclarations = declarations.filter((d: any) => d.type === 'lost').length;
+        const pendingDeclarations = declarations.filter((d: any) => d.status === 'pending').length;
+        const resolvedDeclarations = declarations.filter((d: any) => d.status === 'resolved').length;
+        
+        // Calculer le taux de succès (déclarations résolues / total)
+        const successRate = totalDeclarations > 0 ? Math.round((resolvedDeclarations / totalDeclarations) * 100) : 0;
+        
+        // Objets retournés = déclarations perdues résolues (supposé que les objets ont été retournés)
+        const objectsReturned = lostDeclarations > 0 ? resolvedDeclarations : 0;
+        
+        return {
+          totalDeclarations,
+          foundDeclarations,
+          pendingDeclarations,
+          successRate,
+          objectsReturned
+        };
+      })
+    );
+  }
+
+  // Récupérer les préférences utilisateur
+  getUserPreferences(uid: string): Observable<any> {
+    const userDoc = doc(this.firestore, `users/${uid}`);
+    return docData(userDoc).pipe(
       map((data: any) => ({
-        totalDeclarations: data?.totalDeclarations || 0,
-        foundDeclarations: data?.foundDeclarations || 0,
-        pendingDeclarations: data?.pendingDeclarations || 0,
-        successRate: data?.successRate || 0,
-        objectsReturned: data?.objectsReturned || 0
+        emailNotifications: data?.preferences?.emailNotifications ?? true,
+        declarationUpdates: data?.preferences?.declarationUpdates ?? true,
+        matchAlerts: data?.preferences?.matchAlerts ?? true,
+        publicProfile: data?.preferences?.publicProfile ?? false,
+        showDeclarations: data?.preferences?.showDeclarations ?? true
       }))
     );
+  }
+
+  // Mettre à jour les préférences utilisateur (nouvelles méthodes)
+  updateUserPreferences(uid: string, preferences: any): Observable<void> {
+    const userDoc = doc(this.firestore, `users/${uid}`);
+    return new Observable(observer => {
+      updateDoc(userDoc, {
+        'preferences.emailNotifications': preferences.emailNotifications,
+        'preferences.declarationUpdates': preferences.declarationUpdates,
+        'preferences.matchAlerts': preferences.matchAlerts,
+        'preferences.publicProfile': preferences.publicProfile,
+        'preferences.showDeclarations': preferences.showDeclarations
+      }).then(() => {
+        observer.next();
+        observer.complete();
+      }).catch(error => {
+        observer.error(error);
+      });
+    });
+  }
+
+  // Supprimer le compte utilisateur
+  deleteUserAccount(uid: string): Observable<void> {
+    return new Observable(observer => {
+      try {
+        // Supprimer le document utilisateur
+        const userDoc = doc(this.firestore, `users/${uid}`);
+        updateDoc(userDoc, {
+          deleted: true,
+          deletedAt: new Date(),
+          email: `deleted_${uid}@deleted.local`,
+          firstname: 'Compte',
+          lastname: 'Supprimé'
+        }).then(() => {
+          // Supprimer les données utilisateur associées
+          observer.next();
+          observer.complete();
+        }).catch(error => {
+          observer.error(error);
+        });
+      } catch (error) {
+        observer.error(error);
+      }
+    });
   }
 
   // Vérifier si l'utilisateur est admin
@@ -170,6 +245,52 @@ export class UserProfileService {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  }
+
+  // ============= GESTION FCM =============
+
+  /**
+   * Sauvegarde le token FCM pour l'utilisateur
+   */
+  saveFCMToken(uid: string, token: string): Observable<void> {
+    return new Observable(observer => {
+      try {
+        const userDoc = doc(this.firestore, `users/${uid}`);
+        updateDoc(userDoc, {
+          fcmTokens: token,
+          fcmTokenUpdatedAt: new Date()
+        }).then(() => {
+          observer.next();
+          observer.complete();
+        }).catch(error => {
+          observer.error(error);
+        });
+      } catch (error) {
+        observer.error(error);
+      }
+    });
+  }
+
+  /**
+   * Supprime le token FCM pour l'utilisateur
+   */
+  removeFCMToken(uid: string): Observable<void> {
+    return new Observable(observer => {
+      try {
+        const userDoc = doc(this.firestore, `users/${uid}`);
+        updateDoc(userDoc, {
+          fcmTokens: null,
+          fcmTokenRemovedAt: new Date()
+        }).then(() => {
+          observer.next();
+          observer.complete();
+        }).catch(error => {
+          observer.error(error);
+        });
+      } catch (error) {
+        observer.error(error);
+      }
     });
   }
 }

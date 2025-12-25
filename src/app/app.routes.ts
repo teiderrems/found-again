@@ -49,6 +49,15 @@ export const routes: Routes = [
       title: 'Accueil',
       children: [
          {
+            path: '',
+            loadComponent: () =>
+               import('@/pages/dashboard/dashboard.component').then(
+                  (c) => c.DashboardComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Tableau de Bord',
+         },
+         {
             path: preparePathForRouter(Pages.OBJECTS_LOST_CREATE),
             loadComponent: () =>
                import('@/pages/lost-object/lost-object.component').then(
@@ -169,7 +178,7 @@ export const routes: Routes = [
             pathMatch: 'full',
             title: 'Notifications',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
-         },
+         }
          //To be removed
          //  {
          //     path: preparePathForRouter(Pages.PROFILE),
