@@ -44,24 +44,24 @@ export class EmailTestService {
     await this.testSecurityAlert(userId, userEmail);
     await this.testStatistics(userId);
 
-    console.log('\n✅ Tous les tests sont terminés!');
-    this.snackBar.open('✅ Tous les tests sont terminés!', 'Fermer', { duration: 5000 });
+    console.log('\nTous les tests sont terminés!');
+    this.snackBar.open('Tous les tests sont terminés!', 'Fermer', { duration: 5000 });
   }
 
   /**
    * Test: Email de test simple
    */
   private async testEmail(userId: string, email: string): Promise<void> {
-    console.log('📧 Test 1: Email de test');
+    console.log('Test 1: Email de test');
     try {
       const success = await this.emailService.sendTestEmail(userId, email);
       if (success) {
-        console.log('✅ Email de test envoyé avec succès\n');
+        console.log('Email de test envoyé avec succès\n');
       } else {
-        console.log('❌ Erreur lors de l\'envoi de l\'email de test\n');
+        console.log('Erreur lors de l\'envoi de l\'email de test\n');
       }
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('Erreur:', error);
     }
   }
 
@@ -82,12 +82,12 @@ export class EmailTestService {
         }
       );
       if (success) {
-        console.log('✅ Email de correspondance envoyé avec succès\n');
+        console.log('Email de correspondance envoyé avec succès\n');
       } else {
-        console.log('❌ Erreur lors de l\'envoi de l\'email de correspondance\n');
+        console.log('Erreur lors de l\'envoi de l\'email de correspondance\n');
       }
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('Erreur:', error);
     }
   }
 
@@ -95,7 +95,7 @@ export class EmailTestService {
    * Test: Mise à jour de déclaration
    */
   private async testDeclarationUpdate(userId: string, email: string): Promise<void> {
-    console.log('✅ Test 3: Email de mise à jour de déclaration');
+    console.log('Test 3: Email de mise à jour de déclaration');
     try {
       const success = await this.emailService.sendDeclarationUpdateEmail(
         userId,
@@ -108,12 +108,12 @@ export class EmailTestService {
         }
       );
       if (success) {
-        console.log('✅ Email de mise à jour envoyé avec succès\n');
+        console.log('Email de mise à jour envoyé avec succès\n');
       } else {
-        console.log('❌ Erreur lors de l\'envoi de l\'email de mise à jour\n');
+        console.log('Erreur lors de l\'envoi de l\'email de mise à jour\n');
       }
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('Erreur:', error);
     }
   }
 
@@ -133,12 +133,12 @@ export class EmailTestService {
         }
       );
       if (success) {
-        console.log('✅ Email d\'alerte de sécurité envoyé avec succès\n');
+        console.log('Email d\'alerte de sécurité envoyé avec succès\n');
       } else {
-        console.log('❌ Erreur lors de l\'envoi de l\'alerte de sécurité\n');
+        console.log('Erreur lors de l\'envoi de l\'alerte de sécurité\n');
       }
     } catch (error) {
-      console.error('❌ Erreur:', error);
+      console.error('Erreur:', error);
     }
   }
 

@@ -1,0 +1,120 @@
+<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+  <div class="flex items-center px-4 lg:px-8 h-full justify-between">
+    <!-- Logo -->
+    <a routerLink="/" class="no-underline hover:cursor-pointer h-full flex items-center">
+      <img class="h-full max-h-14 md:max-h-30 w-auto" src="/images/header_logo.png" alt="Found Admin">
+    </a>
+
+    <!-- Admin Indicator Badge -->
+    <div class="hidden lg:flex items-center space-x-2 bg-red-100 px-3 py-1.5 rounded-md border border-red-300 absolute left-1/2 transform -translate-x-1/2">
+      <mat-icon fontIcon="admin_panel_settings" class="text-red-600 text-lg"></mat-icon>
+      <span class="text-xs font-bold text-red-600">ADMINISTRATEUR</span>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden lg:flex justify-center items-center space-x-1">
+      @for (link of adminLinks; track link.id) {
+        <a [routerLink]="link.url"
+          class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors text-gray-700 font-medium no-underline">
+          <mat-icon [fontIcon]="link.icon" class="text-lg"></mat-icon>
+          <span>{{ link.title }}</span>
+          @if (link.badge && link.badge > 0) {
+            <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              {{ link.badge }}
+            </span>
+          }
+        </a>
+      }
+    </nav>
+
+    <!-- User Menu & Actions -->
+    <div class="flex items-center space-x-4">
+      <!-- Desktop Dropdown Menu -->
+      <div class="hidden lg:block">
+        <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
+          <ng-template #dropdownTrigger let-context>
+            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center hover:bg-gray-50 transition-colors hover:cursor-pointer">
+              <span class="flex items-center justify-center w-10 h-10 rounded-full border bg-[#009245] text-white font-bold">
+                {{getAvatar()}}
+              </span>
+              <span class="capitalize font-medium">{{ getDisplayName()}}</span>
+              <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+            </button>
+          </ng-template>
+          <ng-template #dropdownOption let-option let-selected="selected" let-select="select" let-closeDropdown="closeDropdown">
+            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              (click)="handleDropdownAction(option.value); closeDropdown()">
+              <div class="flex-1 flex space-x-2">
+                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+                <div class="font-medium text-gray-900">{{ option.label }}</div>
+              </div>
+            </div>
+          </ng-template>
+        </app-dropdown>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        class="lg:hidden p-2 rounded-md hover:bg-gray-200 transition-colors hover:cursor-pointer"
+        (click)="toggleMobileMenu()"
+        [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+        [attr.aria-expanded]="mobileMenuOpen()">
+        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700"></mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+    <nav class="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+      <div class="flex flex-col p-4 space-y-2">
+        <!-- Admin Badge Mobile -->
+        <div class="flex items-center space-x-2 bg-red-100 px-3 py-2 rounded-md border border-red-300 mb-2">
+          <mat-icon fontIcon="admin_panel_settings" class="text-red-600"></mat-icon>
+          <span class="text-xs font-bold text-red-600">ADMINISTRATEUR</span>
+        </div>
+
+        @for (link of adminLinks; track link.id) {
+          <a
+            [routerLink]="link.url"
+            (click)="closeMobileMenu()"
+            class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] no-underline">
+            <mat-icon [fontIcon]="link.icon" class="text-xl"></mat-icon>
+            <span class="font-medium">{{ link.title }}</span>
+            @if (link.badge && link.badge > 0) {
+              <span class="ml-auto bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                {{ link.badge }}
+              </span>
+            }
+          </a>
+        }
+
+        <div class="border-t border-gray-200 my-2 pt-2">
+          <!-- Mobile User Profile -->
+          <button
+            (click)="closeMobileMenu(); redirectTo(Pages.PROFILE)"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            <mat-icon fontIcon="person" class="text-xl"></mat-icon>
+            <span class="font-medium">Profil</span>
+          </button>
+
+          <!-- Mobile Settings -->
+          <button
+            (click)="closeMobileMenu(); redirectTo(Pages.SETTINGS)"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            <mat-icon fontIcon="settings" class="text-xl"></mat-icon>
+            <span class="font-medium">Paramètres</span>
+          </button>
+
+          <!-- Mobile Logout -->
+          <button
+            (click)="closeMobileMenu(); onLogout()"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 transition-colors text-red-600 hover:text-red-700 hover:cursor-pointer">
+            <mat-icon fontIcon="logout" class="text-xl"></mat-icon>
+            <span class="font-medium">Se Déconnecter</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  }
+</header>

@@ -1,0 +1,35 @@
+/* Admin Header Styles */
+:host {
+  display: block;
+}
+
+/* Ensures proper z-index layering */
+header {
+  z-index: 50;
+}
+
+/* Dropdown styles */
+:host ::ng-deep {
+  .mat-mdc-menu-panel {
+    max-width: 300px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    header .absolute {
+      position: static;
+      transform: none;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+/* Smooth transitions */
+a, button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Badge animations */
+span {
+  transition: background-color 0.2s ease-in-out;
+}

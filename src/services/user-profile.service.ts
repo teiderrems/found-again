@@ -155,7 +155,7 @@ export class UserProfileService {
         // Calculer les stats en fonction des déclarations
         const totalDeclarations = declarations.length;
         const foundDeclarations = declarations.filter((d: any) => d.type === 'found').length;
-        const lostDeclarations = declarations.filter((d: any) => d.type === 'lost').length;
+        const lostDeclarations = declarations.filter((d: any) => d.type === 'loss').length;
         const pendingDeclarations = declarations.filter((d: any) => d.status === 'pending').length;
         const resolvedDeclarations = declarations.filter((d: any) => d.status === 'resolved').length;
         
@@ -210,28 +210,21 @@ export class UserProfileService {
   }
 
   // Supprimer le compte utilisateur
-  deleteUserAccount(uid: string): Observable<void> {
-    return new Observable(observer => {
-      try {
-        // Supprimer le document utilisateur
-        const userDoc = doc(this.firestore, `users/${uid}`);
-        updateDoc(userDoc, {
-          deleted: true,
-          deletedAt: new Date(),
-          email: `deleted_${uid}@deleted.local`,
-          firstname: 'Compte',
-          lastname: 'Supprimé'
-        }).then(() => {
-          // Supprimer les données utilisateur associées
-          observer.next();
-          observer.complete();
-        }).catch(error => {
-          observer.error(error);
-        });
-      } catch (error) {
-        observer.error(error);
+  async deleteUserAccount(uid: string): Promise<void> {
+    try {
+      // Supprimer le compte d'authentification Firebase
+      const authUser = this.auth.currentUser;
+      if (authUser) {
+        await deleteUser(authUser);
       }
-    });
+
+      // Supprimer le document utilisateur
+      const userDoc = doc(this.firestore, `users/${uid}`);
+      await deleteDoc(userDoc);
+    } catch (error) {
+      console.error('Error deleting user account:', error);
+      throw error;
+    }
   }
 
   // Vérifier si l'utilisateur est admin

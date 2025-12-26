@@ -1,0 +1,73 @@
+<div class="p-4 md:p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+    <p class="text-gray-600">Consultez et gérez les utilisateurs du système</p>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <mat-form-field class="w-full">
+      <mat-label>Rechercher un utilisateur...</mat-label>
+      <input matInput placeholder="Email, nom, prénom...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table mat-table [dataSource]="(users$ | async) || []" class="w-full">
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Email</th>
+        <td mat-cell *matCellDef="let element" class="font-medium">{{ element.email }}</td>
+      </ng-container>
+
+      <!-- Firstname Column -->
+      <ng-container matColumnDef="firstname">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Prénom</th>
+        <td mat-cell *matCellDef="let element">{{ element.firstname }}</td>
+      </ng-container>
+
+      <!-- Lastname Column -->
+      <ng-container matColumnDef="lastname">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Nom</th>
+        <td mat-cell *matCellDef="let element">{{ element.lastname }}</td>
+      </ng-container>
+
+      <!-- Role Column -->
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Rôle</th>
+        <td mat-cell *matCellDef="let element">
+          <span [class]="element.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'" class="px-3 py-1 rounded-full text-sm font-medium">
+            {{ element.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- CreatedAt Column -->
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Inscrit le</th>
+        <td mat-cell *matCellDef="let element">{{ element.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold text-right">Actions</th>
+        <td mat-cell *matCellDef="let element" class="text-right space-x-2">
+          <button (click)="viewUser(element.uid)" class="text-blue-600 hover:text-blue-800">
+            <mat-icon class="text-lg">visibility</mat-icon>
+          </button>
+          <button (click)="toggleRole(element.uid, element.role)" class="text-green-600 hover:text-green-800">
+            <mat-icon class="text-lg">{{ element.role === 'admin' ? 'remove_admin' : 'admin_panel_settings' }}</mat-icon>
+          </button>
+          <button (click)="deleteUser(element.uid)" class="text-red-600 hover:text-red-800">
+            <mat-icon class="text-lg">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

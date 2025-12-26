@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
    FormBuilder,
    FormGroup,
@@ -7,7 +7,7 @@ import {
    Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -17,7 +17,7 @@ import { Router, RouterModule } from '@angular/router';
    imports: [ReactiveFormsModule, FormsModule, RouterModule],
    standalone: true,
 })
-export class ConfirmEmailComponent {
+export class ConfirmEmailComponent implements OnInit {
    confirmEmailForm: FormGroup;
    errorMessage = '';
 
@@ -25,6 +25,7 @@ export class ConfirmEmailComponent {
       private fb: FormBuilder,
       private authService: AuthService,
       private readonly router: Router,
+      private readonly route: ActivatedRoute,
    ) {
       this.confirmEmailForm = this.fb.group({
          email: [
@@ -37,6 +38,13 @@ export class ConfirmEmailComponent {
                ),
             ],
          ],
+      });
+   }
+
+   ngOnInit(): void {
+      // Rediriger vers la page de reset de mot de passe en conservant les paramètres (oobCode, etc.)
+      this.route.queryParams.subscribe(params => {
+         this.router.navigate(['/reset-password'], { queryParams: params });
       });
    }
 
@@ -61,3 +69,4 @@ export class ConfirmEmailComponent {
       }
    }
 }
+

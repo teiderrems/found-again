@@ -84,7 +84,7 @@ export class MapViewComponent implements OnInit {
 
   private loadDeclarationsAsMarkers() {
     this.isLoading.set(true);
-    this.declarationService.getDeclarations().subscribe({
+    this.declarationService.getActiveDeclarations().subscribe({
       next: (declarations) => {
         // Convert declarations to markers
         this.markers = declarations

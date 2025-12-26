@@ -1,7 +1,8 @@
 // user-profile.component.ts
 import { Component, OnInit, signal, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
@@ -17,15 +18,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UserProfile, UserStats } from '../../types/user';
+import { UserProfile } from '../../types/user';
 import { UserProfileService } from '../../services/user-profile.service';
 import { ThemeService } from '../../services/theme.service';
 import { EditProfileDialogComponent } from '../../components/edit-profile.component';
+import { ConfirmationDialogComponent } from '../../components/confirmation-dialog.component';
 import { AuthService } from '@/services/auth.service';
 import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 import { FirebaseMessagingService } from '../../services/firebase-messaging.service';
-import { DeclarationService } from '@/services/declaration.service';
-import { DeclarationData } from '@/types/declaration';
+import { MatchingService } from '@/services/matching.service';
+import { DeclarationMatch } from '@/types/declaration';
 
 interface UserPreferences {
   // Notifications
@@ -66,58 +68,37 @@ interface UserPreferences {
 export class UserProfileComponent implements OnInit {
   // Injectés
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly userProfileService = inject(UserProfileService);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly themeService = inject(ThemeService);
   private readonly fb = inject(FormBuilder);
   private readonly firebaseMessaging = inject(FirebaseMessagingService);
+  private readonly matchingService = inject(MatchingService);
 
   // Signals
   readonly userProfile = signal<UserProfile | null>(null);
-  readonly userStats = signal<UserStats | null>(null);
   readonly loading = signal(true);
   readonly preferences = signal<UserPreferences>({
-    emailNotifications: true,
-    declarationUpdates: true,
-    matchAlerts: true,
+    emailNotifications: false,
+    declarationUpdates: false,
+    matchAlerts: false,
     publicProfile: false,
     showDeclarations: true
   });
   readonly isSavingPreferences = signal(false);
   readonly isDeleting = signal(false);
-  private readonly declarationService = inject(DeclarationService);
 
   // Computed signals
   readonly initials = computed(() => this.getInitials());
-  userDeclarations = signal<DeclarationData[]>([]);
   readonly isAdmin = computed(() => this.userProfile()?.role === 'admin');
-  readonly hasDeclarations = computed(() => (this.userDeclarations() || []).length > 0);
+  
+  // Matching signals
+  userMatches = signal<DeclarationMatch[]>([]);
+  readonly hasMatches = computed(() => (this.userMatches() || []).length > 0);
 
   constructor() {
-    // Effect pour charger le profil au démarrage
-    effect(() => {
-      this.loadUserProfile();
-    });
-
-    // Effect pour mettre à jour les stats quand le profil change
-    effect(() => {
-      const profile = this.userProfile();
-      if (profile?.uid) {
-        this.loadUserStats(profile.uid);
-        this.loadUserPreferences(profile.uid);
-      }
-    });
-
-    effect(() => {
-      const profile = this.userProfile();
-      if (profile?.uid) {
-        this.loadUserDeclarations(profile.uid);
-      } else {
-        this.userDeclarations.set([]);
-      }
-    });
-
     // Effect pour appliquer le thème
     effect(() => {
       const profile = this.userProfile();
@@ -128,23 +109,13 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Initialisation du composant
-    // Les effects prennent en charge le chargement des données
-  }
-
-  private loadUserDeclarations(uid: string) {
-    this.declarationService.getDeclarationsByUserId(uid).subscribe({
-      next: (declarations) => {
-        this.userDeclarations.set(declarations);
-      },
-      error: (error) => {
-        console.error('Error loading user declarations:', error);
-      }
-    });
+    // Initialiser le chargement du profil
+    this.loadUserProfile();
   }
 
   private loadUserProfile() {
     this.loading.set(true);
+    console.log('Chargement du profil utilisateur...');
     
     try {
       const profileObservable = this.authService.currentUser$;
@@ -158,7 +129,7 @@ export class UserProfileComponent implements OnInit {
                   this.loading.set(false);
                 },
                 error: (error) => {
-                  console.error('Error loading user profile:', error);
+                  console.error('Erreur lors du chargement du profil utilisateur:', error);
                   this.snackBar.open('Erreur lors du chargement du profil utilisateur', 'Fermer', {
                     duration: 3000
                   });
@@ -166,47 +137,27 @@ export class UserProfileComponent implements OnInit {
                 }
               });
             } else {
+              console.log('Pas d\'utilisateur authentifié');
               this.userProfile.set(null);
+              this.loading.set(false);
             }
-            this.loading.set(false);
           },
           error: (error) => {
-            console.error('Error loading profile:', error);
+            console.error('Erreur lors du chargement du profil:', error);
             this.snackBar.open('Erreur lors du chargement du profil', 'Fermer', {
               duration: 3000
             });
             this.loading.set(false);
           }
         });
+      } else {
+        console.log('Pas d\'observable currentUser$');
+        this.loading.set(false);
       }
     } catch (error) {
-      console.error('Failed to load profile:', error);
+      console.error('Erreur non gérée lors du chargement du profil:', error);
       this.loading.set(false);
     }
-  }
-
-  private loadUserStats(uid: string) {
-    this.userProfileService.getUserStats(uid).subscribe({
-      next: (stats) => {
-        this.userStats.set(stats);
-      },
-      error: (error) => {
-        console.error('Error loading stats:', error);
-      }
-    });
-  }
-
-  private loadUserPreferences(uid: string) {
-    this.userProfileService.getUserPreferences(uid).subscribe({
-      next: (prefs) => {
-        if (prefs) {
-          this.preferences.set(prefs);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading preferences:', error);
-      }
-    });
   }
 
   openEditDialog() {
@@ -232,23 +183,43 @@ export class UserProfileComponent implements OnInit {
   async updateProfile(updates: Partial<UserProfile>) {
     const currentUserId = this.authService.getCurrentUserId();
     if (!currentUserId) return;
-    try {
-      const result = await this.userProfileService.updateProfile(currentUserId, updates);
-      
-      if (result.success) {
-        this.snackBar.open('Profil mis à jour avec succès', 'Fermer', {
+
+    // Ouvrir le dialogue de confirmation pour la mise à jour
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Mettre à jour le profil',
+        message: 'Êtes-vous sûr de vouloir enregistrer ces modifications ?',
+        confirmText: 'Enregistrer',
+        cancelText: 'Annuler',
+        type: 'info'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        const result = await this.userProfileService.updateProfile(currentUserId, updates);
+        
+        if (result.success) {
+          this.snackBar.open('Profil mis à jour avec succès', 'Fermer', {
+            duration: 3000
+          });
+          // Recharger le profil
+          this.loadUserProfile();
+        } else {
+          throw result.error;
+        }
+      } catch (error) {
+        this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', {
           duration: 3000
         });
-        // Recharger le profil
-        this.loadUserProfile();
-      } else {
-        throw result.error;
       }
-    } catch (error) {
-      this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', {
-        duration: 3000
-      });
-    }
+    });
   }
 
   // ============= NOTIFICATIONS =============
@@ -412,23 +383,191 @@ export class UserProfileComponent implements OnInit {
   // ============= GESTION FCM =============
 
   private async enableFCMNotifications(uid: string) {
+    if (!uid) {
+      console.warn('UID indéfini, impossible d\'activer les notifications FCM');
+      return;
+    }
+
     try {
+      console.log('Début de enableFCMNotifications...');
+
+      // 1️⃣ Vérifier le support des notifications du navigateur
+      if (!('Notification' in window)) {
+        console.warn('Les notifications ne sont pas supportées par ce navigateur');
+        this.snackBar.open('Les notifications ne sont pas supportées par ce navigateur', 'Fermer', {
+          duration: 5000
+        });
+        return;
+      }
+
+      console.log('Notifications supportées par le navigateur');
+
+      // 2️⃣ Vérifier l'état actuel et afficher à la console
+      const currentPermission = Notification.permission;
+      console.log('Permission actuelle:', currentPermission);
+      
+      // Si déjà accordée, continuer
+      if (currentPermission === 'granted') {
+        console.log('Permission déjà accordée, continuation...');
+        // Passer directement à l'enregistrement du Service Worker
+      } 
+      // Si déjà refusée
+      else if (currentPermission === 'denied') {
+        console.warn('Les notifications ont été refusées');
+        this.snackBar.open('Les notifications ont été refusées. Réautorisez-les dans les paramètres du navigateur.', 'Fermer', {
+          duration: 5000
+        });
+        return;
+      }
+      // Si par défaut, demander la permission
+      else if (currentPermission === 'default') {
+        console.log('Affichage de la popup du navigateur...');
+        this.snackBar.open('Une popup devrait apparaître. Cliquez sur "Autoriser"', 'Fermer', {
+          duration: 10000
+        });
+        
+        // Attendre un peu et afficher la popup
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('Appel de Notification.requestPermission()...');
+        const permission = await Notification.requestPermission();
+        console.log('Réponse de la popup:', permission);
+        
+        if (permission === 'denied') {
+          console.warn('L\'utilisateur a refusé les notifications');
+          this.snackBar.open('Les notifications ont été refusées. Vous pouvez les autoriser dans les paramètres du navigateur.', 'Fermer', {
+            duration: 5000
+          });
+          return;
+        }
+        
+        if (permission !== 'granted') {
+          console.warn('Permission non accordée:', permission);
+          this.snackBar.open('Les notifications n\'ont pas pu être activées', 'Fermer', {
+            duration: 3000
+          });
+          return;
+        }
+        
+        console.log('Permission accordée par l\'utilisateur');
+      }
+
+      console.log('Toutes les vérifications de permission OK');
+
+      // 4️⃣ Enregistrer le Service Worker
+      console.log('Enregistrement du Service Worker...');
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+            scope: '/'
+          });
+          console.log('Service Worker enregistré:', registration);
+        } catch (swError) {
+          console.warn('Erreur lors de l\'enregistrement du Service Worker:', swError);
+          this.snackBar.open('Avertissement: Service Worker non enregistré', 'Fermer', {
+            duration: 3000
+          });
+        }
+      } else {
+        console.warn('Les Service Workers ne sont pas supportés');
+        this.snackBar.open('Les Service Workers ne sont pas supportés par ce navigateur', 'Fermer', {
+          duration: 3000
+        });
+      }
+
+      // 5️⃣ Obtenir le token FCM
+      console.log('Récupération du token FCM...');
       const token = await this.firebaseMessaging.getMessagingToken();
+      
       if (token) {
+        console.log('Token FCM obtenu:', token.substring(0, 20) + '...');
+        
+        // 6️⃣ Sauvegarder le token dans Firestore
         await this.userProfileService.saveFCMToken(uid, token).toPromise();
         console.log('Token FCM sauvegardé pour l\'utilisateur:', uid);
+
+        // 7️⃣ Afficher une notification de test
+        try {
+          if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.ready;
+            await registration.showNotification('Notifications activées', {
+              body: 'Les notifications push sont maintenant activées pour cette application',
+              icon: '/images/logo/logo.png',
+              badge: '/images/logo/logo.png',
+              tag: 'notification-enabled',
+              requireInteraction: false
+            });
+            console.log('Notification de confirmation envoyée');
+            this.snackBar.open('Notifications activées avec succès!', 'Fermer', {
+              duration: 3000
+            });
+          }
+        } catch (notifError) {
+          console.warn('Erreur lors de l\'affichage de la notification:', notifError);
+          this.snackBar.open('Notifications activées (sans notification de confirmation)', 'Fermer', {
+            duration: 3000
+          });
+        }
+      } else {
+        console.warn('Token FCM non obtenu');
+        this.snackBar.open('Token FCM non obtenu. Les notifications peuvent ne pas fonctionner.', 'Fermer', {
+          duration: 5000
+        });
       }
+
     } catch (error) {
       console.error('Erreur lors de l\'activation FCM:', error);
+      this.snackBar.open('Erreur lors de l\'activation des notifications', 'Fermer', {
+        duration: 3000
+      });
     }
   }
 
   private async disableFCMNotifications(uid: string) {
+    if (!uid) {
+      console.warn('UID indéfini, impossible de désactiver les notifications FCM');
+      return;
+    }
+
     try {
+      console.log('Désactivation des notifications FCM...');
+
+      // 1️⃣ Supprimer le token FCM de Firestore
       await this.userProfileService.removeFCMToken(uid).toPromise();
       console.log('Token FCM supprimé pour l\'utilisateur:', uid);
+
+      // 2️⃣ Désenregistrer le Service Worker (optionnel)
+      if ('serviceWorker' in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            const unregistered = await registration.unregister();
+            if (unregistered) {
+              console.log('Service Worker désenregistré');
+            }
+          }
+        } catch (swError) {
+          console.warn('Erreur lors de la désenregistration du Service Worker:', swError);
+        }
+      }
+
+      // 3️⃣ Fermer les notifications actives
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        const registration = await navigator.serviceWorker.ready;
+        const notifications = await registration.getNotifications();
+        notifications.forEach(notification => {
+          notification.close();
+        });
+        if (notifications.length > 0) {
+          console.log(notifications.length, 'notification(s) fermée(s)');
+        }
+      }
+
+      console.log('Notifications FCM désactivées avec succès');
+
     } catch (error) {
-      console.error('Erreur lors de la désactivation FCM:', error);
+      // Ne pas afficher une erreur si la désactivation échoue (non critique)
+      console.warn('Erreur lors de la désactivation FCM (non critique):', error);
     }
   }
 
@@ -438,66 +577,148 @@ export class UserProfileComponent implements OnInit {
     const profile = this.userProfile();
     if (!profile) return;
 
-    // Confirmation dialog
-    if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.\n\nVotre email: ' + profile.email)) {
-      return;
-    }
+    // Ouvrir le dialogue de confirmation
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Supprimer le compte',
+        message: 'Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible et toutes vos données seront supprimées.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger',
+        confirmAction: 'SUPPRIMER'
+      }
+    });
 
-    // Double confirmation
-    const confirmed = prompt('Confirmez en écrivant "SUPPRIMER" pour confirmer la suppression de votre compte:');
-    if (confirmed !== 'SUPPRIMER') {
-      this.snackBar.open('Suppression annulée', 'Fermer', {
-        duration: 3000
-      });
-      return;
-    }
+    dialogRef.afterClosed().subscribe(async (confirmed) => {
+      if (!confirmed) {
+        this.snackBar.open('Suppression annulée', 'Fermer', {
+          duration: 3000
+        });
+        return;
+      }
 
-    this.isDeleting.set(true);
-    try {
-      await this.userProfileService.deleteUserAccount(profile.uid).toPromise();
-      
-      this.snackBar.open('Votre compte a été supprimé avec succès', 'Fermer', {
-        duration: 5000
-      });
+      this.isDeleting.set(true);
+      try {
+        await this.userProfileService.deleteUserAccount(profile.uid);
+        
+        this.snackBar.open('Votre compte a été supprimé avec succès', 'Fermer', {
+          duration: 5000
+        });
 
-      // Logout après la suppression
-      setTimeout(() => {
-        this.authService.logOut();
-      }, 2000);
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      this.snackBar.open('Erreur lors de la suppression du compte', 'Fermer', {
-        duration: 3000
-      });
-    } finally {
-      this.isDeleting.set(false);
-    }
+        // Rediriger vers la page d'inscription après la suppression
+        setTimeout(() => {
+          this.router.navigate(['/inscription']);
+        }, 2000);
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        this.snackBar.open('Erreur lors de la suppression du compte', 'Fermer', {
+          duration: 3000
+        });
+      } finally {
+        this.isDeleting.set(false);
+      }
+    });
   }
 
   async toggleTheme(event: { checked: boolean }) {
-    const profile = this.userProfile();
-    if (!profile) return;
+    // Vérifier si le profil est chargé
+    if (this.loading()) {
+      console.warn('Profil en cours de chargement, veuillez attendre...');
+      this.snackBar.open('Chargement du profil en cours, veuillez attendre...', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent
+      event.checked = !event.checked;
+      return;
+    }
+
+    // Obtenir l'UID depuis authService (source de vérité)
+    const uid = this.authService.getCurrentUserId();
+    if (!uid) {
+      console.warn('UID utilisateur non disponible');
+      this.snackBar.open('Erreur: UID utilisateur indisponible', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent
+      event.checked = !event.checked;
+      return;
+    }
     
     const theme = event.checked ? 'dark' : 'light';
     
+    this.isSavingPreferences.set(true);
     try {
-      await this.userProfileService.updatePreferences(profile.uid, { theme });
+      await this.userProfileService.updatePreferences(uid, { theme });
       this.themeService.setTheme(theme);
+      this.snackBar.open('Thème mis à jour', 'Fermer', {
+        duration: 3000
+      });
+      console.log('Thème mis à jour:', theme);
     } catch (error) {
-      console.error('Error updating theme:', error);
+      console.error('Erreur lors de la mise à jour du thème:', error);
+      this.snackBar.open('Erreur lors de la mise à jour du thème', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent en cas d'erreur
+      event.checked = !event.checked;
+    } finally {
+      this.isSavingPreferences.set(false);
     }
   }
 
   async toggleNotifications(event: { checked: boolean }) {
-    const profile = this.userProfile();
-    if (!profile) return;
+    // Vérifier si le profil est chargé
+    if (this.loading()) {
+      console.warn('Profil en cours de chargement, veuillez attendre...');
+      this.snackBar.open('Chargement du profil en cours, veuillez attendre...', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent
+      event.checked = !event.checked;
+      return;
+    }
+
+    // Obtenir l'UID depuis authService (source de vérité)
+    const uid = this.authService.getCurrentUserId();
+    if (!uid) {
+      console.warn('UID utilisateur non disponible');
+      this.snackBar.open('Erreur: UID utilisateur indisponible', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent
+      event.checked = !event.checked;
+      return;
+    }
     
     const notifications = event.checked;
     
+    this.isSavingPreferences.set(true);
     try {
-      await this.userProfileService.updatePreferences(profile.uid, { notifications });
+      // Mettre à jour les préférences dans Firestore
+      await this.userProfileService.updatePreferences(uid, { notifications });
+      
+      // Gérer les tokens FCM
+      if (notifications) {
+        await this.enableFCMNotifications(uid);
+      } else {
+        await this.disableFCMNotifications(uid);
+      }
+      
+      this.snackBar.open('Notifications ' + (notifications ? 'activées' : 'désactivées'), 'Fermer', {
+        duration: 3000
+      });
+      console.log('Paramètres de notification mis à jour');
     } catch (error) {
-      console.error('Error updating notifications:', error);
+      console.error('Erreur lors de la mise à jour des notifications:', error);
+      this.snackBar.open('Erreur lors de la mise à jour des notifications', 'Fermer', {
+        duration: 3000
+      });
+      // Revenir le toggle à son état précédent en cas d'erreur
+      event.checked = !event.checked;
+    } finally {
+      this.isSavingPreferences.set(false);
     }
   }
 
@@ -517,16 +738,6 @@ export class UserProfileComponent implements OnInit {
     this.snackBar.open('Données exportées avec succès', 'Fermer', {
       duration: 3000
     });
-  }
-
-  openPrivacySettings() {
-    this.snackBar.open('Page de confidentialité bientôt disponible', 'Fermer', {
-      duration: 3000
-    });
-  }
-
-  logout() {
-    this.authService.logOut();
   }
 
   onAvatarError(event: Event) {
@@ -550,5 +761,64 @@ export class UserProfileComponent implements OnInit {
     }
     
     return 'U';
+  }
+
+
+  // ============= ACTIONS DE MATCHING =============
+
+  /**
+   * Affiche la déclaration correspondante
+   */
+  viewMatchingDeclaration(declarationId: string) {
+    // Navigation vers la page de détail de la déclaration
+    this.router.navigate(['/verifier-identite', declarationId]);
+  }
+
+  /**
+   * Filtre les matchings pour les déclarations LOSS
+   */
+  getLossMatches(): DeclarationMatch[] {
+    return (this.userMatches() || []).filter(m => m.declaration.type === 'loss');
+  }
+
+  /**
+   * Filtre les matchings pour les déclarations FOUND
+   */
+  getFoundMatches(): DeclarationMatch[] {
+    return (this.userMatches() || []).filter(m => m.declaration.type === 'found');
+  }
+
+  /**
+   * Confirme qu'une correspondance est correcte
+   */
+  async confirmMatch(matchId: string) {
+    try {
+      await this.matchingService.updateMatchStatus(matchId, 'confirmed');
+      this.snackBar.open('Correspondance confirmée !', 'Fermer', {
+        duration: 3000
+      });
+    } catch (error) {
+      console.error('Erreur lors de la confirmation:', error);
+      this.snackBar.open('Erreur lors de la confirmation', 'Fermer', {
+        duration: 3000
+      });
+    }
+  }
+
+  /**
+   * Rejette une correspondance
+   */
+  async rejectMatch(matchId: string) {
+    try {
+      await this.matchingService.updateMatchStatus(matchId, 'rejected');
+      this.snackBar.open('Correspondance rejetée', 'Fermer', {
+        duration: 3000
+      });
+    } catch (error) {
+      console.error('Erreur lors du rejet:', error);
+      this.snackBar.open('Erreur lors du rejet', 'Fermer', {
+        duration: 3000
+      });
+    }
   }
 }

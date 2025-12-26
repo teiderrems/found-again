@@ -141,6 +141,41 @@ export const routes: Routes = [
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
+            path: 'admin',
+            children: [
+               {
+                  path: 'declarations',
+                  loadComponent: () =>
+                     import('@/pages/admin/declarations/admin-declarations.component').then(
+                        (c) => c.AdminDeclarationsComponent,
+                     ),
+                  pathMatch: 'full',
+                  title: 'Gestion des Déclarations',
+                  runGuardsAndResolvers: (from, to) => from.url === to.url,
+               },
+               {
+                  path: 'users',
+                  loadComponent: () =>
+                     import('@/pages/admin/users/admin-users.component').then(
+                        (c) => c.AdminUsersComponent,
+                     ),
+                  pathMatch: 'full',
+                  title: 'Gestion des Utilisateurs',
+                  runGuardsAndResolvers: (from, to) => from.url === to.url,
+               },
+               {
+                  path: 'verifications',
+                  loadComponent: () =>
+                     import('@/pages/admin/verifications/admin-verifications.component').then(
+                        (c) => c.AdminVerificationsComponent,
+                     ),
+                  pathMatch: 'full',
+                  title: 'Gestion des Vérifications',
+                  runGuardsAndResolvers: (from, to) => from.url === to.url,
+               },
+            ],
+         },
+         {
             path: 'verifier-identite/:id',
             loadComponent: () =>
                import('@/pages/verify-identity/verify-identity.component').then(
@@ -215,6 +250,15 @@ export const routes: Routes = [
          ),
       pathMatch: 'full',
       title: 'Confirmer Email',
+   },
+   {
+      path: 'reset-password',
+      loadComponent: () =>
+         import('@/pages/reset-password/reset-password.component').then(
+            (c) => c.ResetPasswordComponent,
+         ),
+      pathMatch: 'full',
+      title: 'Réinitialiser le mot de passe',
    },
    {
       path: '',
