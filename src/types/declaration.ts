@@ -36,4 +36,24 @@ export interface DeclarationData {
    contactPhone: string;
    images: ImageType[];
    type: DeclarationType;
+   active?: boolean;
+}
+
+export interface DeclarationMatch {
+   declaration: DeclarationData;
+   matchingWith: DeclarationData;
+   confidence: number;
+   reason: string;
+}
+
+export interface MatchingDocument {
+   userId: string;
+   declarationId1: string;
+   declarationId2: string;
+   confidence: number;
+   reason: string;
+   type: 'loss_to_found' | 'found_to_loss';
+   status: 'pending' | 'confirmed' | 'rejected' | 'closed';
+   createdAt: Date;
+   updatedAt: Date;
 }

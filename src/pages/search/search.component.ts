@@ -15,7 +15,7 @@ import { SearchFieldComponent } from "../../components/search-field/search-field
 })
 export class SearchComponent {
    ngOnInit(): void {
-      this.declarationService.getDeclarations().subscribe({
+      this.declarationService.getActiveDeclarations().subscribe({
          next: (declarations) => {
             this.initialItems.set(declarations);
             this.filteredItems.set(declarations);
@@ -34,7 +34,7 @@ export class SearchComponent {
 
    filterItems(searchTerm: string | null) {
       if (searchTerm) {
-         this.declarationService.getDeclarationsBySearchTerm(searchTerm).subscribe({
+         this.declarationService.getActiveDeclarationsBySearchTerm(searchTerm).subscribe({
             next: (declarations) => {
                this.filteredItems.set(declarations);
             },

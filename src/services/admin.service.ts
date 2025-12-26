@@ -15,15 +15,19 @@ import {
 } from '@angular/fire/firestore';
 import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { UserProfile } from '@/types/user';
+import { VerificationData } from '@/types/verification';
 
 export interface AdminStats {
   totalUsers: number;
   totalDeclarations: number;
   foundDeclarations: number;
   lostDeclarations: number;
+  activeDeclarations: number;
+  inactiveDeclarations: number;
   pendingVerifications: number;
   recentDeclarations: DeclarationData[];
   recentUsers: UserProfile[];
+  recentVerifications: VerificationData[];
 }
 
 export interface DeclarationWithUser extends DeclarationData {
@@ -45,18 +49,24 @@ export class AdminService {
       this.getTotalDeclarations(),
       this.getFoundDeclarations(),
       this.getLostDeclarations(),
+      this.getActiveDeclarations(),
+      this.getInactiveDeclarations(),
       this.getPendingVerifications(),
       this.getRecentDeclarations(),
       this.getRecentUsers(),
+      this.getRecentVerifications(),
     ])).pipe(
-      map(([totalUsers, totalDeclarations, foundDeclarations, lostDeclarations, pendingVerifications, recentDeclarations, recentUsers]) => ({
+      map(([totalUsers, totalDeclarations, foundDeclarations, lostDeclarations, activeDeclarations, inactiveDeclarations, pendingVerifications, recentDeclarations, recentUsers, recentVerifications]) => ({
         totalUsers,
         totalDeclarations,
         foundDeclarations,
         lostDeclarations,
+        activeDeclarations,
+        inactiveDeclarations,
         pendingVerifications,
         recentDeclarations,
         recentUsers,
+        recentVerifications,
       }))
     );
   }
@@ -76,6 +86,26 @@ export class AdminService {
   private async getTotalDeclarations(): Promise<number> {
     const declarationsRef = collection(this.firestore, 'declarations');
     const snapshot = await getDocs(declarationsRef);
+    return snapshot.size;
+  }
+
+  /**
+   * Récupère le nombre de déclarations actives
+   */
+  private async getActiveDeclarations(): Promise<number> {
+    const declarationsRef = collection(this.firestore, 'declarations');
+    const q = query(declarationsRef, where('active', '==', true));
+    const snapshot = await getDocs(q);
+    return snapshot.size;
+  }
+
+  /**
+   * Récupère le nombre de déclarations inactives
+   */
+  private async getInactiveDeclarations(): Promise<number> {
+    const declarationsRef = collection(this.firestore, 'declarations');
+    const q = query(declarationsRef, where('active', '==', false));
+    const snapshot = await getDocs(q);
     return snapshot.size;
   }
 
@@ -129,11 +159,11 @@ export class AdminService {
     
     return declarations
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 10);
+      .slice(0, 5);
   }
 
   /**
-   * Récupère les utilisateurs récents (derniers 10)
+   * Récupère les utilisateurs récents (derniers 5)
    */
   private async getRecentUsers(): Promise<UserProfile[]> {
     const usersRef = collection(this.firestore, 'users');
@@ -142,7 +172,7 @@ export class AdminService {
     
     return users
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 10);
+      .slice(0, 5);
   }
 
   /**
@@ -243,5 +273,39 @@ export class AdminService {
         );
       })
     );
+  }
+
+  /**
+   * Récupère tous les utilisateurs de la collection 'users'
+   */
+  getAllUsers(): Observable<UserProfile[]> {
+    const usersRef = collection(this.firestore, 'users');
+    return from(getDocs(usersRef)).pipe(
+      map(snapshot => {
+        if (snapshot.empty) {
+          return [];
+        }
+        return snapshot.docs.map(doc => ({
+          uid: doc.id,
+          ...doc.data()
+        } as UserProfile));
+      })
+    );
+  }
+
+  /**
+   * Récupère les vérifications récentes (dernières 5)
+   */
+  private async getRecentVerifications(): Promise<VerificationData[]> {
+    const verificationsRef = collection(this.firestore, 'verifications');
+    const snapshot = await getDocs(verificationsRef);
+    const verifications = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as VerificationData));
+    
+    return verifications
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 5);
   }
 }

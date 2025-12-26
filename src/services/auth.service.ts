@@ -13,7 +13,9 @@ import {
 import {
    createUserWithEmailAndPassword,
    signInWithEmailAndPassword,
-   updatePassword
+   updatePassword,
+   confirmPasswordReset,
+   verifyPasswordResetCode
 } from '@angular/fire/auth';
 import { GoogleAuthProvider } from '@angular/fire/auth';
 import { doc, Firestore, setDoc, docData, updateDoc, query, collection, where, getDocs } from '@angular/fire/firestore';
@@ -109,6 +111,20 @@ export class AuthService {
 
    resetPassword(email: string): Observable<void> {
       return from(sendPasswordResetEmail(this.auth, email));
+   }
+
+   /**
+    * Confirme le reset de mot de passe avec le code et le nouveau mot de passe
+    */
+   confirmPasswordReset(code: string, newPassword: string): Observable<void> {
+      return from(confirmPasswordReset(this.auth, code, newPassword));
+   }
+
+   /**
+    * Vérifie que le code de reset de mot de passe est valide
+    */
+   verifyPasswordResetCode(code: string): Observable<string> {
+      return from(verifyPasswordResetCode(this.auth, code));
    }
 
    /**

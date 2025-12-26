@@ -16,7 +16,7 @@ const getEmailTransporter = () => {
   const gmailPassword = process.env.GMAIL_PASSWORD;
 
   if (!gmailUser || !gmailPassword) {
-    console.warn('⚠️  Variables Gmail non configurées. Email simulé uniquement.');
+    console.warn('Variables Gmail non configurées. Email simulé uniquement.');
     return null;
   }
 
@@ -75,14 +75,14 @@ export const sendEmail = functions.https.onRequest(async (request, response) => 
       return;
     }
 
-    console.log(`📧 Envoi d'email à ${params.recipientEmail}...`);
+    console.log(`Envoi d'email à ${params.recipientEmail}...`);
 
     // Récupérer le transporter
     const transporter = getEmailTransporter();
 
     if (!transporter) {
       // Mode simulation
-      console.log('✅ Email simulé (pas de SMTP configuré):', {
+      console.log('Email simulé (pas de SMTP configuré):', {
         to: params.recipientEmail,
         subject: params.subject,
         type: params.type
@@ -115,7 +115,7 @@ export const sendEmail = functions.https.onRequest(async (request, response) => 
       text: params.templateData?.message || 'Voir la version HTML'
     });
 
-    console.log(`✅ Email envoyé avec succès: ${result.messageId}`);
+    console.log(`Email envoyé avec succès: ${result.messageId}`);
 
     // Logger dans Firestore
     await admin.firestore().collection('emailLogs').add({
@@ -130,7 +130,7 @@ export const sendEmail = functions.https.onRequest(async (request, response) => 
 
     response.json({ success: true, messageId: result.messageId });
   } catch (error: any) {
-    console.error('❌ Erreur lors de l\'envoi:', error.message);
+    console.error('Erreur lors de l\'envoi:', error.message);
 
     // Logger l'erreur dans Firestore
     try {
@@ -172,8 +172,8 @@ export const onDeclarationCreated = functions.firestore
       const users = usersSnapshot.docs;
 
       const transporter = getEmailTransporter();
-      const declarationType = declaration.type === 'found' ? '🔍 Objet trouvé' : '❌ Objet perdu';
-      const emoji = declaration.type === 'found' ? '🎉' : '😢';
+      const declarationType = declaration.type === 'found' ? 'Objet trouvé' : 'Objet perdu';
+      const emoji = '';
 
       // Envoyer à chaque utilisateur (sauf admins et créateur)
       for (const userDoc of users) {
@@ -182,18 +182,18 @@ export const onDeclarationCreated = functions.firestore
 
         // Skipped les admins et le créateur
         if (userData.role === 'admin' || userId === declaration.userId) {
-          console.log(`⏭️  Skipped ${userData.role === 'admin' ? 'admin' : 'creator'} ${userId}`);
+          console.log(`Skipped ${userData.role === 'admin' ? 'admin' : 'creator'} ${userId}`);
           continue;
         }
 
         // Vérifier les préférences
         if (userData.emailNotifications === false) {
-          console.log(`⏭️  Notifications email désactivées pour ${userId}`);
+          console.log(`Notifications email désactivées pour ${userId}`);
           continue;
         }
 
         if (!userData.email) {
-          console.warn(`⚠️  Pas d'email pour l'utilisateur ${userId}`);
+          console.warn(`Pas d'email pour l'utilisateur ${userId}`);
           continue;
         }
 
@@ -221,7 +221,7 @@ export const onDeclarationCreated = functions.firestore
               <div class="container">
                 <div class="card">
                   <div class="header">
-                    <div class="logo">🔍 Found Again</div>
+                    <div class="logo">Found Again</div>
                   </div>
                   <div class="declaration-badge">${emoji} NOUVELLE DÉCLARATION</div>
                   <h1 class="title">Nouvelle ${declaration.type === 'found' ? 'trouvaille' : 'perte'} signalée!</h1>
@@ -256,9 +256,9 @@ export const onDeclarationCreated = functions.firestore
               html: htmlContent
             });
 
-            console.log(`✅ Email de déclaration envoyé à ${userData.email}`);
+            console.log(`Email de déclaration envoyé à ${userData.email}`);
           } catch (emailError) {
-            console.error(`❌ Erreur envoi email à ${userData.email}:`, emailError);
+            console.error(`Erreur envoi email à ${userData.email}:`, emailError);
           }
         }
       }
@@ -277,7 +277,7 @@ export const onDeclarationCreated = functions.firestore
       });
 
     } catch (error) {
-      console.error('❌ Erreur envoi email déclaration:', error);
+      console.error('Erreur envoi email déclaration:', error);
     }
   });
 
@@ -295,7 +295,7 @@ export const onDeclarationCreatedFCM = functions.firestore
       const usersSnapshot = await admin.firestore().collection('users').get();
       const users = usersSnapshot.docs;
 
-      const emoji = declaration.type === 'found' ? '🎉' : '😢';
+      const emoji = '';
 
       // Envoyer FCM à chaque utilisateur (sauf admins et créateur)
       for (const userDoc of users) {
@@ -304,19 +304,19 @@ export const onDeclarationCreatedFCM = functions.firestore
 
         // Skipped les admins et le créateur
         if (userData.role === 'admin' || userId === creatorId) {
-          console.log(`⏭️  Skipped ${userData.role === 'admin' ? 'admin' : 'creator'} ${userId}`);
+          console.log(`Skipped ${userData.role === 'admin' ? 'admin' : 'creator'} ${userId}`);
           continue;
         }
 
         // Vérifier les préférences
         if (userData.emailNotifications === false) {
-          console.log(`⏭️  Notifications désactivées pour ${userId}`);
+          console.log(`Notifications désactivées pour ${userId}`);
           continue;
         }
 
         // Vérifier si l'utilisateur a un token FCM
         if (!userData.fcmToken) {
-          console.log(`⏭️  Pas de token FCM pour ${userId}`);
+          console.log(`Pas de token FCM pour ${userId}`);
           continue;
         }
 
@@ -332,12 +332,12 @@ export const onDeclarationCreatedFCM = functions.firestore
             }
           });
         } catch (error) {
-          console.error(`❌ Erreur FCM pour ${userId}:`, error);
+          console.error(`Erreur FCM pour ${userId}:`, error);
         }
       }
 
     } catch (error) {
-      console.error('❌ Erreur FCM déclaration broadcast:', error);
+      console.error('Erreur FCM déclaration broadcast:', error);
     }
   });
 
@@ -354,7 +354,7 @@ async function sendFCMNotification(userId: string, payload: {
     const userData = userDoc.data();
 
     if (!userData || !userData.fcmToken) {
-      console.log(`⚠️  Pas de token FCM pour ${userId}`);
+      console.log(`Pas de token FCM pour ${userId}`);
       return;
     }
 
@@ -373,7 +373,7 @@ async function sendFCMNotification(userId: string, payload: {
     };
 
     const response = await admin.messaging().send(message as any);
-    console.log(`✅ FCM notification envoyée (${response})`);
+    console.log(`FCM notification envoyée (${response})`);
 
     // Logger la notification
     await admin.firestore().collection('notificationLogs').add({
@@ -386,12 +386,12 @@ async function sendFCMNotification(userId: string, payload: {
       fcmResponse: response
     });
   } catch (error: any) {
-    console.error('❌ Erreur FCM notification:', error.message);
+    console.error('Erreur FCM notification:', error.message);
     
     // Si le token est invalide, le supprimer
     if (error.code === 'messaging/invalid-registration-token' || 
         error.code === 'messaging/registration-token-not-registered') {
-      console.log(`🗑️  Suppression du token invalide pour ${userId}`);
+      console.log(`Suppression du token invalide pour ${userId}`);
       await admin.firestore().collection('users').doc(userId).update({
         fcmToken: admin.firestore.FieldValue.delete()
       });
@@ -414,7 +414,7 @@ export const onNotificationCreatedFCM = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications désactivées pour ${userId}`);
+        console.log(`Notifications désactivées pour ${userId}`);
         return;
       }
 
@@ -427,7 +427,7 @@ export const onNotificationCreatedFCM = functions.firestore
         }
       });
     } catch (error) {
-      console.error('❌ Erreur FCM notification:', error);
+      console.error('Erreur FCM notification:', error);
     }
   });
 
@@ -446,7 +446,7 @@ export const onMatchCreatedFCM = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications désactivées pour ${userId}`);
+        console.log(`Notifications désactivées pour ${userId}`);
         return;
       }
 
@@ -458,7 +458,7 @@ export const onMatchCreatedFCM = functions.firestore
       const matchedObjectName = dec2.exists ? dec2.data()?.objectName : 'Objet';
 
       await sendFCMNotification(userId, {
-        title: '🎉 Correspondance trouvée!',
+        title: 'Correspondance trouvée!',
         body: `"${objectName}" correspond à "${matchedObjectName}" (${(match.confidence * 100).toFixed(0)}%)`,
         data: {
           type: 'match_found',
@@ -467,7 +467,7 @@ export const onMatchCreatedFCM = functions.firestore
         }
       });
     } catch (error) {
-      console.error('❌ Erreur FCM match:', error);
+      console.error('Erreur FCM match:', error);
     }
   });
 
@@ -493,18 +493,18 @@ export const onDeclarationStatusChangedFCM = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications désactivées pour ${userId}`);
+        console.log(`Notifications désactivées pour ${userId}`);
         return;
       }
 
       const statusEmojis: { [key: string]: string } = {
-        'active': '🟢',
-        'resolved': '✅',
-        'closed': '❌',
-        'archived': '📦'
+        'active': '',
+        'resolved': '',
+        'closed': '',
+        'archived': ''
       };
 
-      const emoji = statusEmojis[after.status] || '📝';
+      const emoji = statusEmojis[after.status] || '';
 
       await sendFCMNotification(userId, {
         title: `${emoji} Déclaration ${after.status}`,
@@ -517,7 +517,7 @@ export const onDeclarationStatusChangedFCM = functions.firestore
         }
       });
     } catch (error) {
-      console.error('❌ Erreur FCM déclaration:', error);
+      console.error('Erreur FCM déclaration:', error);
     }
   });
 
@@ -540,12 +540,12 @@ export const onVerificationCompletedFCM = functions.firestore
         const userData = userDoc.data();
 
         if (!userData || userData.emailNotifications === false) {
-          console.log(`⏭️  Notifications désactivées pour ${userId}`);
+          console.log(`Notifications désactivées pour ${userId}`);
           return;
         }
 
         await sendFCMNotification(userId, {
-          title: '✅ Identité vérifiée!',
+          title: 'Identité vérifiée!',
           body: 'Félicitations! Votre identité a été vérifiée avec succès.',
           data: {
             type: 'verification_approved',
@@ -555,7 +555,7 @@ export const onVerificationCompletedFCM = functions.firestore
         });
       }
     } catch (error) {
-      console.error('❌ Erreur FCM vérification:', error);
+      console.error('Erreur FCM vérification:', error);
     }
   });
 
@@ -574,21 +574,21 @@ export const onNotificationCreated = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || !userData.email) {
-        console.warn(`⚠️  Pas d'email pour l'utilisateur ${userId}`);
+        console.warn(`Pas d'email pour l'utilisateur ${userId}`);
         return;
       }
 
       // Vérifier les préférences de notification
       if (userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications email désactivées pour ${userId}`);
+        console.log(`Notifications email désactivées pour ${userId}`);
         return;
       }
 
-      console.log(`📧 Envoi notification à ${userData.email}`);
+      console.log(`Envoi notification à ${userData.email}`);
 
       const transporter = getEmailTransporter();
       if (!transporter) {
-        console.log('✅ Notification simulée');
+        console.log('Notification simulée');
         return;
       }
 
@@ -599,9 +599,9 @@ export const onNotificationCreated = functions.firestore
         html: `<p>${notification.message || 'Vous avez une nouvelle notification'}</p>`
       });
 
-      console.log(`✅ Notification envoyée à ${userData.email}`);
+      console.log(`Notification envoyée à ${userData.email}`);
     } catch (error) {
-      console.error('❌ Erreur notification:', error);
+      console.error('Erreur notification:', error);
     }
   });
 
@@ -620,19 +620,19 @@ export const onMatchCreated = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || !userData.email) {
-        console.warn(`⚠️  Pas d'email pour l'utilisateur ${userId}`);
+        console.warn(`Pas d'email pour l'utilisateur ${userId}`);
         return;
       }
 
       // Vérifier les préférences
       if (userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications email désactivées pour ${userId}`);
+        console.log(`Notifications email désactivées pour ${userId}`);
         return;
       }
 
       const transporter = getEmailTransporter();
       if (!transporter) {
-        console.log('✅ Email de correspondance simulé');
+        console.log('Email de correspondance simulé');
         return;
       }
 
@@ -662,9 +662,9 @@ export const onMatchCreated = functions.firestore
           <div class="container">
             <div class="card">
               <div class="header">
-                <div class="logo">🔍 Found Again</div>
+                <div class="logo">Found Again</div>
               </div>
-              <div class="match-badge">✅ CORRESPONDANCE TROUVÉE!</div>
+              <div class="match-badge">CORRESPONDANCE TROUVÉE!</div>
               <h1 class="title">Bonne nouvelle - Correspondance détectée!</h1>
               <p>Nous avons trouvé une correspondance potentielle pour votre déclaration.</p>
               
@@ -690,11 +690,11 @@ export const onMatchCreated = functions.firestore
       await transporter.sendMail({
         from: process.env.GMAIL_USER,
         to: userData.email,
-        subject: '🎉 Correspondance trouvée sur Found Again!',
+        subject: 'Correspondance trouvée sur Found Again!',
         html: htmlContent
       });
 
-      console.log(`✅ Email de correspondance envoyé à ${userData.email}`);
+      console.log(`Email de correspondance envoyé à ${userData.email}`);
 
       // Logger dans Firestore
       await admin.firestore().collection('emailLogs').add({
@@ -708,7 +708,7 @@ export const onMatchCreated = functions.firestore
         confidence: match.confidence
       });
     } catch (error) {
-      console.error('❌ Erreur envoi email correspondance:', error);
+      console.error('Erreur envoi email correspondance:', error);
     }
   });
 
@@ -731,19 +731,19 @@ export const onVerificationCompleted = functions.firestore
         const userData = userDoc.data();
 
         if (!userData || !userData.email) {
-          console.warn(`⚠️  Pas d'email pour l'utilisateur ${userId}`);
+          console.warn(`Pas d'email pour l'utilisateur ${userId}`);
           return;
         }
 
         // Vérifier les préférences
         if (userData.emailNotifications === false) {
-          console.log(`⏭️  Notifications email désactivées pour ${userId}`);
+          console.log(`Notifications email désactivées pour ${userId}`);
           return;
         }
 
         const transporter = getEmailTransporter();
         if (!transporter) {
-          console.log('✅ Email de vérification simulé');
+          console.log('Email de vérification simulé');
           return;
         }
 
@@ -768,9 +768,9 @@ export const onVerificationCompleted = functions.firestore
             <div class="container">
               <div class="card">
                 <div class="header">
-                  <div class="logo">🔍 Found Again</div>
+                  <div class="logo">Found Again</div>
                 </div>
-                <div class="success-badge">✅ IDENTITÉ VÉRIFIÉE</div>
+                <div class="success-badge">IDENTITÉ VÉRIFIÉE</div>
                 <h1 class="title">Félicitations! Votre identité a été vérifiée</h1>
                 <p>Votre compte a maintenant accès à toutes les fonctionnalités de Found Again.</p>
                 <p>Vous pouvez maintenant:</p>
@@ -793,11 +793,11 @@ export const onVerificationCompleted = functions.firestore
         await transporter.sendMail({
           from: process.env.GMAIL_USER,
           to: userData.email,
-          subject: '✅ Identité vérifiée - Bienvenue sur Found Again!',
+          subject: 'Identité vérifiée - Bienvenue sur Found Again!',
           html: htmlContent
         });
 
-        console.log(`✅ Email de vérification envoyé à ${userData.email}`);
+        console.log(`Email de vérification envoyé à ${userData.email}`);
 
         // Logger
         await admin.firestore().collection('emailLogs').add({
@@ -810,7 +810,7 @@ export const onVerificationCompleted = functions.firestore
         });
       }
     } catch (error) {
-      console.error('❌ Erreur email vérification:', error);
+      console.error('Erreur email vérification:', error);
     }
   });
 
@@ -836,19 +836,19 @@ export const onDeclarationStatusChanged = functions.firestore
       const userData = userDoc.data();
 
       if (!userData || !userData.email) {
-        console.warn(`⚠️  Pas d'email pour l'utilisateur ${userId}`);
+        console.warn(`Pas d'email pour l'utilisateur ${userId}`);
         return;
       }
 
       // Vérifier les préférences
       if (userData.emailNotifications === false) {
-        console.log(`⏭️  Notifications email désactivées pour ${userId}`);
+        console.log(`Notifications email désactivées pour ${userId}`);
         return;
       }
 
       const transporter = getEmailTransporter();
       if (!transporter) {
-        console.log('✅ Email de mise à jour simulé');
+        console.log('Email de mise à jour simulé');
         return;
       }
 
@@ -860,14 +860,14 @@ export const onDeclarationStatusChanged = functions.firestore
       };
 
       const statusEmojis: { [key: string]: string } = {
-        'active': '🟢',
-        'resolved': '✅',
-        'closed': '❌',
-        'archived': '📦'
+        'active': '',
+        'resolved': '',
+        'closed': '',
+        'archived': ''
       };
 
       const statusMessage = statusMessages[after.status] || `Statut: ${after.status}`;
-      const emoji = statusEmojis[after.status] || '📝';
+      const emoji = statusEmojis[after.status] || '';
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -891,7 +891,7 @@ export const onDeclarationStatusChanged = functions.firestore
           <div class="container">
             <div class="card">
               <div class="header">
-                <div class="logo">🔍 Found Again</div>
+                <div class="logo">Found Again</div>
               </div>
               <div class="status-badge">${emoji} ${after.status.toUpperCase()}</div>
               <h1 class="title">${statusMessage}</h1>
@@ -900,7 +900,7 @@ export const onDeclarationStatusChanged = functions.firestore
                 <strong>Objet:</strong><br/>
                 ${after.objectName || 'Objet'}<br/><br/>
                 <strong>Type:</strong><br/>
-                ${after.type === 'found' ? '🔍 Objet trouvé' : '❌ Objet perdu'}<br/><br/>
+                ${after.type === 'found' ? 'Objet trouvé' : 'Objet perdu'}<br/><br/>
                 <strong>Nouveau statut:</strong><br/>
                 ${after.status}
               </div>
@@ -923,7 +923,7 @@ export const onDeclarationStatusChanged = functions.firestore
         html: htmlContent
       });
 
-      console.log(`✅ Email de mise à jour envoyé à ${userData.email}`);
+      console.log(`Email de mise à jour envoyé à ${userData.email}`);
 
       // Logger
       await admin.firestore().collection('emailLogs').add({
@@ -938,7 +938,7 @@ export const onDeclarationStatusChanged = functions.firestore
         newStatus: after.status
       });
     } catch (error) {
-      console.error('❌ Erreur email mise à jour:', error);
+      console.error('Erreur email mise à jour:', error);
     }
   });
 
@@ -989,7 +989,7 @@ function generateEmailHTML(params: EmailParams): string {
       <div class="container">
         <div class="card">
           <div class="header">
-            <div class="logo">🔍</div>
+            <div class="logo"></div>
             <div class="header-title">${data.title || params.subject}</div>
           </div>
           <div class="content">

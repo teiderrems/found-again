@@ -2,40 +2,49 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService, AdminStats } from '@/services/admin.service';
 import { VerificationService } from '@/services/verification.service';
+import { DeclarationService } from '@/services/declaration.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '@/services/auth.service';
 import { UserProfile } from '@/types/user';
 import { DeclarationWithUser } from '@/services/admin.service';
-import { VerificationData } from '@/types/verification';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
+import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, FirebaseDatePipe],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, FirebaseDatePipe],
 })
 export class AdminDashboardComponent implements OnInit {
   private adminService = inject(AdminService);
   private verificationService = inject(VerificationService);
+  private declarationService = inject(DeclarationService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
 
   stats = signal<AdminStats>({
     totalUsers: 0,
     totalDeclarations: 0,
     foundDeclarations: 0,
     lostDeclarations: 0,
+    activeDeclarations: 0,
+    inactiveDeclarations: 0,
     pendingVerifications: 0,
     recentDeclarations: [],
     recentUsers: [],
+    recentVerifications: [],
   });
 
   pendingVerifications = signal<(DeclarationWithUser & { verificationId?: string })[]>([]);
-  activeTab = signal<'recent-declarations' | 'pending-verifications' | 'recent-users'>('recent-declarations');
+  activeTab = signal<'recent-declarations' | 'pending-verifications' | 'recent-users' | 'recent-verifications'>('recent-declarations');
   isLoading = signal(false);
   selectedUserForRoleChange = signal<UserProfile | null>(null);
   showRoleModal = signal(false);
@@ -172,5 +181,138 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading.set(false);
       },
     });
+  }
+
+  /**
+   * Supprime une déclaration après confirmation
+   */
+  deleteDeclaration(declarationId: string, declarationTitle: string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Supprimer la déclaration',
+        message: `Êtes-vous sûr de vouloir supprimer la déclaration "${declarationTitle}" ? Cette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.isLoading.set(true);
+      this.declarationService.deleteDeclarationAsAdmin(declarationId).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.snackBar.open('Déclaration supprimée avec succès', 'Fermer', {
+            duration: 3000
+          });
+          this.loadStats();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression:', error);
+          this.isLoading.set(false);
+          this.snackBar.open('Erreur lors de la suppression de la déclaration', 'Fermer', {
+            duration: 3000
+          });
+        },
+      });
+    });
+  }
+
+  /**
+   * Toggle declaration active status
+   */
+  toggleDeclarationActive(declarationId: string, currentActive: boolean, declarationTitle: string) {
+    const newStatus = !currentActive;
+    const action = newStatus ? 'activer' : 'désactiver';
+    
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
+        message: `Êtes-vous sûr de vouloir ${action} la déclaration "${declarationTitle}" ?`,
+        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+        cancelText: 'Annuler',
+        type: 'warning'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.isLoading.set(true);
+      this.declarationService.toggleDeclarationActive(declarationId, newStatus).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.snackBar.open(`Déclaration ${action}e avec succès`, 'Fermer', {
+            duration: 3000
+          });
+          this.loadStats();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la modification:', error);
+          this.isLoading.set(false);
+          this.snackBar.open('Erreur lors de la modification de la déclaration', 'Fermer', {
+            duration: 3000
+          });
+        },
+      });
+    });
+  }
+
+  /**
+   * Deactivate loss declarations (when owner found their item)
+   */
+  markLossAsResolved(declarationId: string, declarationTitle: string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Marquer comme résolu',
+        message: `La déclaration de perte "${declarationTitle}" a-t-elle retrouvé son propriétaire ? Cette déclaration sera désactivée.`,
+        confirmText: 'Marquer comme résolu',
+        cancelText: 'Annuler',
+        type: 'info'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.isLoading.set(true);
+      this.declarationService.deactivateLossDeclaration(declarationId).subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.snackBar.open('Déclaration de perte marquée comme résolue', 'Fermer', {
+            duration: 3000
+          });
+          this.loadStats();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la modification:', error);
+          this.isLoading.set(false);
+          this.snackBar.open('Erreur lors de la modification de la déclaration', 'Fermer', {
+            duration: 3000
+          });
+        },
+      });
+    });
+  }
+
+  /**
+   * View declaration details
+   */
+  viewDeclaration(declarationId: string) {
+    this.router.navigate(['/verifier-identite', declarationId]);
   }
 }

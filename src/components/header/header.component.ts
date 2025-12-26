@@ -336,16 +336,6 @@ export class HeaderComponent implements OnInit {
          },
       },
       {
-         value: '4',
-         label: 'Paramètre',
-         icon: 'settings',
-         action: ($event: any) => {
-            console.log($event);
-           this.redirectTo(Pages.SETTINGS);
-
-         },
-      },
-      {
          value: '5',
          label: 'Se Déconnecter',
          icon: 'logout',

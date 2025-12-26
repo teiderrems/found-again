@@ -1,0 +1,87 @@
+<div class="p-4 md:p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Gestion des Vérifications</h1>
+    <p class="text-gray-600">Consultez et approuvez les vérifications d'identité des utilisateurs</p>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field class="w-full">
+        <mat-label>Rechercher par utilisateur...</mat-label>
+        <input matInput placeholder="Email, ID utilisateur...">
+        <mat-icon matPrefix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Filtrer par statut...</mat-label>
+        <select matNativeControl>
+          <option value="">Tous les statuts</option>
+          <option value="pending">En attente</option>
+          <option value="approved">Approuvé</option>
+          <option value="rejected">Rejeté</option>
+        </select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table mat-table [dataSource]="(verifications$ | async) || []" class="w-full">
+      <!-- UserId Column -->
+      <ng-container matColumnDef="userId">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Utilisateur</th>
+        <td mat-cell *matCellDef="let element" class="font-medium">{{ element.userId }}</td>
+      </ng-container>
+
+      <!-- DeclarationId Column -->
+      <ng-container matColumnDef="declarationId">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Déclaration</th>
+        <td mat-cell *matCellDef="let element">{{ element.declarationId }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Statut</th>
+        <td mat-cell *matCellDef="let element">
+          <span [class]="
+            element.status === 'approved' ? 'bg-green-100 text-green-800' :
+            element.status === 'rejected' ? 'bg-red-100 text-red-800' :
+            'bg-yellow-100 text-yellow-800'
+          " class="px-3 py-1 rounded-full text-sm font-medium">
+            {{ element.status === 'approved' ? 'Approuvé' : element.status === 'rejected' ? 'Rejeté' : 'En attente' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- CreatedAt Column -->
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold">Date</th>
+        <td mat-cell *matCellDef="let element">{{ element.timestamp | date: 'dd/MM/yyyy HH:mm' }}</td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="bg-gray-50 font-semibold text-right">Actions</th>
+        <td mat-cell *matCellDef="let element" class="text-right space-x-2">
+          <button (click)="viewVerification(element.id)" class="text-blue-600 hover:text-blue-800">
+            <mat-icon class="text-lg">visibility</mat-icon>
+          </button>
+          @if (element.status === 'pending') {
+            <button (click)="approveVerification(element.id)" class="text-green-600 hover:text-green-800">
+              <mat-icon class="text-lg">check_circle</mat-icon>
+            </button>
+            <button (click)="rejectVerification(element.id)" class="text-red-600 hover:text-red-800">
+              <mat-icon class="text-lg">cancel</mat-icon>
+            </button>
+          }
+          <button (click)="deleteVerification(element.id)" class="text-gray-600 hover:text-gray-800">
+            <mat-icon class="text-lg">delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

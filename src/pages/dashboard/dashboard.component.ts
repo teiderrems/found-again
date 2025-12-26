@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DeclarationService } from '@/services/declaration.service';
 import { AuthService } from '@/services/auth.service';
 import { DeclarationData, DeclarationType } from '@/types/declaration';
+import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
 import ApexCharts from 'apexcharts';
 
 @Component({
@@ -13,11 +16,13 @@ import ApexCharts from 'apexcharts';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule]
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatDialogModule]
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   private declarationService = inject(DeclarationService);
   private authService = inject(AuthService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
   private userId = this.authService.getCurrentUserId();
 
   @ViewChild('typeChart') typeChart!: ElementRef;
@@ -238,15 +243,110 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   deleteDeclaration(id: string, type: DeclarationType, images: any[]) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette déclaration ?')) {
-      this.declarationService.deleteDeclaration(id, type, images).subscribe({
-        next: () => {
-          this.loadUserDeclarations();
-        },
-        error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Supprimer la déclaration',
+        message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.declarationService.deleteDeclaration(id, type, images).subscribe({
+          next: () => {
+            this.snackBar.open('Déclaration supprimée avec succès', 'Fermer', {
+              duration: 3000
+            });
+            this.loadUserDeclarations();
+          },
+          error: (error) => {
+            console.error('Erreur lors de la suppression:', error);
+            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+              duration: 3000
+            });
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Toggle declaration active/inactive status
+   */
+  toggleDeclarationActive(id: string, currentActive: boolean) {
+    const newStatus = !currentActive;
+    const action = newStatus ? 'activer' : 'désactiver';
+    
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
+        message: `Êtes-vous sûr de vouloir ${action} cette déclaration ?`,
+        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+        cancelText: 'Annuler',
+        type: 'warning'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.declarationService.toggleDeclarationActive(id, newStatus).subscribe({
+          next: () => {
+            this.snackBar.open(`Déclaration ${action}e avec succès`, 'Fermer', {
+              duration: 3000
+            });
+            this.loadUserDeclarations();
+          },
+          error: (error) => {
+            console.error('Erreur lors de la modification:', error);
+            this.snackBar.open('Erreur lors de la modification', 'Fermer', {
+              duration: 3000
+            });
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Mark loss declaration as resolved
+   */
+  markLossAsResolved(id: string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      disableClose: false,
+      data: {
+        title: 'Objet retrouvé',
+        message: 'Vous avez retrouvé votre objet perdu ? Cette déclaration sera désactivée.',
+        confirmText: 'Confirmer',
+        cancelText: 'Annuler',
+        type: 'info'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.declarationService.deactivateLossDeclaration(id).subscribe({
+          next: () => {
+            this.snackBar.open('Déclaration marquée comme résolue', 'Fermer', {
+              duration: 3000
+            });
+            this.loadUserDeclarations();
+          },
+          error: (error) => {
+            console.error('Erreur lors de la modification:', error);
+            this.snackBar.open('Erreur lors de la modification', 'Fermer', {
+              duration: 3000
+            });
+          }
+        });
+      }
+    });
   }
 }

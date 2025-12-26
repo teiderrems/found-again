@@ -9,6 +9,7 @@ import {
    doc,
    DocumentReference,
    setDoc,
+   updateDoc,
    deleteDoc,
    getDoc,
    Query,
@@ -55,6 +56,7 @@ export class DeclarationService {
          ...declaration,
          images: [],
          createdAt: new Date().toISOString(),
+         active: true,
       };
 
       return from(addDoc(colRef, initialData)).pipe(
@@ -92,6 +94,16 @@ export class DeclarationService {
    getDeclarations(): Observable<DeclarationData[]> {
       const colRef = this.getCollectionRef();
       return collectionData(colRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+   }
+
+   /**
+    * Récupère seulement les déclarations actives (côté Firestore).
+    */
+   getActiveDeclarations(): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const activeFilter = where('active', '==', true);
+      const declarationsQuery = query(colRef, activeFilter);
+      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<DeclarationData[]>;
    }
 
    /**
@@ -259,6 +271,32 @@ export class DeclarationService {
    }
 
    /**
+    * Récupère les déclarations actives filtrées par terme de recherche (côté Firestore).
+    */
+   getActiveDeclarationsBySearchTerm(
+      searchTerm: string,
+   ): Observable<DeclarationData[]> {
+      const colRef = this.getCollectionRef();
+      const lowerCaseTerm = searchTerm.toLowerCase().trim();
+      const activeFilter = where('active', '==', true);
+      const declarationsQuery = query(colRef, activeFilter);
+
+      return (collectionData(declarationsQuery, { idField: 'id' }) as Observable<any[]>).pipe(
+         map((declarations: any[]) =>
+            (declarations as DeclarationData[]).filter((declaration) => {
+               const inCategory =
+                  declaration.category.toLowerCase().includes(lowerCaseTerm);
+               const inTitle =
+                  declaration.title.toLowerCase().includes(lowerCaseTerm);
+               const inDescription =
+                  declaration.description.toLowerCase().includes(lowerCaseTerm);
+               return inCategory || inTitle || inDescription;
+            }),
+         ),
+      );
+   }
+
+   /**
     */
 
    /**
@@ -346,5 +384,56 @@ export class DeclarationService {
             }));
          })
       );
+   }
+
+   /**
+    * Supprime une déclaration par son ID (réservé aux administrateurs).
+    * Récupère d'abord la déclaration pour supprimer les images associées.
+    */
+   deleteDeclarationAsAdmin(declarationId: string): Observable<void> {
+      return this.getDeclarationById(declarationId).pipe(
+         switchMap((declaration) => {
+            // Appelle la méthode de suppression existante avec tous les paramètres
+            return this.deleteDeclaration(
+               declarationId,
+               declaration.type,
+               declaration.images || []
+            );
+         }),
+         catchError((e) => {
+            console.error(`Erreur lors de la suppression de la déclaration ${declarationId}:`, e);
+            throw e;
+         })
+      );
+   }
+
+   /**
+    * Activate or deactivate a declaration
+    */
+   toggleDeclarationActive(declarationId: string, active: boolean): Observable<void> {
+      const colRef = this.getCollectionRef();
+      const docRef = doc(colRef, declarationId);
+      
+      return from(updateDoc(docRef, { active })).pipe(
+         map(() => undefined),
+         catchError((e) => {
+            console.error(`Erreur lors de la modification du statut de la déclaration ${declarationId}:`, e);
+            throw e;
+         })
+      );
+   }
+
+   /**
+    * Deactivate loss declarations (when the owner found their item)
+    */
+   deactivateLossDeclaration(declarationId: string): Observable<void> {
+      return this.toggleDeclarationActive(declarationId, false);
+   }
+
+   /**
+    * Activate a declaration
+    */
+   activateDeclaration(declarationId: string): Observable<void> {
+      return this.toggleDeclarationActive(declarationId, true);
    }
 }
