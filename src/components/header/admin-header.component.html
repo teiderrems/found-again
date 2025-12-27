@@ -10,6 +10,7 @@
       @for (link of adminLinks; track link.id) {
         <a [routerLink]="link.url"
           routerLinkActive="after:w-full text-[#009245] bg-gray-200"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors text-gray-700 font-medium no-underline relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#009245] after:to-green-700 after:transition-all after:duration-300">
           <mat-icon [fontIcon]="link.icon" class="text-lg"></mat-icon>
           <span>{{ link.title }}</span>

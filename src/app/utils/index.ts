@@ -27,5 +27,3 @@ export const capitalizeFirstLetter = (word?: string) => {
 };
 
 export * from './preparePathForRouter';
-export * from './truncate';
-export * from './generateUrl';
