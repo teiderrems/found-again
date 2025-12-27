@@ -166,7 +166,16 @@ export const sendPasswordReset = onCall({ cors: true }, async (request) => {
 
   try {
     // Générer le lien de réinitialisation
-    const link = await admin.auth().generatePasswordResetLink(email);
+    const firebaseLink = await admin.auth().generatePasswordResetLink(email);
+    
+    // Extraire le oobCode du lien Firebase
+    const urlObj = new URL(firebaseLink);
+    const oobCode = urlObj.searchParams.get('oobCode');
+    
+    // Construire le lien vers notre application Angular
+    // Note: Assurez-vous que l'URL de base correspond à votre déploiement
+    const appUrl = 'https://found-again-4a0e0.web.app'; // ou localhost en dev
+    const link = `${appUrl}/reset-password?oobCode=${oobCode}`;
     
     const transporter = getEmailTransporter();
     
@@ -199,14 +208,17 @@ export const sendPasswordReset = onCall({ cors: true }, async (request) => {
             </div>
             <h1 class="title">Réinitialisation de mot de passe</h1>
             
-            <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
-            <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :</p>
+            <p>Bonjour,</p>
+            <p>Suivez ce lien pour réinitialiser votre mot de passe Found Again pour votre compte ${email}.</p>
             
             <div style="text-align: center;">
               <a href="${link}" class="button">Réinitialiser mon mot de passe</a>
             </div>
             
-            <p style="margin-top: 24px; font-size: 14px;">Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
+            <p style="margin-top: 24px; font-size: 14px;">Si vous n'avez pas demandé à réinitialiser votre mot de passe, vous pouvez ignorer cet email.</p>
+            
+            <p>Merci,</p>
+            <p>L'équipe Found Again</p>
           </div>
           <div class="footer">
             <p>© 2025 Found Again. Tous droits réservés.</p>

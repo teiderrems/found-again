@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { Router, RouterModule } from '@angular/router';
    templateUrl: './register.component.html',
    styleUrl: './register.component.css',
    standalone: true,
-   imports: [ReactiveFormsModule, FormsModule, RouterModule],
+   imports: [ReactiveFormsModule, FormsModule, RouterModule, MatSnackBarModule],
 })
 export class RegisterComponent {
    registerForm: FormGroup;
@@ -25,6 +26,7 @@ export class RegisterComponent {
       private fb: FormBuilder,
       private authService: AuthService,
       private readonly router: Router,
+      private snackBar: MatSnackBar
    ) {
       this.registerForm = this.fb.group({
          firstname: ['', [Validators.required, Validators.minLength(2)]],
@@ -69,12 +71,21 @@ export class RegisterComponent {
                password: this.registerForm.get('password')?.value,
             });
             if (user) {
+               this.snackBar.open('Inscription réussie ! Bienvenue.', 'OK', {
+                  duration: 3000,
+                  verticalPosition: 'top'
+               });
                this.router.navigateByUrl('/');
                this.registerForm.reset();
             }
-         } catch (err) {
+         } catch (err: any) {
             console.log(err);
             this.errorMessage = 'Identifiants Incorrects.';
+            const errorMessage = this.getErrorMessage(err);
+            this.snackBar.open(errorMessage, 'Fermer', {
+               duration: 5000,
+               verticalPosition: 'top'
+            });
          }
       }
    }
@@ -83,6 +94,10 @@ export class RegisterComponent {
       try {
          const value= await this.authService.signInGoogle();
          if (value) {
+            this.snackBar.open('Inscription via Google réussie !', 'OK', {
+               duration: 3000,
+               verticalPosition: 'top'
+            });
             this.router.navigateByUrl('/');
          }
       } catch (error: any) {
@@ -96,7 +111,30 @@ export class RegisterComponent {
          
          // Pour les autres erreurs, les logger et afficher un message
          console.error('Erreur lors de la connexion Google:', error);
+         const errorMessage = this.getErrorMessage(error);
+         this.snackBar.open(errorMessage, 'Fermer', {
+            duration: 5000,
+            verticalPosition: 'top'
+         });
          // Vous pouvez ajouter ici une notification visuelle à l'utilisateur
+      }
+   }
+
+   private getErrorMessage(error: any): string {
+      const code = error?.code;
+      switch (code) {
+         case 'auth/email-already-in-use':
+            return 'Cette adresse email est déjà utilisée par un autre compte.';
+         case 'auth/invalid-email':
+            return 'L\'adresse email est invalide.';
+         case 'auth/operation-not-allowed':
+            return 'L\'inscription par email/mot de passe n\'est pas activée.';
+         case 'auth/weak-password':
+            return 'Le mot de passe est trop faible.';
+         case 'auth/network-request-failed':
+            return 'Erreur de connexion réseau. Vérifiez votre connexion internet.';
+         default:
+            return 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
       }
    }
 

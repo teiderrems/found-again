@@ -23,6 +23,7 @@ import { Functions, httpsCallable } from '@angular/fire/functions';
 import { from, lastValueFrom, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators'; // Ajout de 'map'
 import { UserProfile, UpdateProfileData } from '../types/user'; // Assurez-vous d'importer ces types
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
    providedIn: 'root',
@@ -36,6 +37,7 @@ export class AuthService {
       private readonly firestore: Firestore,
       private readonly auth: Auth,
       private readonly functions: Functions,
+      private snackBar: MatSnackBar
    ) {
       this.currentUser$ = user(auth);
       this.currentUser$.subscribe((u) => {
@@ -75,16 +77,30 @@ export class AuthService {
 
          console.log('Aucun utilisateur existant, création d\'un nouveau compte...');
 
+         const displayName = userCredential.user.displayName || '';
+         const nameParts = displayName.split(' ');
+         const firstname = nameParts[0] || 'Unknown';
+         const lastname = nameParts.slice(1).join(' ') || '';
+
          // Si l'utilisateur n'existe pas, créer un nouveau compte
-         return await this.registerUser(
+         const result = await this.registerUser(
             {
                email: userCredential.user.email as string,
-               firstname: 'Unknown',
-               lastname: 'Unknown',
+               firstname: firstname,
+               lastname: lastname,
                password: 'user1234',
             },
             userCredential.user,
          );
+
+         if (result) {
+            this.snackBar.open('Compte créé avec succès. Votre mot de passe par défaut est : user1234', 'OK', {
+               duration: 10000,
+               verticalPosition: 'top'
+            });
+         }
+
+         return result;
       } catch (error) {
          console.error('Erreur lors de la connexion Google:', error);
          throw error;
@@ -144,6 +160,7 @@ export class AuthService {
          if (!user) {
             const userCredential = await lastValueFrom(this.signUp(data)); // Convertir en Promise pour async/await
             const user = userCredential!.user;
+
             const userId = user.uid;
             const userDocRef = doc(this.firestore, this.userCollectionName, userId);
             const alreadyExists = await lastValueFrom(

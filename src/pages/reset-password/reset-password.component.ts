@@ -134,11 +134,18 @@ export class ResetPasswordComponent implements OnInit {
       }, 2000);
     } catch (error: any) {
       console.error('Erreur lors de l\'envoi de l\'email:', error);
+      let msg = 'Une erreur est survenue. Veuillez réessayer.';
       if (error.code === 'auth/user-not-found') {
-        this.errorMessage = 'Cet email n\'existe pas.';
+        msg = 'Cet email n\'existe pas.';
+        this.errorMessage = msg;
       } else {
-        this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        this.errorMessage = msg;
       }
+      this.snackBar.open(msg, 'Fermer', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
     } finally {
       this.isLoading = false;
     }
@@ -208,11 +215,18 @@ export class ResetPasswordComponent implements OnInit {
       }, 2000);
     } catch (error: any) {
       console.error('Erreur lors de la réinitialisation:', error);
+      let msg = 'Une erreur est survenue. Veuillez réessayer.';
       if (error.code === 'auth/weak-password') {
-        this.errorMessage = 'Le mot de passe est trop faible.';
+        msg = 'Le mot de passe est trop faible.';
+        this.errorMessage = msg;
       } else {
-        this.errorMessage = 'Une erreur est survenue. Veuillez réessayer.';
+        this.errorMessage = msg;
       }
+      this.snackBar.open(msg, 'Fermer', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+      });
     } finally {
       this.isLoading = false;
     }
