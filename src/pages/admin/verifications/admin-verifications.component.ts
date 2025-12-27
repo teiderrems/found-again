@@ -11,6 +11,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { VerificationService } from '@/services/verification.service';
 import { VerificationData, VerificationStatus } from '@/types/verification';
 import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { VerificationDetailsDialogComponent } from '@/components/verification-details-dialog/verification-details-dialog.component';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
 import { SettingsService } from '@/services/settings.service';
 
@@ -130,7 +131,18 @@ export class AdminVerificationsComponent implements OnInit {
   }
 
   viewVerification(verification: VerificationData): void {
-    this.router.navigate(['/verifier-identite', verification.declarationId]);
+    const dialogRef = this.dialog.open(VerificationDetailsDialogComponent, {
+      width: '600px',
+      data: verification
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'approve') {
+        this.approveVerification(verification);
+      } else if (result === 'reject') {
+        this.rejectVerification(verification);
+      }
+    });
   }
 
   approveVerification(verification: VerificationData): void {

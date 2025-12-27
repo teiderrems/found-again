@@ -1203,19 +1203,6 @@ export const onVerificationUpdated = functions.firestore
         
         // CAS 1 : VALIDATION
         if (newData.status === 'verified') {
-            // 1. Créer la notification
-            await admin.firestore().collection('notifications').add({
-                userId: claimantUserId,
-                title: 'Vérification validée',
-                message: `Votre demande de vérification pour l'objet "${declarationData?.title || 'Objet'}" a été validée.`,
-                type: 'success',
-                read: false,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                actionUrl: `/found-object/${declarationId}`,
-                data: { declarationId, verificationId }
-            });
-
-            // 2. Envoyer l'email
             const finderUserId = declarationData?.userId;
             if (!finderUserId) {
                 console.error('Trouveur introuvable');
@@ -1230,6 +1217,28 @@ export const onVerificationUpdated = functions.firestore
                 return null;
             }
 
+            // Déterminer l'URL d'action (carte avec coordonnées si disponibles)
+            // NOTE: On utilise les coordonnées du trouveur (détenteur de l'objet) et non celles de la déclaration (lieu de trouvaille)
+            let actionUrl = `/found-object/${declarationId}`;
+            
+            if (finderData.coordinates) {
+                const { lat, lng } = finderData.coordinates;
+                actionUrl = `/map-view?lat=${lat}&lng=${lng}`;
+            }
+
+            // 1. Créer la notification
+            await admin.firestore().collection('notifications').add({
+                userId: claimantUserId,
+                title: 'Vérification validée',
+                message: `Votre demande de vérification pour l'objet "${declarationData?.title || 'Objet'}" a été validée.`,
+                type: 'success',
+                read: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                actionUrl: actionUrl,
+                data: { declarationId, verificationId }
+            });
+
+            // 2. Envoyer l'email
             if (transporter) {
                 const htmlContent = `
                     <!DOCTYPE html>
