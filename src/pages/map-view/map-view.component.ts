@@ -72,6 +72,10 @@ export class MapViewComponent implements OnInit {
       const originLng = parseFloat(params['originLng']);
       const destinationLat = parseFloat(params['destinationLat']);
       const destinationLng = parseFloat(params['destinationLng']);
+      
+      // Check for single point coordinates
+      const lat = parseFloat(params['lat']);
+      const lng = parseFloat(params['lng']);
 
       if (!isNaN(originLat) && !isNaN(originLng) && !isNaN(destinationLat) && !isNaN(destinationLng)) {
         // Set default route coordinates
@@ -95,6 +99,15 @@ export class MapViewComponent implements OnInit {
         // Center map between origin and destination
         this.centerLat = (originLat + destinationLat) / 2;
         this.centerLng = (originLng + destinationLng) / 2;
+      } else if (!isNaN(lat) && !isNaN(lng)) {
+        // Center map on specific point
+        this.centerLat = lat;
+        this.centerLng = lng;
+        this.zoomLevel = 15; // Zoom in closer for specific point
+        
+        // We still load declarations, but maybe we should highlight the one at this location?
+        // For now, just centering is good.
+        this.loadDeclarationsAsMarkers();
       } else {
         // Load user declarations as markers
         this.loadDeclarationsAsMarkers();
