@@ -1,25 +1,83 @@
-<div class="w-full h-full flex flex-col">
-  <!-- Header -->
-  <div class="bg-white border-b border-gray-200 shadow-sm p-4 sm:p-6">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Carte des Objets</h1>
-        <p class="text-gray-600 text-sm mt-1">{{ markers.length }} objet(s) sur la carte</p>
-      </div>
+<div class="relative w-full h-full flex flex-col bg-gray-50">
+  <!-- Header - Floating style or clean bar -->
+  <div class="z-10 bg-white shadow-md px-6 py-4 flex items-center justify-between relative">
+    <div class="flex items-center gap-4">
       <button (click)="goBack()"
-        class="flex items-center space-x-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-        </svg>
-        <span class="text-gray-700 font-medium">Retour</span>
+        class="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors">
+        <mat-icon>arrow_back</mat-icon>
       </button>
+      <div>
+        <h1 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <mat-icon class="text-[#009245]">map</mat-icon>
+          Carte des Objets
+        </h1>
+        <p class="text-sm text-gray-500">{{ markers.length }} objets signalés</p>
+      </div>
+    </div>
+    
+    <!-- Legend / Filters -->
+    <div class="hidden sm:flex items-center gap-4 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#009245]"></span>
+        <span class="text-gray-600">Trouvés</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+        <span class="text-gray-600">Perdus</span>
+      </div>
     </div>
   </div>
 
-  <!-- Map Container -->
-  <div class="flex-1 w-full flex">
-    <!-- Map -->
-    <div class="flex-1 w-full">
+  <!-- Main Content -->
+  <div class="flex-1 flex overflow-hidden relative">
+    
+    <!-- Sidebar List (Desktop) -->
+    @if (markers.length > 0 && !showDefaultRoute) {
+      <div class="hidden lg:flex flex-col w-96 bg-white border-r border-gray-200 shadow-xl z-0 h-full">
+        <div class="p-4 border-b border-gray-100 bg-gray-50">
+          <div class="relative">
+            <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</mat-icon>
+            <input type="text" placeholder="Rechercher un objet..." 
+                   (input)="onSearch($event)"
+                   class="w-full pl-10 pr-4 py-2 rounded-lg border-gray-200 text-sm focus:border-[#009245] focus:ring-[#009245]">
+          </div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-2 space-y-2">
+          @for (marker of markers; track marker; let i = $index) {
+            <button
+              (click)="selectMarker(i)"
+              [class.bg-green-50]="isMarkerSelected(i) && marker.icon === 'found'"
+              [class.bg-orange-50]="isMarkerSelected(i) && marker.icon !== 'found'"
+              [class.border-[#009245]]="isMarkerSelected(i) && marker.icon === 'found'"
+              [class.border-orange-500]="isMarkerSelected(i) && marker.icon !== 'found'"
+              class="w-full text-left p-3 rounded-xl hover:bg-gray-50 transition-all border-2 border-transparent group">
+              <div class="flex items-start gap-3">
+                <div [class]="'shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm ' + (marker.icon === 'found' ? 'bg-[#009245]' : 'bg-orange-500')">
+                  <mat-icon class="text-sm">{{ marker.icon === 'found' ? 'check_circle' : 'help' }}</mat-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex justify-between items-start">
+                    <h3 class="font-semibold text-gray-900 truncate pr-2">{{ marker.title }}</h3>
+                    <span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                      {{ marker.date | date:'dd/MM' }}
+                    </span>
+                  </div>
+                  <p class="text-xs text-gray-500 truncate mt-0.5">{{ marker.category }}</p>
+                  <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                    <mat-icon class="text-[10px] h-3 w-3">location_on</mat-icon>
+                    <span class="truncate">{{ marker.location || 'Position sur la carte' }}</span>
+                  </p>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Map Container -->
+    <div class="flex-1 relative h-full w-full">
       <app-map
         [latitude]="centerLat"
         [longitude]="centerLng"
@@ -28,105 +86,69 @@
         [defaultRouteOrigin]="defaultRouteOrigin"
         [defaultRouteDestination]="defaultRouteDestination"
         [showDefaultRoute]="showDefaultRoute"
+        (markerClick)="selectMarker($event)"
+        class="w-full h-full block"
       ></app-map>
-    </div>
 
-    <!-- Markers List (Desktop only) -->
-    @if (markers.length > 0 && !showDefaultRoute) {
-      <div class="hidden lg:block w-80 bg-white border-l border-gray-200 overflow-y-auto shadow-lg">
-        <div class="sticky top-0 bg-white border-b border-gray-200 p-4">
-          <h3 class="font-semibold text-gray-900">{{ markers.length }} Objet(s)</h3>
-          <p class="text-xs text-gray-500 mt-1">Cliquez pour voir les détails</p>
-        </div>
-        <div class="divide-y">
-          @for (marker of markers; track marker; let i = $index) {
-            <button
-              (click)="selectMarker(i)"
-              [class.bg-blue-50]="isMarkerSelected(i)"
-              class="w-full text-left p-4 hover:bg-gray-50 transition-colors border-l-4 border-transparent hover:border-gray-300"
-              [style.border-left-color]="getMarkerColor(i)">
-              <div class="flex items-start space-x-3">
-                <div [class]="'shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white ' + getMarkerBgColor(i)">
-                  {{ getMarkerLabel(i) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-medium text-gray-900 truncate">{{ marker.title }}</p>
-                  <p class="text-xs text-gray-500 truncate">{{ marker.description }}</p>
-                  <p class="text-xs text-gray-400 mt-1">{{ marker.position.lat.toFixed(2) }}, {{ marker.position.lng.toFixed(2) }}</p>
-                </div>
-              </div>
+      <!-- Mobile/Overlay Details Card -->
+      @if (selectedMarker) {
+        <div class="absolute bottom-4 left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-20 animate-slide-up">
+          <!-- Header Image or Color -->
+          <div [class]="'h-24 w-full relative ' + (selectedMarker.declarationType === DeclarationType.FOUND ? 'bg-linear-to-r from-[#009245] to-green-600' : 'bg-linear-to-r from-orange-500 to-red-500')">
+            <button (click)="selectedMarker = null" class="absolute top-2 right-2 p-1 bg-black/20 hover:bg-black/30 rounded-full text-white transition-colors">
+              <mat-icon>close</mat-icon>
             </button>
-          }
-        </div>
-      </div>
-    }
-  </div>
-
-  <!-- Object Info Sidebar (Mobile-friendly) -->
-  @if (selectedMarker) {
-    <div
-      [@slideInUp]
-      class="absolute bottom-0 left-0 right-0 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-gray-200 max-h-80 overflow-y-auto z-40">
-      <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between rounded-t-2xl sm:rounded-t-2xl">
-        <h3 class="font-semibold text-gray-900">Détails de l'Objet</h3>
-        <button (click)="selectedMarker = null" class="text-gray-500 hover:text-gray-700">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-      <div class="p-4 space-y-4">
-        <!-- Type Badge -->
-        <div>
-          <span [class]="'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ' + (selectedMarker.declarationType === DeclarationType.FOUND ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700')">
-            {{ selectedMarker.declarationType === DeclarationType.FOUND ? 'Trouvé' : 'Perdu' }}
-          </span>
-        </div>
-        <!-- Title -->
-        <div>
-          <p class="text-xs text-gray-500 font-medium uppercase">Titre</p>
-          <p class="text-gray-900 font-semibold mt-1">{{ selectedMarker.title }}</p>
-        </div>
-        <!-- Category -->
-        <div>
-          <p class="text-xs text-gray-500 font-medium uppercase">Catégorie</p>
-          <p class="text-gray-700 mt-1">{{ selectedMarker.category }}</p>
-        </div>
-        <!-- Description -->
-        <div>
-          <p class="text-xs text-gray-500 font-medium uppercase">Description</p>
-          <p class="text-gray-700 text-sm mt-1 line-clamp-3">{{ selectedMarker.description }}</p>
-        </div>
-        <!-- Location -->
-        <div>
-          <p class="text-xs text-gray-500 font-medium uppercase">Localisation</p>
-          <p class="text-gray-700 text-sm mt-1">{{ selectedMarker.location }}</p>
-        </div>
-        <!-- Date -->
-        <div>
-          <p class="text-xs text-gray-500 font-medium uppercase">Date</p>
-          <p class="text-gray-700 text-sm mt-1">{{ selectedMarker.date | date: 'dd/MM/yyyy' }}</p>
-        </div>
-        <!-- Images -->
-        @if (selectedMarker.images && selectedMarker.images.length > 0) {
-          <div>
-            <p class="text-xs text-gray-500 font-medium uppercase mb-2">Images ({{ selectedMarker.images.length }})</p>
-            <div class="grid grid-cols-2 gap-2">
-              @for (img of selectedMarker.images.slice(0, 4); track img) {
-                <img
-                  [src]="img.downloadURL"
-                  [alt]="selectedMarker.title"
-                  class="w-full h-24 object-cover rounded-lg">
-              }
+            <div class="absolute -bottom-6 left-6">
+              <div class="w-12 h-12 rounded-xl bg-white p-1 shadow-lg flex items-center justify-center">
+                 <mat-icon [class]="selectedMarker.declarationType === DeclarationType.FOUND ? 'text-[#009245]' : 'text-orange-500'">
+                   {{ selectedMarker.declarationType === DeclarationType.FOUND ? 'check_circle' : 'help' }}
+                 </mat-icon>
+              </div>
             </div>
           </div>
-        }
-        <!-- Action Button -->
-        <button (click)="viewDetails(selectedMarker.declarationId)"
-          class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200">
-          Voir Détails
-        </button>
-      </div>
+
+          <div class="pt-8 px-6 pb-6">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h2 class="text-lg font-bold text-gray-900">{{ selectedMarker.title }}</h2>
+                <p class="text-sm text-gray-500">{{ selectedMarker.category }}</p>
+              </div>
+              <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + (selectedMarker.declarationType === DeclarationType.FOUND ? 'bg-green-100 text-[#009245]' : 'bg-orange-100 text-orange-700')">
+                {{ selectedMarker.declarationType === DeclarationType.FOUND ? 'Trouvé' : 'Perdu' }}
+              </span>
+            </div>
+
+            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+              {{ selectedMarker.description }}
+            </p>
+
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-4 bg-gray-50 p-3 rounded-lg">
+              <mat-icon class="text-sm">location_on</mat-icon>
+              <span class="truncate">{{ selectedMarker.location || 'Position approximative' }}</span>
+            </div>
+
+            @if (selectedMarker.images && selectedMarker.images.length > 0) {
+              <div class="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
+                @for (img of selectedMarker.images; track img) {
+                  <img [src]="img.downloadURL" class="w-16 h-16 rounded-lg object-cover shrink-0 border border-gray-200">
+                }
+              </div>
+            }
+
+            @if (selectedMarker.declarationId) {
+              <button (click)="viewDetails(selectedMarker.declarationId!)"
+                class="w-full py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                [class.bg-[#009245]]="selectedMarker.declarationType === DeclarationType.FOUND"
+                [class.hover:bg-green-700]="selectedMarker.declarationType === DeclarationType.FOUND"
+                [class.bg-orange-500]="selectedMarker.declarationType !== DeclarationType.FOUND"
+                [class.hover:bg-orange-600]="selectedMarker.declarationType !== DeclarationType.FOUND">
+                <span>Voir la fiche complète</span>
+                <mat-icon class="text-sm">arrow_forward</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      }
     </div>
-  }
+  </div>
 </div>

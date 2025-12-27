@@ -294,6 +294,14 @@ export class AdminService {
   }
 
   /**
+   * Supprime un utilisateur (Firestore uniquement)
+   */
+  deleteUser(userId: string): Observable<void> {
+    const userRef = doc(this.firestore, 'users', userId);
+    return from(deleteDoc(userRef));
+  }
+
+  /**
    * Récupère les vérifications récentes (dernières 5)
    */
   private async getRecentVerifications(): Promise<VerificationData[]> {

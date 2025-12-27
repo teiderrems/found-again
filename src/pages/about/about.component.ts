@@ -1,6 +1,6 @@
 // components/about.component.ts
 import { Component } from '@angular/core';
-
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 
 interface TeamMember {
@@ -32,7 +32,7 @@ interface Value {
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, MatIconModule],
   templateUrl: './about.component.html',
   styleUrl: './about.component.css'
 })

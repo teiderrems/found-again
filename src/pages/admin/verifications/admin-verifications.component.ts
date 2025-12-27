@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { VerificationService } from '@/services/verification.service';
-import { VerificationData } from '@/types/verification';
-import { Observable, of } from 'rxjs';
+import { VerificationData, VerificationStatus } from '@/types/verification';
+import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
+import { SettingsService } from '@/services/settings.service';
 
 @Component({
   selector: 'app-admin-verifications',
@@ -20,39 +22,198 @@ import { Observable, of } from 'rxjs';
     RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     MatInputModule,
     MatFormFieldModule,
+    MatDialogModule,
+    MatPaginatorModule,
+    FirebaseDatePipe
   ],
   templateUrl: './admin-verifications.component.html',
   styleUrl: './admin-verifications.component.css',
 })
 export class AdminVerificationsComponent implements OnInit {
-  verifications$!: Observable<VerificationData[]>;
-  displayedColumns: string[] = ['userId', 'declarationId', 'status', 'timestamp', 'actions'];
+  private verificationService = inject(VerificationService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private settingsService = inject(SettingsService);
 
-  constructor(private verificationService: VerificationService) {}
+  verifications = signal<VerificationData[]>([]);
+  filteredVerifications = signal<VerificationData[]>([]);
+  pageSize = signal(10);
+  pageIndex = signal(0);
+  
+  constructor() {
+    effect(() => {
+      this.pageSize.set(this.settingsService.itemsPerPage());
+    }, { allowSignalWrites: true });
+  }
+  
+  // Sorting
+  sortColumn = signal<string>('');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  sortedVerifications = computed(() => {
+    const verifications = this.filteredVerifications();
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    if (!column) return verifications;
+
+    return [...verifications].sort((a, b) => {
+      const valueA = (a as any)[column];
+      const valueB = (b as any)[column];
+      
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return 1;
+      if (valueB == null) return -1;
+
+      const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      return direction === 'asc' ? comparison : -comparison;
+    });
+  });
+
+  pagedVerifications = computed(() => {
+    const startIndex = this.pageIndex() * this.pageSize();
+    return this.sortedVerifications().slice(startIndex, startIndex + this.pageSize());
+  });
 
   ngOnInit(): void {
-    // TODO: Implémenter la récupération de toutes les vérifications
-    this.verifications$ = of([]);
+    this.loadVerifications();
   }
 
-  viewVerification(id: string): void {
-    console.log('Viewing verification:', id);
+  loadVerifications() {
+    this.verificationService.getAllVerifications().subscribe({
+      next: (verifications) => {
+        this.verifications.set(verifications);
+        this.filteredVerifications.set(verifications);
+      },
+      error: (error) => console.error('Error loading verifications:', error)
+    });
   }
 
-  approveVerification(id: string): void {
-    console.log('Approving verification:', id);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+    this.filteredVerifications.set(
+      this.verifications().filter(v => 
+        v.userId.toLowerCase().includes(filterValue) || 
+        v.declarationId.toLowerCase().includes(filterValue)
+      )
+    );
+    this.pageIndex.set(0);
   }
 
-  rejectVerification(id: string): void {
-    console.log('Rejecting verification:', id);
+  filterByStatus(event: Event) {
+    const status = (event.target as HTMLSelectElement).value;
+    if (!status) {
+      this.filteredVerifications.set(this.verifications());
+    } else {
+      this.filteredVerifications.set(
+        this.verifications().filter(v => v.status === status)
+      );
+    }
+    this.pageIndex.set(0);
   }
 
-  deleteVerification(id: string): void {
-    console.log('Deleting verification:', id);
+  sortData(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+  }
+
+  handlePageEvent(e: PageEvent) {
+    this.pageSize.set(e.pageSize);
+    this.pageIndex.set(e.pageIndex);
+  }
+
+  viewVerification(verification: VerificationData): void {
+    this.router.navigate(['/verifier-identite', verification.declarationId]);
+  }
+
+  approveVerification(verification: VerificationData): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Approuver la vérification',
+        message: 'Êtes-vous sûr de vouloir approuver cette vérification ?',
+        confirmText: 'Approuver',
+        cancelText: 'Annuler',
+        type: 'success'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.verificationService.approveVerification(
+          verification.declarationId,
+          verification.id,
+          'Approuvé par l\'administrateur'
+        ).subscribe({
+          next: () => {
+            this.snackBar.open('Vérification approuvée', 'Fermer', { duration: 3000 });
+            this.loadVerifications();
+          },
+          error: (error) => {
+            console.error('Error approving verification:', error);
+            this.snackBar.open('Erreur lors de l\'approbation', 'Fermer', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  rejectVerification(verification: VerificationData): void {
+    const reason = prompt('Raison du rejet :');
+    if (reason === null) return; // Cancelled
+
+    this.verificationService.rejectVerification(
+      verification.declarationId,
+      verification.id,
+      reason || 'Aucune raison fournie',
+      'Rejeté par l\'administrateur'
+    ).subscribe({
+      next: () => {
+        this.snackBar.open('Vérification rejetée', 'Fermer', { duration: 3000 });
+        this.loadVerifications();
+      },
+      error: (error) => {
+        console.error('Error rejecting verification:', error);
+        this.snackBar.open('Erreur lors du rejet', 'Fermer', { duration: 3000 });
+      }
+    });
+  }
+
+  deleteVerification(verification: VerificationData): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Supprimer la vérification',
+        message: 'Êtes-vous sûr de vouloir supprimer cette vérification ?',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.verificationService.deleteVerification(
+          verification.declarationId,
+          verification.id
+        ).subscribe({
+          next: () => {
+            this.snackBar.open('Vérification supprimée', 'Fermer', { duration: 3000 });
+            this.loadVerifications();
+          },
+          error: (error) => {
+            console.error('Error deleting verification:', error);
+            this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+          }
+        });
+      }
+    });
   }
 }

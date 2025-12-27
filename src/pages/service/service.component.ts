@@ -2,13 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { AppFeature, AppFeaturesService } from '../../services/app-features.service';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
    selector: 'app-service',
    templateUrl: './service.component.html',
    styleUrl: './service.component.css',
    standalone: true,
-   imports: [CommonModule, RouterModule]
+   imports: [CommonModule, RouterModule, MatIconModule]
 })
 export class ServiceComponent {
    private featuresService = inject(AppFeaturesService);

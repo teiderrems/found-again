@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 
@@ -88,7 +88,7 @@ export const TRAVEL_MODE_ICONS: Record<TravelMode, string> = {
   standalone: true,
   imports: [MatIconModule]
 })
-export class MapComponent implements OnInit, OnDestroy {
+export class MapComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('mapContainer') mapContainer!: ElementRef;
   @Input() latitude: number = 48.8626;
   @Input() longitude: number = 2.3344;
@@ -97,6 +97,7 @@ export class MapComponent implements OnInit, OnDestroy {
   @Input() defaultRouteOrigin: { lat: number; lng: number } | null = { lat: 48.8626, lng: 2.3344 }; // Place de l'Échelle
   @Input() defaultRouteDestination: { lat: number; lng: number } | null = { lat: 48.8809, lng: 2.3553 }; // Gare du Nord
   @Input() showDefaultRoute: boolean = true;
+  @Output() markerClick = new EventEmitter<number>();
 
   map: any;
   mapMarkers: any[] = [];
@@ -118,6 +119,21 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadGoogleMapsScript();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (this.map) {
+      if (changes['latitude'] || changes['longitude']) {
+        this.map.panTo({ lat: this.latitude, lng: this.longitude });
+      }
+      if (changes['zoomLevel']) {
+        this.map.setZoom(this.zoomLevel);
+      }
+      if (changes['markers']) {
+        this.clearMarkers();
+        this.addMarkers();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -231,10 +247,6 @@ export class MapComponent implements OnInit, OnDestroy {
         if (this.showDefaultRoute && this.defaultRouteOrigin && this.defaultRouteDestination) {
           this.showRoute(this.defaultRouteOrigin, this.defaultRouteDestination);
         }
-
-        this.map.addListener('click', (mapsMouseEvent: any) => {
-          this.addClickMarker(mapsMouseEvent.latLng);
-        });
       } catch (error) {
         console.error('Erreur lors de l\'initialisation de la map:', error);
         this.showErrorMessage('Erreur lors du chargement de la carte');
@@ -243,12 +255,13 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   private addMarkers() {
-    this.markers.forEach(markerData => {
+    this.markers.forEach((markerData, index) => {
       this.createMarker(
         markerData.position, 
         markerData.title, 
         markerData.description,
-        (markerData as any).icon
+        (markerData as any).icon,
+        index
       );
     });
   }
@@ -257,7 +270,8 @@ export class MapComponent implements OnInit, OnDestroy {
     position: { lat: number; lng: number },
     title: string,
     description?: string,
-    icon?: string
+    icon?: string,
+    index?: number
   ) {
     try {
       // Déterminer la couleur du marqueur selon le type
@@ -298,6 +312,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
       // Ajouter le listener au clic
       marker.addListener('click', () => {
+        if (index !== undefined) {
+          this.markerClick.emit(index);
+        }
+        
         this.infoWindow.close();
         
         // Créer un contenu plus détaillé avec le type d'objet si disponible
@@ -330,18 +348,6 @@ export class MapComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Erreur lors de la création du marqueur:', error);
     }
-  }
-
-  private addClickMarker(latLng: any) {
-    const position = {
-      lat: latLng.lat(),
-      lng: latLng.lng()
-    };
-    this.createMarker(
-      position,
-      'Nouveau marqueur',
-      `Cliqué à: ${position.lat.toFixed(4)}, ${position.lng.toFixed(4)}`
-    );
   }
 
   clearMarkers() {

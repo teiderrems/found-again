@@ -154,6 +154,82 @@ export const sendEmail = functions.https.onRequest(async (request, response) => 
 });
 
 /**
+ * Callable Cloud Function pour envoyer un email de réinitialisation de mot de passe
+ */
+export const sendPasswordReset = functions.https.onCall(async (data, context) => {
+  const email = data.email;
+  
+  if (!email) {
+    throw new functions.https.HttpsError('invalid-argument', 'L\'email est requis.');
+  }
+
+  try {
+    // Générer le lien de réinitialisation
+    const link = await admin.auth().generatePasswordResetLink(email);
+    
+    const transporter = getEmailTransporter();
+    
+    if (!transporter) {
+      console.log('Email simulé (pas de SMTP):', { to: email, link });
+      return { success: true, message: 'Email simulé', link };
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+          .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+          .header { text-align: center; margin-bottom: 24px; }
+          .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
+          .title { font-size: 20px; font-weight: 600; color: #166534; margin: 16px 0; }
+          .button { display: inline-block; padding: 12px 24px; background: #16a34a; color: white; text-decoration: none; border-radius: 6px; margin-top: 16px; }
+          .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <div class="header">
+              <div class="logo">Found Again</div>
+            </div>
+            <h1 class="title">Réinitialisation de mot de passe</h1>
+            
+            <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+            <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :</p>
+            
+            <div style="text-align: center;">
+              <a href="${link}" class="button">Réinitialiser mon mot de passe</a>
+            </div>
+            
+            <p style="margin-top: 24px; font-size: 14px;">Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.</p>
+          </div>
+          <div class="footer">
+            <p>© 2025 Found Again. Tous droits réservés.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: 'Réinitialisation de votre mot de passe - Found Again',
+      html: htmlContent
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error('Erreur sendPasswordReset:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+/**
  * Trigger Firestore - Envoyer un email quand une nouvelle déclaration est créée
  */
 export const onDeclarationCreated = functions.firestore
@@ -1010,3 +1086,62 @@ function generateEmailHTML(params: EmailParams): string {
 
   return template;
 }
+
+/**
+ * Trigger Firestore pour envoyer un email lors d'une demande de contact
+ */
+export const onContactRequestCreated = functions.firestore
+  .document('contact_requests/{requestId}')
+  .onCreate(async (snapshot, context) => {
+    const data = snapshot.data();
+    const requestId = context.params.requestId;
+
+    console.log(`Nouvelle demande de contact reçue: ${requestId}`);
+
+    const transporter = getEmailTransporter();
+    
+    // Email de destination (admin)
+    // Si ADMIN_EMAIL n'est pas défini, on s'envoie l'email à soi-même (GMAIL_USER)
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.GMAIL_USER;
+
+    if (!transporter || !adminEmail) {
+      console.log('Email simulé pour contact request:', data);
+      return null;
+    }
+
+    const mailOptions = {
+      from: `"Found Again Contact" <${process.env.GMAIL_USER}>`,
+      to: adminEmail,
+      replyTo: data.email, // Pour répondre directement à l'utilisateur
+      subject: `[Contact] ${data.subject} - ${data.name}`,
+      html: `
+        <h2>Nouvelle demande de contact</h2>
+        <p><strong>De:</strong> ${data.name} (${data.email})</p>
+        <p><strong>Sujet:</strong> ${data.subject}</p>
+        <hr/>
+        <p><strong>Message:</strong></p>
+        <p>${data.message.replace(/\n/g, '<br>')}</p>
+        <hr/>
+        <p><small>ID de la demande: ${requestId}</small></p>
+      `
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email de contact envoyé à l\'admin');
+      
+      // Mettre à jour le statut si nécessaire
+      await snapshot.ref.update({ 
+        emailSent: true,
+        emailSentAt: admin.firestore.Timestamp.now()
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'email de contact:', error);
+      await snapshot.ref.update({ 
+        emailSent: false,
+        emailError: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+    
+    return null;
+  });
