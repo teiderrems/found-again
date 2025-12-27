@@ -4,6 +4,7 @@
  */
 
 import * as functions from 'firebase-functions';
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from 'firebase-admin';
 import * as nodemailer from 'nodemailer';
 
@@ -156,11 +157,11 @@ export const sendEmail = functions.https.onRequest(async (request, response) => 
 /**
  * Callable Cloud Function pour envoyer un email de réinitialisation de mot de passe
  */
-export const sendPasswordReset = functions.https.onCall(async (data, context) => {
-  const email = data.email;
+export const sendPasswordReset = onCall({ cors: true }, async (request) => {
+  const email = request.data.email;
   
   if (!email) {
-    throw new functions.https.HttpsError('invalid-argument', 'L\'email est requis.');
+    throw new HttpsError('invalid-argument', 'L\'email est requis.');
   }
 
   try {
@@ -225,7 +226,7 @@ export const sendPasswordReset = functions.https.onCall(async (data, context) =>
     return { success: true };
   } catch (error: any) {
     console.error('Erreur sendPasswordReset:', error);
-    throw new functions.https.HttpsError('internal', error.message);
+    throw new HttpsError('internal', error.message);
   }
 });
 
