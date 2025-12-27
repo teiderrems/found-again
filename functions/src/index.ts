@@ -1160,118 +1160,212 @@ export const onContactRequestCreated = functions.firestore
   });
 
 /**
- * Trigger Firestore - Envoyer un email quand une vérification est validée
+ * Trigger Firestore - Envoyer un email quand une vérification est mise à jour (validée ou rejetée)
  */
-export const onVerificationVerified = functions.firestore
+export const onVerificationUpdated = functions.firestore
     .document("declarations/{declarationId}/verifications/{verificationId}")
     .onUpdate(async (change, context) => {
     
     const newData = change.after.data();
     const previousData = change.before.data();
 
-    // Vérifier si le statut est passé à 'verified'
-    if (newData.status === 'verified' && previousData.status !== 'verified') {
-        const declarationId = context.params.declarationId;
-        const verificationId = context.params.verificationId;
-        const claimantUserId = newData.userId; // L'utilisateur qui a fait la demande (le propriétaire présumé)
+    // Si le statut n'a pas changé, on ne fait rien
+    if (newData.status === previousData.status) {
+        return null;
+    }
 
-        console.log(`Vérification ${verificationId} validée pour la déclaration ${declarationId}`);
+    const declarationId = context.params.declarationId;
+    const verificationId = context.params.verificationId;
+    const claimantUserId = newData.userId; // L'utilisateur qui a fait la demande
 
-        try {
-            // 1. Récupérer la déclaration pour avoir l'ID du trouveur
-            const declarationSnapshot = await admin.firestore().collection('declarations').doc(declarationId).get();
-            if (!declarationSnapshot.exists) {
-                console.error('Déclaration introuvable');
-                return null;
-            }
-            const declarationData = declarationSnapshot.data();
-            const finderUserId = declarationData?.userId; // L'utilisateur qui a trouvé l'objet
+    console.log(`Vérification ${verificationId} mise à jour : ${previousData.status} -> ${newData.status}`);
 
+    try {
+        // 1. Récupérer la déclaration
+        const declarationSnapshot = await admin.firestore().collection('declarations').doc(declarationId).get();
+        if (!declarationSnapshot.exists) {
+            console.error('Déclaration introuvable');
+            return null;
+        }
+        const declarationData = declarationSnapshot.data();
+
+        // 2. Récupérer les infos du propriétaire (pour lui envoyer l'email)
+        const claimantSnapshot = await admin.firestore().collection('users').doc(claimantUserId).get();
+        const claimantData = claimantSnapshot.data();
+        const claimantEmail = claimantData?.email;
+
+        if (!claimantEmail) {
+            console.error('Email du demandeur introuvable');
+            return null;
+        }
+
+        const transporter = getEmailTransporter();
+        
+        // CAS 1 : VALIDATION
+        if (newData.status === 'verified') {
+            // 1. Créer la notification
+            await admin.firestore().collection('notifications').add({
+                userId: claimantUserId,
+                title: 'Vérification validée',
+                message: `Votre demande de vérification pour l'objet "${declarationData?.title || 'Objet'}" a été validée.`,
+                type: 'success',
+                read: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                actionUrl: `/found-object/${declarationId}`,
+                data: { declarationId, verificationId }
+            });
+
+            // 2. Envoyer l'email
+            const finderUserId = declarationData?.userId;
             if (!finderUserId) {
-                console.error('Trouveur introuvable dans la déclaration');
+                console.error('Trouveur introuvable');
                 return null;
             }
 
-            // 2. Récupérer les infos du trouveur (pour les envoyer au propriétaire)
             const finderSnapshot = await admin.firestore().collection('users').doc(finderUserId).get();
             const finderData = finderSnapshot.data();
 
-            // 3. Récupérer les infos du propriétaire (pour lui envoyer l'email)
-            const claimantSnapshot = await admin.firestore().collection('users').doc(claimantUserId).get();
-            const claimantData = claimantSnapshot.data();
-            const claimantEmail = claimantData?.email;
-
-            if (!claimantEmail || !finderData) {
-                console.error('Données utilisateur manquantes');
+            if (!finderData) {
+                console.error('Données du trouveur manquantes');
                 return null;
             }
 
-            // 4. Envoyer l'email
-            const transporter = getEmailTransporter();
-            if (!transporter) {
-                console.log('Email simulé (pas de SMTP):', { to: claimantEmail, subject: 'Vérification validée' });
-                return null;
+            if (transporter) {
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                            .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+                            .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                            .header { text-align: center; margin-bottom: 24px; }
+                            .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
+                            .title { font-size: 20px; font-weight: 600; color: #166534; margin: 16px 0; }
+                            .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 16px 0; }
+                            .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="card">
+                                <div class="header">
+                                    <div class="logo">Found Again</div>
+                                </div>
+                                <h1 class="title">Vérification validée !</h1>
+                                
+                                <p>Bonne nouvelle ! Votre demande de vérification pour l'objet <strong>${declarationData?.title || 'Objet'}</strong> a été validée.</p>
+                                
+                                <p>Voici les coordonnées de la personne qui a trouvé votre objet :</p>
+                                
+                                <div class="info-box">
+                                    <p><strong>Nom :</strong> ${finderData.firstname} ${finderData.lastname}</p>
+                                    <p><strong>Email :</strong> ${finderData.email}</p>
+                                    ${finderData.phone ? `<p><strong>Téléphone :</strong> ${finderData.phone}</p>` : ''}
+                                </div>
+                                
+                                <p>Vous pouvez maintenant prendre contact pour récupérer votre objet.</p>
+                                
+                                <p>Cordialement,</p>
+                                <p>L'équipe Found Again</p>
+                            </div>
+                            <div class="footer">
+                                <p>© 2025 Found Again. Tous droits réservés.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                await transporter.sendMail({
+                    from: process.env.GMAIL_USER,
+                    to: claimantEmail,
+                    subject: 'Votre objet a été retrouvé ! - Found Again',
+                    html: htmlContent
+                });
+            } else {
+                console.log('Email simulé (pas de SMTP):', { to: claimantEmail, status: newData.status });
             }
-
-            const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="fr">
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                        .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
-                        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-                        .header { text-align: center; margin-bottom: 24px; }
-                        .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
-                        .title { font-size: 20px; font-weight: 600; color: #166534; margin: 16px 0; }
-                        .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 16px 0; }
-                        .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="card">
-                            <div class="header">
-                                <div class="logo">Found Again</div>
-                            </div>
-                            <h1 class="title">Vérification validée !</h1>
-                            
-                            <p>Bonne nouvelle ! Votre demande de vérification pour l'objet <strong>${declarationData?.title || 'Objet'}</strong> a été validée.</p>
-                            
-                            <p>Voici les coordonnées de la personne qui a trouvé votre objet :</p>
-                            
-                            <div class="info-box">
-                                <p><strong>Nom :</strong> ${finderData.firstname} ${finderData.lastname}</p>
-                                <p><strong>Email :</strong> ${finderData.email}</p>
-                                ${finderData.phone ? `<p><strong>Téléphone :</strong> ${finderData.phone}</p>` : ''}
-                            </div>
-                            
-                            <p>Vous pouvez maintenant prendre contact pour récupérer votre objet.</p>
-                            
-                            <p>Cordialement,</p>
-                            <p>L'équipe Found Again</p>
-                        </div>
-                        <div class="footer">
-                            <p>© 2025 Found Again. Tous droits réservés.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
-
-            await transporter.sendMail({
-                from: process.env.GMAIL_USER,
-                to: claimantEmail,
-                subject: 'Votre objet a été retrouvé ! - Found Again',
-                html: htmlContent
+        }
+        
+        // CAS 2 : REJET
+        else if (newData.status === 'rejected') {
+            const rejectionReason = newData.rejectionReason || 'Informations insuffisantes.';
+            
+            // 1. Créer la notification
+            await admin.firestore().collection('notifications').add({
+                userId: claimantUserId,
+                title: 'Vérification refusée',
+                message: `Votre demande de vérification pour l'objet "${declarationData?.title || 'Objet'}" a été refusée.`,
+                type: 'error',
+                read: false,
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                actionUrl: `/found-object/${declarationId}`,
+                data: { declarationId, verificationId, rejectionReason }
             });
 
-            console.log(`Email envoyé à ${claimantEmail}`);
+            // 2. Envoyer l'email
+            if (transporter) {
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                            .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+                            .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                            .header { text-align: center; margin-bottom: 24px; }
+                            .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
+                            .title { font-size: 20px; font-weight: 600; color: #dc2626; margin: 16px 0; }
+                            .info-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 16px 0; }
+                            .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="card">
+                                <div class="header">
+                                    <div class="logo">Found Again</div>
+                                </div>
+                                <h1 class="title">Vérification refusée</h1>
+                                
+                                <p>Nous sommes désolés, mais votre demande de vérification pour l'objet <strong>${declarationData?.title || 'Objet'}</strong> n'a pas pu être validée.</p>
+                                
+                                <div class="info-box">
+                                    <p><strong>Raison du refus :</strong></p>
+                                    <p>${rejectionReason}</p>
+                                </div>
+                                
+                                <p>Si vous pensez qu'il s'agit d'une erreur, vous pouvez soumettre une nouvelle demande avec plus de détails ou de preuves.</p>
+                                
+                                <p>Cordialement,</p>
+                                <p>L'équipe Found Again</p>
+                            </div>
+                            <div class="footer">
+                                <p>© 2025 Found Again. Tous droits réservés.</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
 
-        } catch (error) {
-            console.error('Erreur lors du traitement de la validation:', error);
+                await transporter.sendMail({
+                    from: process.env.GMAIL_USER,
+                    to: claimantEmail,
+                    subject: 'Mise à jour de votre demande de vérification - Found Again',
+                    html: htmlContent
+                });
+            } else {
+                console.log('Email simulé (pas de SMTP):', { to: claimantEmail, status: newData.status });
+            }
         }
+
+        console.log(`Email de notification envoyé à ${claimantEmail} pour le statut ${newData.status}`);
+
+    } catch (error) {
+        console.error('Erreur lors du traitement de la mise à jour de vérification:', error);
     }
     return null;
 });
