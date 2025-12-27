@@ -192,6 +192,11 @@ export class AuthService {
                   preferences: {
                      theme: 'dark',
                      notifications: true,
+                     emailNotifications: true,
+                     declarationUpdates: true,
+                     matchAlerts: true,
+                     publicProfile: false,
+                     showDeclarations: true
                   },
                   deleted: false,
                } as any);
@@ -209,6 +214,11 @@ export class AuthService {
                preferences: {
                   theme: 'dark',
                   notifications: true,
+                  emailNotifications: true,
+                  declarationUpdates: true,
+                  matchAlerts: true,
+                  publicProfile: false,
+                  showDeclarations: true
                },
                deleted: false,
             } as any);
@@ -352,6 +362,11 @@ export class AuthService {
             preferences: existingUser.preferences || {
                theme: 'dark',
                notifications: true,
+               emailNotifications: true,
+               declarationUpdates: true,
+               matchAlerts: true,
+               publicProfile: false,
+               showDeclarations: true
             },
             phone: existingUser.phone,
             avatarUrl: existingUser.avatarUrl,
@@ -416,6 +431,11 @@ export class AuthService {
             preferences: deletedAccount.preferences || {
                theme: 'dark',
                notifications: true,
+               emailNotifications: true,
+               declarationUpdates: true,
+               matchAlerts: true,
+               publicProfile: false,
+               showDeclarations: true
             },
             phone: deletedAccount.phone,
             avatarUrl: deletedAccount.avatarUrl,
