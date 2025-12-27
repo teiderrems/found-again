@@ -1,28 +1,31 @@
-import { Component, OnInit, inject, signal, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef, AfterViewInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DeclarationService } from '@/services/declaration.service';
 import { AuthService } from '@/services/auth.service';
 import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
 import ApexCharts from 'apexcharts';
+import { SettingsService } from '@/services/settings.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatDialogModule]
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatDialogModule, MatPaginatorModule]
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   private declarationService = inject(DeclarationService);
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private settingsService = inject(SettingsService);
   private userId = this.authService.getCurrentUserId();
 
   @ViewChild('typeChart') typeChart!: ElementRef;
@@ -35,6 +38,46 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     found: 0,
     lost: 0,
     pending: 0
+  });
+
+  // Pagination
+  pageSize = signal(5);
+  pageIndex = signal(0);
+
+  constructor() {
+    effect(() => {
+      this.pageSize.set(this.settingsService.itemsPerPage());
+    }, { allowSignalWrites: true });
+  }
+
+  // Sorting
+  sortColumn = signal<string>('');
+  sortDirection = signal<'asc' | 'desc'>('asc');
+
+  sortedDeclarations = computed(() => {
+    const declarations = this.userDeclarations();
+    const column = this.sortColumn();
+    const direction = this.sortDirection();
+
+    if (!column) return declarations;
+
+    return [...declarations].sort((a, b) => {
+      const valueA = (a as any)[column];
+      const valueB = (b as any)[column];
+      
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return 1;
+      if (valueB == null) return -1;
+
+      const comparison = valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      return direction === 'asc' ? comparison : -comparison;
+    });
+  });
+
+  pagedDeclarations = computed(() => {
+    const declarations = this.sortedDeclarations();
+    const startIndex = this.pageIndex() * this.pageSize();
+    return declarations.slice(startIndex, startIndex + this.pageSize());
   });
 
   chartsReady = signal(false);
@@ -52,9 +95,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private loadUserDeclarations( userId?: string) {
+  handlePageEvent(event: PageEvent) {
+    this.pageSize.set(event.pageSize);
+    this.pageIndex.set(event.pageIndex);
+  }
+
+  sortData(column: string) {
+    if (this.sortColumn() === column) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortColumn.set(column);
+      this.sortDirection.set('asc');
+    }
+  }
+
+  private loadUserDeclarations(userId?: string) {
+    const uid = userId || this.userId;
+    if (!uid) return;
+
     this.isLoading.set(true);
-    this.declarationService.getDeclarationsByUserId(userId!).subscribe({
+    this.declarationService.getDeclarationsByUserId(uid).subscribe({
       next: (declarations) => {
         this.userDeclarations.set(declarations);
         this.calculateStats(declarations);

@@ -307,7 +307,10 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <span class="text-gray-700">Mode sombre</span>
-                                <mat-slide-toggle (change)="toggleTheme($event)" [disabled]="isSavingPreferences()">
+                                <mat-slide-toggle 
+                                    [checked]="userProfile()?.preferences?.theme === 'dark'"
+                                    (change)="toggleTheme($event)" 
+                                    [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
                             </div>
                         </div>
@@ -321,8 +324,13 @@
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Activer les notifications</span>
-                                <mat-slide-toggle (change)="toggleNotifications($event)"
+                                <div>
+                                    <span class="text-gray-700 block">Notifications Push</span>
+                                    <span class="text-gray-500 text-xs">Recevoir des notifications sur cet appareil</span>
+                                </div>
+                                <mat-slide-toggle 
+                                    [checked]="userProfile()?.preferences?.notifications"
+                                    (change)="toggleNotifications($event)"
                                     [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
                             </div>

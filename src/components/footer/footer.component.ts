@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { LinkType } from '../header/header.component';
 import { RouterLink } from '@angular/router';
 import {Pages} from "@/config/constant";
 import { MatIconModule } from '@angular/material/icon';
+import { SettingsService } from '@/services/settings.service';
 
 @Component({
    selector: 'app-footer',
@@ -12,6 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
    imports: [RouterLink, MatIconModule],
 })
 export class FooterComponent {
+   settingsService = inject(SettingsService);
+   Pages = Pages;
+   
    public links_: LinkType[] = [
       {
          id: 'services',

@@ -99,13 +99,22 @@ export class UserProfileComponent implements OnInit {
   readonly hasMatches = computed(() => (this.userMatches() || []).length > 0);
 
   constructor() {
-    // Effect pour appliquer le thème
+    // Effect pour appliquer le thème et synchroniser les préférences
     effect(() => {
       const profile = this.userProfile();
-      if (profile?.preferences?.theme) {
+      if (profile?.preferences) {
         this.themeService.setTheme(profile.preferences.theme);
+        
+        // Synchroniser le signal local preferences avec les données du profil
+        this.preferences.set({
+          emailNotifications: profile.preferences.emailNotifications ?? true,
+          declarationUpdates: profile.preferences.declarationUpdates ?? true,
+          matchAlerts: profile.preferences.matchAlerts ?? true,
+          publicProfile: profile.preferences.publicProfile ?? false,
+          showDeclarations: profile.preferences.showDeclarations ?? true
+        });
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnInit() {
@@ -382,10 +391,10 @@ export class UserProfileComponent implements OnInit {
 
   // ============= GESTION FCM =============
 
-  private async enableFCMNotifications(uid: string) {
+  private async enableFCMNotifications(uid: string): Promise<boolean> {
     if (!uid) {
       console.warn('UID indéfini, impossible d\'activer les notifications FCM');
-      return;
+      return false;
     }
 
     try {
@@ -397,7 +406,7 @@ export class UserProfileComponent implements OnInit {
         this.snackBar.open('Les notifications ne sont pas supportées par ce navigateur', 'Fermer', {
           duration: 5000
         });
-        return;
+        return false;
       }
 
       console.log('Notifications supportées par le navigateur');
@@ -417,7 +426,7 @@ export class UserProfileComponent implements OnInit {
         this.snackBar.open('Les notifications ont été refusées. Réautorisez-les dans les paramètres du navigateur.', 'Fermer', {
           duration: 5000
         });
-        return;
+        return false;
       }
       // Si par défaut, demander la permission
       else if (currentPermission === 'default') {
@@ -438,7 +447,7 @@ export class UserProfileComponent implements OnInit {
           this.snackBar.open('Les notifications ont été refusées. Vous pouvez les autoriser dans les paramètres du navigateur.', 'Fermer', {
             duration: 5000
           });
-          return;
+          return false;
         }
         
         if (permission !== 'granted') {
@@ -446,7 +455,7 @@ export class UserProfileComponent implements OnInit {
           this.snackBar.open('Les notifications n\'ont pas pu être activées', 'Fermer', {
             duration: 3000
           });
-          return;
+          return false;
         }
         
         console.log('Permission accordée par l\'utilisateur');
@@ -508,11 +517,13 @@ export class UserProfileComponent implements OnInit {
             duration: 3000
           });
         }
+        return true;
       } else {
-        console.warn('Token FCM non obtenu');
-        this.snackBar.open('Token FCM non obtenu. Les notifications peuvent ne pas fonctionner.', 'Fermer', {
-          duration: 5000
+        console.warn('Impossible d\'obtenir le token FCM');
+        this.snackBar.open('Erreur: Impossible d\'obtenir le token de notification', 'Fermer', {
+          duration: 3000
         });
+        return false;
       }
 
     } catch (error) {
@@ -520,6 +531,7 @@ export class UserProfileComponent implements OnInit {
       this.snackBar.open('Erreur lors de l\'activation des notifications', 'Fermer', {
         duration: 3000
       });
+      return false;
     }
   }
 
@@ -696,19 +708,32 @@ export class UserProfileComponent implements OnInit {
     
     this.isSavingPreferences.set(true);
     try {
-      // Mettre à jour les préférences dans Firestore
-      await this.userProfileService.updatePreferences(uid, { notifications });
-      
-      // Gérer les tokens FCM
       if (notifications) {
-        await this.enableFCMNotifications(uid);
+        // Tenter d'activer les notifications FCM d'abord (demande permission si nécessaire)
+        const success = await this.enableFCMNotifications(uid);
+        
+        if (success) {
+          // Si succès (permission accordée + token), sauvegarder la préférence
+          await this.userProfileService.updatePreferences(uid, { notifications: true });
+          this.snackBar.open('Notifications activées', 'Fermer', {
+            duration: 3000
+          });
+        } else {
+          // Si échec (refus permission ou erreur), revenir en arrière
+          event.checked = false;
+          // On force la mise à jour du signal local pour refléter l'état réel (false)
+          // car le toggle a changé visuellement mais on n'a pas persisté le changement
+          this.preferences.update(p => ({ ...p })); 
+        }
       } else {
+        // Désactivation : on met à jour Firestore d'abord
+        await this.userProfileService.updatePreferences(uid, { notifications: false });
         await this.disableFCMNotifications(uid);
+        this.snackBar.open('Notifications désactivées', 'Fermer', {
+          duration: 3000
+        });
       }
       
-      this.snackBar.open('Notifications ' + (notifications ? 'activées' : 'désactivées'), 'Fermer', {
-        duration: 3000
-      });
       console.log('Paramètres de notification mis à jour');
     } catch (error) {
       console.error('Erreur lors de la mise à jour des notifications:', error);

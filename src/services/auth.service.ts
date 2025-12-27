@@ -19,6 +19,7 @@ import {
 } from '@angular/fire/auth';
 import { GoogleAuthProvider } from '@angular/fire/auth';
 import { doc, Firestore, setDoc, docData, updateDoc, query, collection, where, getDocs } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { from, lastValueFrom, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators'; // Ajout de 'map'
 import { UserProfile, UpdateProfileData } from '../types/user'; // Assurez-vous d'importer ces types
@@ -34,6 +35,7 @@ export class AuthService {
    constructor(
       private readonly firestore: Firestore,
       private readonly auth: Auth,
+      private readonly functions: Functions,
    ) {
       this.currentUser$ = user(auth);
       this.currentUser$.subscribe((u) => {
@@ -110,7 +112,9 @@ export class AuthService {
    }
 
    resetPassword(email: string): Observable<void> {
-      return from(sendPasswordResetEmail(this.auth, email));
+      // Utiliser la Cloud Function personnalisée pour envoyer l'email
+      const sendPasswordReset = httpsCallable(this.functions, 'sendPasswordReset');
+      return from(sendPasswordReset({ email }).then(() => void 0));
    }
 
    /**

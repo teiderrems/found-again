@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ export type AdminLinkType = {
   imports: [
     CommonModule,
     RouterLink,
+    RouterLinkActive,
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
@@ -64,6 +65,13 @@ export class AdminHeaderComponent implements OnInit {
       title: 'Vérifications',
       url: '/admin/verifications',
       icon: 'verified_user',
+      badge: 0
+    },
+    {
+      id: 'settings',
+      title: 'Paramètres',
+      url: '/admin/settings',
+      icon: 'settings',
       badge: 0
     },
   ];
@@ -163,7 +171,7 @@ export class AdminHeaderComponent implements OnInit {
         this.redirectTo(Pages.PROFILE);
         break;
       case 'settings':
-        this.redirectTo(Pages.SETTINGS);
+        this.redirectTo(Pages.ADMIN_SETTINGS);
         break;
       case 'logout':
         this.onLogout();

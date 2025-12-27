@@ -1,9 +1,11 @@
 // components/contact.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import {Pages} from "@/config/constant";
+import { SettingsService } from '@/services/settings.service';
+import { ContactService } from '@/services/contact.service';
 
 interface ContactMethod {
   type: string;
@@ -23,22 +25,24 @@ interface FAQItem {
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, MatIconModule],
   templateUrl:'./contact.component.html',
   styleUrl:'./contact.component.css'
 })
 export class ContactComponent implements OnInit {
   contactForm: FormGroup;
   isSubmitting = false;
+  private settingsService = inject(SettingsService);
+  private contactService = inject(ContactService);
 
   contactMethods: ContactMethod[] = [
     {
       type: 'email',
       label: 'Email',
-      value: 'contact@objets-trouves.fr',
+      value: this.settingsService.contactEmail(),
       icon: 'email',
       description: 'Réponse sous 24h',
-      action: 'mailto:contact@objets-trouves.fr'
+      action: `mailto:${this.settingsService.contactEmail()}`
     },
     {
       type: 'phone',
@@ -127,7 +131,11 @@ export class ContactComponent implements OnInit {
       subject: ['', Validators.required],
       message: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]]
     });
-  }
+    effect(() => {
+      const email = this.settingsService.contactEmail();
+      this.contactMethods[0].value = email;
+      this.contactMethods[0].action = `mailto:${email}`;
+    });  }
 
   ngOnInit(): void {}
 
@@ -135,14 +143,18 @@ export class ContactComponent implements OnInit {
     if (this.contactForm.valid) {
       this.isSubmitting = true;
 
-      // Simulation d'envoi
-      console.log('Formulaire soumis:', this.contactForm.value);
-
-      setTimeout(() => {
-        this.isSubmitting = false;
-        alert('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
-        this.contactForm.reset();
-      }, 2000);
+      this.contactService.sendContactRequest(this.contactForm.value).subscribe({
+        next: () => {
+          this.isSubmitting = false;
+          alert('Message envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.');
+          this.contactForm.reset();
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'envoi du message:', error);
+          this.isSubmitting = false;
+          alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+        }
+      });
     } else {
       this.markAllFieldsAsTouched();
     }

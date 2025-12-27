@@ -1,5 +1,11 @@
-<div class="min-h-screen flex items-center justify-center overflow-hidden black/30 p-4">
-  <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full">
+<div class="min-h-screen flex items-center justify-center overflow-hidden bg-gray-50 p-4 relative">
+  <!-- Background Elements -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-indigo-100/40 to-transparent blur-3xl"></div>
+    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-purple-100/40 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full relative z-10">
 
     <div class="md:w-1/2 bg-cover bg-center hidden md:block">
       <img src="/images/loginImage.png" alt="Personne célébrant devant un ordinateur" class="w-full h-full object-cover">

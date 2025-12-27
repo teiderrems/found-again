@@ -1,0 +1,83 @@
+<div class="p-4 md:p-6">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Paramètres de l'Application</h1>
+    <p class="text-gray-600">Gérez la configuration globale de l'application</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- General Settings -->
+    <mat-card class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <mat-card-header class="border-b border-gray-100 p-4">
+        <mat-card-title class="text-lg font-semibold text-gray-900">Général</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="p-4 space-y-4">
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Nom de l'application</mat-label>
+          <input matInput [(ngModel)]="settings().appName" placeholder="Ex: Found Again">
+          <mat-icon matSuffix>web</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Email de contact</mat-label>
+          <input matInput [(ngModel)]="settings().contactEmail" placeholder="contact@example.com" type="email">
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field class="w-full" appearance="outline">
+          <mat-label>Éléments par page (Tableaux)</mat-label>
+          <input matInput [(ngModel)]="settings().itemsPerPage" type="number" min="5" max="100">
+          <mat-icon matSuffix>list</mat-icon>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- System Settings -->
+    <mat-card class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <mat-card-header class="border-b border-gray-100 p-4">
+        <mat-card-title class="text-lg font-semibold text-gray-900">Système</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="p-4 space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-medium text-gray-900">Mode Maintenance</h3>
+            <p class="text-sm text-gray-500">Rendre l'application inaccessible aux utilisateurs</p>
+          </div>
+          <mat-slide-toggle [(ngModel)]="settings().maintenanceMode" color="warn"></mat-slide-toggle>
+        </div>
+
+        <div class="flex items-center justify-between border-t border-gray-100 pt-4">
+          <div>
+            <h3 class="text-sm font-medium text-gray-900">Inscriptions</h3>
+            <p class="text-sm text-gray-500">Autoriser les nouvelles inscriptions</p>
+          </div>
+          <mat-slide-toggle [(ngModel)]="settings().allowRegistration" color="primary"></mat-slide-toggle>
+        </div>
+
+        <div class="pt-4 border-t border-gray-100">
+          <mat-form-field class="w-full" appearance="outline">
+            <mat-label>Taille max. upload (MB)</mat-label>
+            <input matInput [(ngModel)]="settings().maxUploadSize" type="number" min="1" max="50">
+            <span matSuffix>MB</span>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Actions -->
+  <div class="mt-6 flex justify-end">
+    <button 
+      mat-flat-button 
+      color="primary" 
+      (click)="saveSettings()" 
+      [disabled]="isLoading()"
+      class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+      @if (isLoading()) {
+        <mat-icon class="animate-spin mr-2">refresh</mat-icon>
+      } @else {
+        <mat-icon class="mr-2">save</mat-icon>
+      }
+      Enregistrer les modifications
+    </button>
+  </div>
+</div>

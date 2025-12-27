@@ -78,6 +78,40 @@ export class VerificationService {
   }
 
   /**
+   * Récupère toutes les vérifications (tous statuts confondus)
+   */
+  getAllVerifications(): Observable<VerificationData[]> {
+    const declarationsRef = collection(this.firestore, 'declarations');
+
+    return from(getDocs(declarationsRef)).pipe(
+      switchMap(async (snapshot) => {
+        const allVerifications: VerificationData[] = [];
+
+        for (const declarationDoc of snapshot.docs) {
+          const verificationsRef = collection(
+            this.firestore,
+            'declarations',
+            declarationDoc.id,
+            'verifications'
+          );
+
+          const verificationsSnapshot = await getDocs(verificationsRef);
+
+          verificationsSnapshot.docs.forEach(verificationDoc => {
+            allVerifications.push({
+              id: verificationDoc.id,
+              declarationId: declarationDoc.id,
+              ...verificationDoc.data()
+            } as VerificationData);
+          });
+        }
+
+        return allVerifications;
+      })
+    );
+  }
+
+  /**
    * Récupère toutes les vérifications en attente
    */
   getPendingVerifications(): Observable<VerificationData[]> {

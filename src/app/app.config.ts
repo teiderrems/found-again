@@ -21,6 +21,7 @@ import { requestInterceptor } from "./auth.interceptor";
 import { DATE_PIPE_DEFAULT_OPTIONS, registerLocaleData } from '@angular/common';
 import fr from '@angular/common/locales/fr';
 import { getMessaging, provideMessaging } from "@angular/fire/messaging";
+import { getFunctions, provideFunctions } from "@angular/fire/functions";
 
 registerLocaleData(fr);
 
@@ -69,6 +70,7 @@ export const appConfig: ApplicationConfig = {
         UserTrackingService,
         provideDatabase(() => getDatabase()),
         provideMessaging(() => getMessaging()),
+        provideFunctions(() => getFunctions()),
         
     ],
 };

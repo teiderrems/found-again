@@ -1,11 +1,14 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, Inject, LOCALE_ID } from '@angular/core';
+import { formatDate } from '@angular/common';
 
 @Pipe({
   name: 'firebaseDate',
   standalone: true,
 })
 export class FirebaseDatePipe implements PipeTransform {
-  transform(value: any, format: string = 'short'): string {
+  constructor(@Inject(LOCALE_ID) private locale: string) {}
+
+  transform(value: any, format: string = 'mediumDate'): string {
     if (!value) return '';
 
     let date: Date;
@@ -29,35 +32,12 @@ export class FirebaseDatePipe implements PipeTransform {
       return '';
     }
 
-    // Formatter la date selon le format demandé
-    if (format === 'short') {
-      return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      });
-    } else if (format === 'long') {
-      return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } else if (format === 'time') {
-      return date.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } else if (format === 'full') {
-      return date.toLocaleString('fr-FR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+    try {
+      return formatDate(date, format, this.locale);
+    } catch (error) {
+      console.warn('FirebaseDatePipe: Error formatting date', error);
+      return date.toString();
     }
-
-    return date.toString();
   }
 }
 

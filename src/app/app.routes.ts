@@ -31,10 +31,18 @@ import {
    redirectLoggedInTo,
 } from '@angular/fire/auth-guard';
 
+import { RegistrationGuard } from '@/guards/registration.guard';
+import { MaintenanceGuard } from '@/guards/maintenance.guard';
+
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
 const redirectUnauthorizedToLanding = () => redirectUnauthorizedTo(['connexion']);
 
 export const routes: Routes = [
+   {
+      path: 'maintenance',
+      loadComponent: () => import('@/pages/maintenance/maintenance.component').then(c => c.MaintenanceComponent),
+      title: 'Maintenance en cours'
+   },
    {
       path: 'home',
       redirectTo: Pages.HOME,
@@ -42,7 +50,7 @@ export const routes: Routes = [
    {
       path: '',
       component: HomeComponent,
-      canActivate: [AuthGuard],
+      canActivate: [AuthGuard, MaintenanceGuard],
       data: {
          authGuardPipe: redirectUnauthorizedToLanding,
       },
@@ -51,8 +59,8 @@ export const routes: Routes = [
          {
             path: '',
             loadComponent: () =>
-               import('@/pages/dashboard/dashboard.component').then(
-                  (c) => c.DashboardComponent,
+               import('@/pages/dashboard-dispatcher/dashboard-dispatcher.component').then(
+                  (c) => c.DashboardDispatcherComponent,
                ),
             pathMatch: 'full',
             title: 'Tableau de Bord',
@@ -111,6 +119,26 @@ export const routes: Routes = [
                ),
             pathMatch: 'full',
             title: 'Nous contacter',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: preparePathForRouter(Pages.PRIVACY),
+            loadComponent: () =>
+               import('@/pages/privacy/privacy.component').then(
+                  (c) => c.PrivacyComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Politique de Confidentialité',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: preparePathForRouter(Pages.TERMS),
+            loadComponent: () =>
+               import('@/pages/terms/terms.component').then(
+                  (c) => c.TermsComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Conditions Générales',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          },
          {
@@ -173,6 +201,16 @@ export const routes: Routes = [
                   title: 'Gestion des Vérifications',
                   runGuardsAndResolvers: (from, to) => from.url === to.url,
                },
+               {
+                  path: 'settings',
+                  loadComponent: () =>
+                     import('@/pages/admin/settings/admin-settings.component').then(
+                        (c) => c.AdminSettingsComponent,
+                     ),
+                  pathMatch: 'full',
+                  title: 'Paramètres de l\'Application',
+                  runGuardsAndResolvers: (from, to) => from.url === to.url,
+               },
             ],
          },
          {
@@ -229,7 +267,7 @@ export const routes: Routes = [
       loadComponent: () =>
          import('@/pages/login/login.component').then((c) => c.LoginComponent),
       pathMatch: 'full',
-      canActivate: [AuthGuard],
+      canActivate: [AuthGuard, MaintenanceGuard],
       data: {
          authGuardPipe: redirectLoggedInToHome,
       },
@@ -240,6 +278,7 @@ export const routes: Routes = [
       loadComponent: () =>
          import('@/pages/register/register.component').then((c) => c.RegisterComponent),
       pathMatch: 'full',
+      canActivate: [RegistrationGuard, MaintenanceGuard],
       title: "S'inscrire",
    },
    {

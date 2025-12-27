@@ -16,6 +16,8 @@ import { LocationService, LocationSuggestion } from '@/services/location.service
 import { DefaultCategory } from '@/constants/categories.constants';
 import { CategorySelectorComponent } from '../category-selector.component';
 import { DeclarationCreate, DeclarationType } from '@/types/declaration';
+import { SettingsService } from '@/services/settings.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
    selector: 'app-declaration',
@@ -75,6 +77,8 @@ export class DeclarationComponent implements OnInit {
    private authService = inject(AuthService);
    private locationService = inject(LocationService);
    private fb = inject(FormBuilder);
+   private settingsService = inject(SettingsService);
+   private snackBar = inject(MatSnackBar);
 
    selectedCategory: string = '';
    categories = signal<DefaultCategory[]>([]);
@@ -201,9 +205,21 @@ export class DeclarationComponent implements OnInit {
    
    onFileSelected(event: any): void {
       const files: FileList = event.target.files;
+      const maxSizeBytes = this.settingsService.maxUploadSize() * 1024 * 1024;
+
       if (files.length > 0) {
          for (let i = 0; i < files.length; i++) {
             const file = files[i];
+            
+            if (file.size > maxSizeBytes) {
+               this.snackBar.open(
+                  `Le fichier ${file.name} dépasse la taille maximale autorisée de ${this.settingsService.maxUploadSize()}MB`,
+                  'Fermer',
+                  { duration: 5000, panelClass: ['bg-red-500', 'text-white'] }
+               );
+               continue;
+            }
+
             if (file.type.startsWith('image/')) {
                this.selectedFiles.push(file);
 

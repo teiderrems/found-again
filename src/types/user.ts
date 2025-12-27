@@ -25,6 +25,11 @@ export interface UserProfile {
   preferences: {
     theme: 'light' | 'dark';
     notifications: boolean;
+    emailNotifications?: boolean;
+    declarationUpdates?: boolean;
+    matchAlerts?: boolean;
+    publicProfile?: boolean;
+    showDeclarations?: boolean;
   };
   phone?: string;
   avatarUrl?: string;

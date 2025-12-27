@@ -5,7 +5,7 @@
       <!-- Logo & Branding -->
       <div class="flex flex-col items-start">
         <a routerLink="/" class="no-underline hover:opacity-80 transition-opacity duration-200 mb-4">
-          <img class="h-12 w-auto" src="/images/header_logo.png" alt="Found Again">
+          <img class="h-12 w-auto" src="/images/header_logo.png" [alt]="settingsService.appName()">
         </a>
         <p class="text-gray-600 text-sm leading-relaxed">
           Aidez-nous à retrouver les objets perdus et à restituer les objets trouvés.
@@ -46,12 +46,12 @@
       <!-- Copyright & Legal -->
       <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
         <span class="text-gray-500 text-sm">
-          &copy; 2025 Found Again. Tous droits réservés.
+          &copy; {{ settingsService.appName() }}. Tous droits réservés.
         </span>
         <div class="flex items-center space-x-6 text-sm">
-          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Confidentialité</a>
-          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Conditions</a>
-          <a href="#" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Contact</a>
+          <a [routerLink]="Pages.PRIVACY" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Confidentialité</a>
+          <a [routerLink]="Pages.TERMS" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Conditions</a>
+          <a [routerLink]="Pages.CONTACT" class="text-gray-500 hover:text-[#009245] transition-colors duration-200">Contact</a>
         </div>
       </div>
     </div>

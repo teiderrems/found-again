@@ -1,126 +1,61 @@
-<div class="services-showcase">
-  <!-- En-tête -->
-  <section class="text-center py-16 bg-linear-to-br from-blue-50 to-indigo-100">
-    <div class="container mx-auto px-4">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-        Nos Services
-        <span class="text-blue-600">Complets</span>
+<div class="max-h-full bg-gray-50">
+  <!-- Hero -->
+  <section class="bg-white border-b border-gray-200 py-16">
+    <div class="container mx-auto px-4 text-center max-w-4xl">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        Nos Services <span class="text-[#009245]">Complets</span>
       </h1>
       <p class="text-xl text-gray-600 mb-8">
-        Découvrez toutes les fonctionnalités conçues pour vous aider à retrouver
-        vos objets perdus et rendre service à la communauté
+        Découvrez toutes les fonctionnalités conçues pour vous aider à retrouver vos objets perdus.
       </p>
-      <div class="flex flex-wrap justify-center gap-4 mb-12">
-        @if (stats()) {
-          @for (stat of stats() | keyvalue; track stat) {
-            <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ stat.value }}</div>
-              <div class="text-sm text-gray-500 capitalize">
-                {{ stat.key }}
-              </div>
-            </div>
-          }
-        }
-      </div>
     </div>
   </section>
 
-  <!-- Grille des services -->
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        @for (feature of features; track feature) {
-          <div class="feature-card group" [class]="getCardClasses(feature)">
-            <!-- En-tête de la carte -->
-            <div class="feature-card-header">
-              <div class="feature-icon" [style.backgroundColor]="feature.color + '20'">
-                <span class="material-icons text-2xl" [style.color]="feature.color">
-                  {{ feature.icon }}
-                </span>
-              </div>
-              @if (feature.stats) {
-                <div class="feature-stats">
-                  <span class="stats-badge">{{ feature.stats }}</span>
-                </div>
-              }
-            </div>
-            <!-- Corps de la carte -->
-            <div class="feature-card-body">
-              <h3 class="feature-title">{{ feature.title }}</h3>
-              <p class="feature-description">{{ feature.description }}</p>
-              <ul class="feature-benefits">
-                @for (benefit of feature.benefits; track benefit) {
-                  <li class="benefit-item">
-                    <span class="material-icons text-green-500 text-sm">check_circle</span>
-                    {{ benefit }}
-                  </li>
-                }
-              </ul>
-            </div>
-            <!-- Pied de carte -->
-            <div class="feature-card-footer">
-              @if (feature.route) {
-                <button [routerLink]="feature.route" class="primary-action-btn"
-                  [style.backgroundColor]="feature.color">
-                  <span>Découvrir</span>
-                  <span class="material-icons text-sm">arrow_forward</span>
-                </button>
-              }
-              @if (feature.action) {
-                <button (click)="handleAction(feature.action!)"
-                  class="secondary-action-btn">
-                  <span>Configurer</span>
-                  <span class="material-icons text-sm">settings</span>
-                </button>
-              }
-              @if (!feature.route && !feature.action) {
-                <button class="learn-more-btn">
-                  <span>En savoir plus</span>
-                  <span class="material-icons text-sm">info</span>
-                </button>
-              }
-            </div>
+  <!-- Services Grid -->
+  <section class="py-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      @for (feature of features; track feature) {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex flex-col">
+          <div class="w-12 h-12 rounded-lg bg-green-50 text-[#009245] flex items-center justify-center mb-4">
+            <mat-icon>{{ feature.icon }}</mat-icon>
           </div>
-        }
-      </div>
-    </div>
-  </section>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ feature.title }}</h3>
+          <p class="text-gray-600 mb-6 grow">{{ feature.description }}</p>
+          
+          <ul class="space-y-2 mb-6">
+            @for (benefit of feature.benefits; track benefit) {
+              <li class="flex items-center text-sm text-gray-600">
+                <mat-icon class="text-green-500 text-sm mr-2">check_circle</mat-icon>
+                {{ benefit }}
+              </li>
+            }
+          </ul>
 
-  <!-- Section d'appel à l'action -->
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold text-gray-800 mb-4">Prêt à commencer ?</h2>
-      <p class="text-lg text-gray-600 mb-8 ">
-        Rejoignez des milliers de personnes qui utilisent déjà nos services pour
-        retrouver leurs objets perdus
-      </p>
-      <div class="flex flex-wrap justify-center gap-4">
-        <button routerLink="/declarer" class="cta-btn primary">
-          <span class="material-icons mr-2">add_circle</span>
-          Déclarer un objet
-        </button>
-        <button routerLink="/rechercher" class="cta-btn secondary">
-          <span class="material-icons mr-2">search</span>
-          Rechercher un objet
-        </button>
-      </div>
+          @if (feature.route) {
+            <button [routerLink]="feature.route" 
+                    class="w-full py-2 px-4 rounded-lg border border-[#009245] text-[#009245] hover:bg-green-50 font-medium transition-colors">
+              Découvrir
+            </button>
+          }
+        </div>
+      }
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">
+  <section class="py-16 bg-white border-t border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
         Questions Fréquentes
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 gap-6">
         @for (faq of faqs; track faq) {
-          <div class="faq-item">
-            <h3 class="faq-question">
-              <span class="material-icons text-blue-500 mr-2">help</span>
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
+            <h3 class="flex items-start text-lg font-semibold text-gray-900 mb-2">
+              <mat-icon class="text-[#009245] mr-3 mt-1">help</mat-icon>
               {{ faq.question }}
             </h3>
-            <p class="faq-answer">{{ faq.answer }}</p>
+            <p class="text-gray-600 ml-9">{{ faq.answer }}</p>
           </div>
         }
       </div>

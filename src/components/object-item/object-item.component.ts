@@ -2,6 +2,8 @@ import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-preview-dialog.component';
 
 @Component({
    selector: 'app-object-item',
@@ -14,9 +16,9 @@ export class ObjectItemComponent implements OnInit {
    item = input.required<DeclarationData>();
    currentIndex = 0;
    images: string[] = [];
-   isPreviewOpen = signal(false);
    
    private readonly router = inject(Router); 
+   private readonly dialog = inject(MatDialog);
    private cacheBusterTimestamp: number = Date.now();
    
    ngOnInit(): void {
@@ -73,22 +75,19 @@ export class ObjectItemComponent implements OnInit {
    }
 
    openPreview() {
-      this.isPreviewOpen.set(true);
-      document.body.style.overflow = 'hidden';
+      this.dialog.open(ImagePreviewDialogComponent, {
+         data: {
+            images: this.images,
+            startIndex: this.currentIndex
+         },
+         maxWidth: '100vw',
+         maxHeight: '100vh',
+         height: '100%',
+         width: '100%',
+         panelClass: 'full-screen-modal',
+         backdropClass: 'bg-transparent'
+      });
    }
 
-   closePreview() {
-      this.isPreviewOpen.set(false);
-      document.body.style.overflow = 'auto';
-   }
-
-   nextPreviewImage(event: Event) {
-      event.stopPropagation();
-      this.nextImage(event);
-   }
-
-   prevPreviewImage(event: Event) {
-      event.stopPropagation();
-      this.prevImage(event);
-   }
+   // Removed old preview methods as they are handled by the dialog
 }

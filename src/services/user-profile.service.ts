@@ -63,7 +63,12 @@ export class UserProfileService {
           role: data.role || 'standard',
           preferences: {
             theme: data.preferences?.theme || 'light',
-            notifications: data.preferences?.notifications ?? true
+            notifications: data.preferences?.notifications ?? true,
+            emailNotifications: data.preferences?.emailNotifications ?? true,
+            declarationUpdates: data.preferences?.declarationUpdates ?? true,
+            matchAlerts: data.preferences?.matchAlerts ?? true,
+            publicProfile: data.preferences?.publicProfile ?? false,
+            showDeclarations: data.preferences?.showDeclarations ?? true
           },
           phone: data.phone || '',
           avatarUrl: data.avatarUrl || this.generateAvatar(data.email || ''),
@@ -118,10 +123,13 @@ export class UserProfileService {
     try {
       const userDoc = doc(this.firestore, `users/${uid}`);
       
-      await updateDoc(userDoc, {
-        'preferences.theme': preferences.theme || 'light',
-        'preferences.notifications': preferences.notifications ?? true
-      });
+      const updateData: any = {};
+      if (preferences.theme !== undefined) updateData['preferences.theme'] = preferences.theme;
+      if (preferences.notifications !== undefined) updateData['preferences.notifications'] = preferences.notifications;
+      
+      if (Object.keys(updateData).length > 0) {
+        await updateDoc(userDoc, updateData);
+      }
       
       // Mettre à jour le signal local
       const currentProfile = this.userProfile();
