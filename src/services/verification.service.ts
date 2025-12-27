@@ -331,4 +331,28 @@ export class VerificationService {
       })
     );
   }
+
+  /**
+   * Met à jour le statut d'une vérification (Admin)
+   */
+  updateVerificationStatus(
+    declarationId: string,
+    verificationId: string,
+    update: VerificationUpdate
+  ): Observable<void> {
+    const verificationRef = doc(
+      this.firestore,
+      'declarations',
+      declarationId,
+      'verifications',
+      verificationId
+    );
+
+    return from(updateDoc(verificationRef, {
+      status: update.status,
+      adminNotes: update.adminNotes || null,
+      rejectionReason: update.rejectionReason || null,
+      updatedAt: new Date().toISOString()
+    } as any));
+  }
 }

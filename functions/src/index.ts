@@ -1158,3 +1158,120 @@ export const onContactRequestCreated = functions.firestore
     
     return null;
   });
+
+/**
+ * Trigger Firestore - Envoyer un email quand une vérification est validée
+ */
+export const onVerificationVerified = functions.firestore
+    .document("declarations/{declarationId}/verifications/{verificationId}")
+    .onUpdate(async (change, context) => {
+    
+    const newData = change.after.data();
+    const previousData = change.before.data();
+
+    // Vérifier si le statut est passé à 'verified'
+    if (newData.status === 'verified' && previousData.status !== 'verified') {
+        const declarationId = context.params.declarationId;
+        const verificationId = context.params.verificationId;
+        const claimantUserId = newData.userId; // L'utilisateur qui a fait la demande (le propriétaire présumé)
+
+        console.log(`Vérification ${verificationId} validée pour la déclaration ${declarationId}`);
+
+        try {
+            // 1. Récupérer la déclaration pour avoir l'ID du trouveur
+            const declarationSnapshot = await admin.firestore().collection('declarations').doc(declarationId).get();
+            if (!declarationSnapshot.exists) {
+                console.error('Déclaration introuvable');
+                return null;
+            }
+            const declarationData = declarationSnapshot.data();
+            const finderUserId = declarationData?.userId; // L'utilisateur qui a trouvé l'objet
+
+            if (!finderUserId) {
+                console.error('Trouveur introuvable dans la déclaration');
+                return null;
+            }
+
+            // 2. Récupérer les infos du trouveur (pour les envoyer au propriétaire)
+            const finderSnapshot = await admin.firestore().collection('users').doc(finderUserId).get();
+            const finderData = finderSnapshot.data();
+
+            // 3. Récupérer les infos du propriétaire (pour lui envoyer l'email)
+            const claimantSnapshot = await admin.firestore().collection('users').doc(claimantUserId).get();
+            const claimantData = claimantSnapshot.data();
+            const claimantEmail = claimantData?.email;
+
+            if (!claimantEmail || !finderData) {
+                console.error('Données utilisateur manquantes');
+                return null;
+            }
+
+            // 4. Envoyer l'email
+            const transporter = getEmailTransporter();
+            if (!transporter) {
+                console.log('Email simulé (pas de SMTP):', { to: claimantEmail, subject: 'Vérification validée' });
+                return null;
+            }
+
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+                        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                        .header { text-align: center; margin-bottom: 24px; }
+                        .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
+                        .title { font-size: 20px; font-weight: 600; color: #166534; margin: 16px 0; }
+                        .info-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 16px 0; }
+                        .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="card">
+                            <div class="header">
+                                <div class="logo">Found Again</div>
+                            </div>
+                            <h1 class="title">Vérification validée !</h1>
+                            
+                            <p>Bonne nouvelle ! Votre demande de vérification pour l'objet <strong>${declarationData?.title || 'Objet'}</strong> a été validée.</p>
+                            
+                            <p>Voici les coordonnées de la personne qui a trouvé votre objet :</p>
+                            
+                            <div class="info-box">
+                                <p><strong>Nom :</strong> ${finderData.firstname} ${finderData.lastname}</p>
+                                <p><strong>Email :</strong> ${finderData.email}</p>
+                                ${finderData.phone ? `<p><strong>Téléphone :</strong> ${finderData.phone}</p>` : ''}
+                            </div>
+                            
+                            <p>Vous pouvez maintenant prendre contact pour récupérer votre objet.</p>
+                            
+                            <p>Cordialement,</p>
+                            <p>L'équipe Found Again</p>
+                        </div>
+                        <div class="footer">
+                            <p>© 2025 Found Again. Tous droits réservés.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            await transporter.sendMail({
+                from: process.env.GMAIL_USER,
+                to: claimantEmail,
+                subject: 'Votre objet a été retrouvé ! - Found Again',
+                html: htmlContent
+            });
+
+            console.log(`Email envoyé à ${claimantEmail}`);
+
+        } catch (error) {
+            console.error('Erreur lors du traitement de la validation:', error);
+        }
+    }
+    return null;
+});
