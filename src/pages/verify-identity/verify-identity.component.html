@@ -105,13 +105,11 @@
                   </div>
                 </div>
               </div>
-              <button
+              <button mat-raised-button color="primary"
                 (click)="startVerification()"
-                class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                class="w-full !py-6 !rounded-xl !text-lg">
                 <span class="flex items-center justify-center space-x-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L7.707 9.707a1 1 0 01-1.414-1.414l4-4z" clip-rule="evenodd" />
-                  </svg>
+                  <mat-icon>check_circle</mat-icon>
                   <span>Commencer la Vérification</span>
                 </span>
               </button>
@@ -200,23 +198,23 @@
                 }
                 <!-- Buttons -->
                 <div class="flex gap-4">
-                  <button
+                  <button mat-stroked-button
                     type="button"
                     (click)="resetForm()"
-                    class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    class="flex-1 !py-6 !rounded-xl">
                     Annuler
                   </button>
-                  <button
+                  <button mat-raised-button color="primary"
                     type="submit"
                     [disabled]="verifyForm.invalid || isLoading()"
-                    class="flex-1 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:cursor-not-allowed">
+                    class="flex-1 !py-6 !rounded-xl">
                     <span class="flex items-center justify-center space-x-2">
                       @if (!isLoading()) {
                         <span>Soumettre la Vérification</span>
                       }
                       @if (isLoading()) {
                         <span class="flex items-center space-x-2">
-                          <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          <mat-spinner diameter="20" color="accent"></mat-spinner>
                           <span>Vérification...</span>
                         </span>
                       }
@@ -253,14 +251,14 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-3">Vérification Échouée</h2>
                 <p class="text-gray-600 mb-8 max-w-md mx-auto">{{ errorMessage() }}</p>
                 <div class="flex gap-4 justify-center">
-                  <button
+                  <button mat-raised-button color="primary"
                     (click)="resetForm()"
-                    class="px-6 py-3 bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                    class="!px-6 !py-3 !rounded-xl">
                     Réessayer
                   </button>
-                  <button
+                  <button mat-stroked-button
                     (click)="goBack()"
-                    class="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                    class="!px-6 !py-3 !rounded-xl">
                     Retour à l'accueil
                   </button>
                 </div>

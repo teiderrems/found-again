@@ -44,6 +44,55 @@ interface EmailParams {
   };
 }
 
+// ============= User Management Functions =============
+
+/**
+ * Active ou désactive un utilisateur (Auth + Firestore)
+ * Accessible uniquement aux administrateurs
+ */
+export const toggleUserStatus = onCall({ cors: true }, async (request) => {
+  // Vérifier l'authentification
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'L\'utilisateur doit être connecté.');
+  }
+
+  const callerUid = request.auth.uid;
+  const { targetUid, isActive } = request.data;
+
+  console.log('toggleUserStatus called with:', { targetUid, isActive, callerUid });
+
+  if (!targetUid || isActive === undefined) {
+    throw new HttpsError('invalid-argument', 'Les paramètres targetUid et isActive sont requis.');
+  }
+
+  try {
+    // Vérifier si l'appelant est admin
+    const callerDoc = await admin.firestore().collection('users').doc(callerUid).get();
+    const callerData = callerDoc.data();
+
+    if (!callerData || callerData.role !== 'admin') {
+      throw new HttpsError('permission-denied', 'Seuls les administrateurs peuvent effectuer cette action.');
+    }
+
+    // 1. Mettre à jour le statut dans Firebase Auth (disabled = !isActive)
+    await admin.auth().updateUser(targetUid, {
+      disabled: !isActive
+    });
+
+    // 2. Mettre à jour le statut dans Firestore pour l'affichage
+    await admin.firestore().collection('users').doc(targetUid).update({
+      isActive: isActive
+    });
+
+    console.log(`Utilisateur ${targetUid} ${isActive ? 'activé' : 'désactivé'} par ${callerUid}`);
+    return { success: true };
+
+  } catch (error) {
+    console.error('Erreur lors du changement de statut utilisateur:', error);
+    throw new HttpsError('internal', 'Une erreur est survenue lors du changement de statut.');
+  }
+});
+
 // ============= Cloud Functions =============
 
 /**

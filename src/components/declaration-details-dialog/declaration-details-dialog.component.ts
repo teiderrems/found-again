@@ -85,7 +85,7 @@ interface DialogData {
       </div>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-6">
+      <mat-dialog-content class="flex-1 p-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <!-- Main Info (Left Column) -->
@@ -221,7 +221,7 @@ interface DialogData {
           </div>
 
         </div>
-      </div>
+      </mat-dialog-content>
     </div>
   `,
   styles: [`

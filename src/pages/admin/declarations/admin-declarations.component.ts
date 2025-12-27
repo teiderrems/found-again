@@ -142,10 +142,6 @@ export class AdminDeclarationsComponent implements OnInit {
             this.snackBar.open('Déclaration supprimée avec succès', 'Fermer', {
               duration: 3000
             });
-            // No need to reload manually if observable was used, but here we use signal so we might need to reload or update signal
-            // Since we are not using the observable directly in the template anymore but a signal, we should reload or filter out locally.
-            // Let's reload to be safe and get fresh data.
-            this.loadDeclarations(); 
           },
           error: (error) => {
             console.error('Erreur lors de la suppression:', error);
@@ -181,7 +177,6 @@ export class AdminDeclarationsComponent implements OnInit {
             this.snackBar.open(`Déclaration ${action}e avec succès`, 'Fermer', {
               duration: 3000
             });
-            this.loadDeclarations();
           },
           error: (error) => {
             console.error('Erreur lors de la modification:', error);

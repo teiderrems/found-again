@@ -6,11 +6,11 @@
 
   <!-- Search and Filter -->
   <div class="bg-white rounded-lg shadow p-4 mb-6">
-    <mat-form-field class="w-full">
-      <mat-label>Rechercher un utilisateur...</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Email, nom, prénom...">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
+    <div class="relative">
+      <input (keyup)="applyFilter($event)" placeholder="Rechercher un utilisateur (Email, nom, prénom...)"
+        class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+      <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+    </div>
   </div>
 
   <!-- Table -->
@@ -51,6 +51,7 @@
                 }
               </div>
             </th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Statut</th>
             <th (click)="sortData('createdAt')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
               <div class="flex items-center">
                 Inscrit le
@@ -74,20 +75,30 @@
                   {{ user.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}
                 </span>
               </td>
+              <td class="py-4 px-6">
+                <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
+                              ((user.isActive ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                  {{ (user.isActive ?? true) ? 'Actif' : 'Inactif' }}
+                </span>
+              </td>
               <td class="py-4 px-6 text-gray-600 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
               <td class="py-4 px-6 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button 
+                  <button mat-icon-button color="primary"
                     (click)="toggleRole(user)" 
-                    class="p-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors"
                     [title]="user.role === 'admin' ? 'Rétrograder' : 'Promouvoir'">
-                    <mat-icon class="text-base">{{ user.role === 'admin' ? 'remove_moderator' : 'add_moderator' }}</mat-icon>
+                    <mat-icon>{{ user.role === 'admin' ? 'remove_moderator' : 'add_moderator' }}</mat-icon>
                   </button>
-                  <button 
+                  <button mat-icon-button
+                    (click)="toggleUserStatus(user)"
+                    [color]="(user.isActive ?? true) ? 'warn' : 'primary'"
+                    [title]="(user.isActive ?? true) ? 'Désactiver' : 'Activer'">
+                    <mat-icon>{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn"
                     (click)="deleteUser(user)" 
-                    class="p-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
                     title="Supprimer">
-                    <mat-icon class="text-base">delete</mat-icon>
+                    <mat-icon>delete</mat-icon>
                   </button>
                 </div>
               </td>

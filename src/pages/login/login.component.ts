@@ -97,13 +97,13 @@ export class LoginComponent {
          
          // Ignorer silencieusement si l'utilisateur ferme la popup
          if (errorCode === 'auth/popup-closed-by-user') {
-            console.log('Authentification Google annulée par l\'utilisateur');
             return;
          }
          
          // Pour les autres erreurs, les logger et afficher un message
          console.error('Erreur lors de la connexion Google:', error);
          const errorMessage = this.getErrorMessage(error);
+         this.errorMessage = errorMessage;
          this.snackBar.open(errorMessage, 'Fermer', {
             duration: 5000,
             verticalPosition: 'top'
@@ -114,10 +114,6 @@ export class LoginComponent {
 
    //Méthode pour la connexion
    async signIn() {
-      console.log('Statut du formulaire : ', this.loginForm.status);
-      console.log('Erreurs email : ', this.email?.errors);
-      console.log('Erreurs password : ', this.password?.errors);
-
       this.loginForm.markAllAsTouched();
 
       if (this.loginForm.valid) {
@@ -138,17 +134,21 @@ export class LoginComponent {
                error: (error) => {
                   console.error(error);
                   const errorMessage = this.getErrorMessage(error);
+                  this.errorMessage = errorMessage;
                   this.snackBar.open(errorMessage, 'Fermer', {
                      duration: 5000,
                      verticalPosition: 'top'
                   });
                },
-               complete: () => console.log('done'),
             });
       }
    }
+   getErrorMessage(error: any): string {
+      // Gérer les erreurs personnalisées lancées par AuthService
+      if (error.message && (error.message.includes('désactivé') || error.message.includes('disabled'))) {
+         return 'Votre compte a été désactivé. Veuillez contacter l\'administrateur.';
+      }
 
-   private getErrorMessage(error: any): string {
       const code = error?.code;
       switch (code) {
          case 'auth/invalid-credential':
@@ -162,7 +162,7 @@ export class LoginComponent {
          case 'auth/network-request-failed':
             return 'Erreur de connexion réseau. Vérifiez votre connexion internet.';
          case 'auth/user-disabled':
-            return 'Ce compte a été désactivé.';
+            return 'Votre compte a été désactivé. Veuillez contacter l\'administrateur.';
          default:
             return 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
       }

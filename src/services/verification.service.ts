@@ -11,7 +11,11 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  DocumentReference
+  DocumentReference,
+  collectionGroup,
+  collectionData,
+  docData,
+  orderBy
 } from '@angular/fire/firestore';
 import {
   VerificationData,
@@ -32,7 +36,8 @@ export class VerificationService {
   createVerification(
     declarationId: string,
     userId: string,
-    verification: VerificationCreate
+    verification: VerificationCreate,
+    matchingDeclarationId?: string // ID de la déclaration correspondante (optionnel)
   ): Observable<string> {
     const verificationsRef = collection(
       this.firestore,
@@ -49,6 +54,7 @@ export class VerificationService {
       serialNumber: verification.serialNumber || null,
       status: VerificationStatus.PENDING,
       timestamp: new Date().toISOString(),
+      matchingDeclarationId: matchingDeclarationId || null // Stocker l'ID correspondant
     };
 
     return from(addDoc(verificationsRef, verificationData)).pipe(
@@ -57,7 +63,7 @@ export class VerificationService {
   }
 
   /**
-   * Récupère toutes les vérifications d'une déclaration
+   * Récupère toutes les vérifications d'une déclaration - Temps réel
    */
   getVerificationsByDeclaration(declarationId: string): Observable<VerificationData[]> {
     const verificationsRef = collection(
@@ -67,88 +73,61 @@ export class VerificationService {
       'verifications'
     );
 
-    return from(getDocs(verificationsRef)).pipe(
-      map(snapshot =>
-        snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        } as VerificationData))
-      )
+    return collectionData(verificationsRef, { idField: 'id' }).pipe(
+      map(docs => docs.map(doc => ({
+        ...doc,
+        id: doc['id']
+      } as VerificationData)))
     );
   }
 
   /**
-   * Récupère toutes les vérifications (tous statuts confondus)
+   * Récupère toutes les vérifications (tous statuts confondus) - Temps réel
    */
   getAllVerifications(): Observable<VerificationData[]> {
-    const declarationsRef = collection(this.firestore, 'declarations');
+    const verificationsGroup = collectionGroup(this.firestore, 'verifications');
+    // Note: On ne trie pas côté serveur pour éviter de devoir créer un index composite complexe
+    // On trie côté client
+    
+    return collectionData(verificationsGroup, { idField: 'id' }).pipe(
+      map(docs => {
+        const verifications = docs.map(doc => {
+          const data = doc as any;
+          // Gestion sécurisée du timestamp qui peut être un objet Timestamp Firestore ou une string/date
+          let timestamp = new Date();
+          if (data.timestamp) {
+            if (typeof data.timestamp.toDate === 'function') {
+              timestamp = data.timestamp.toDate();
+            } else {
+              timestamp = new Date(data.timestamp);
+            }
+          }
 
-    return from(getDocs(declarationsRef)).pipe(
-      switchMap(async (snapshot) => {
-        const allVerifications: VerificationData[] = [];
-
-        for (const declarationDoc of snapshot.docs) {
-          const verificationsRef = collection(
-            this.firestore,
-            'declarations',
-            declarationDoc.id,
-            'verifications'
-          );
-
-          const verificationsSnapshot = await getDocs(verificationsRef);
-
-          verificationsSnapshot.docs.forEach(verificationDoc => {
-            allVerifications.push({
-              id: verificationDoc.id,
-              declarationId: declarationDoc.id,
-              ...verificationDoc.data()
-            } as VerificationData);
-          });
-        }
-
-        return allVerifications;
+          return {
+            ...data,
+            id: doc['id'],
+            timestamp
+          } as VerificationData;
+        });
+        
+        // Tri côté client
+        return verifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       })
     );
   }
 
   /**
-   * Récupère toutes les vérifications en attente
+   * Récupère toutes les vérifications en attente - Temps réel
    */
   getPendingVerifications(): Observable<VerificationData[]> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-
-    return from(getDocs(declarationsRef)).pipe(
-      switchMap(async (snapshot) => {
-        const allVerifications: VerificationData[] = [];
-
-        for (const declarationDoc of snapshot.docs) {
-          const verificationsRef = collection(
-            this.firestore,
-            'declarations',
-            declarationDoc.id,
-            'verifications'
-          );
-
-          const verificationsSnapshot = await getDocs(
-            query(verificationsRef, where('status', '==', VerificationStatus.PENDING))
-          );
-
-          verificationsSnapshot.docs.forEach(verificationDoc => {
-            allVerifications.push({
-              id: verificationDoc.id,
-              declarationId: declarationDoc.id,
-              ...verificationDoc.data()
-            } as VerificationData);
-          });
-        }
-
-        return allVerifications;
-      })
+    // On réutilise getAllVerifications pour éviter la duplication de logique et les problèmes d'index
+    return this.getAllVerifications().pipe(
+      map(verifications => verifications.filter(v => v.status === VerificationStatus.PENDING))
     );
   }
 
   /**
-   * Récupère une vérification spécifique
+   * Récupère une vérification spécifique - Temps réel
    */
   getVerification(
     declarationId: string,
@@ -162,15 +141,15 @@ export class VerificationService {
       verificationId
     );
 
-    return from(getDoc(verificationRef)).pipe(
-      map(docSnapshot => {
-        if (!docSnapshot.exists()) {
+    return docData(verificationRef, { idField: 'id' }).pipe(
+      map(data => {
+        if (!data) {
           throw new Error('Vérification non trouvée');
         }
         return {
-          id: docSnapshot.id,
+          ...data,
+          id: verificationId,
           declarationId,
-          ...docSnapshot.data()
         } as VerificationData;
       })
     );
@@ -208,12 +187,13 @@ export class VerificationService {
   approveVerification(
     declarationId: string,
     verificationId: string,
-    adminNotes?: string
+    adminNotes?: string,
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
-    return this.updateVerification(declarationId, verificationId, {
+    return this.updateVerificationStatus(declarationId, verificationId, {
       status: VerificationStatus.VERIFIED,
       adminNotes,
-    });
+    }, matchingDeclarationId);
   }
 
   /**
@@ -338,7 +318,8 @@ export class VerificationService {
   updateVerificationStatus(
     declarationId: string,
     verificationId: string,
-    update: VerificationUpdate
+    update: VerificationUpdate,
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
     const verificationRef = doc(
       this.firestore,
@@ -353,6 +334,40 @@ export class VerificationService {
       adminNotes: update.adminNotes || null,
       rejectionReason: update.rejectionReason || null,
       updatedAt: new Date().toISOString()
-    } as any));
+    } as any)).pipe(
+      switchMap(async () => {
+        // Si la vérification est validée, on désactive les deux déclarations
+        if (update.status === VerificationStatus.VERIFIED) {
+          // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
+          const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
+          await updateDoc(foundDeclarationRef, { 
+            active: false, 
+            status: 'resolved',
+            resolvedAt: new Date().toISOString()
+          });
+
+          // 2. Désactiver la déclaration d'objet perdu correspondante
+          // Si l'ID n'est pas fourni, on essaie de le récupérer depuis le document de vérification
+          let targetMatchingId = matchingDeclarationId;
+          
+          if (!targetMatchingId) {
+            const verificationSnap = await getDoc(verificationRef);
+            if (verificationSnap.exists()) {
+              const data = verificationSnap.data();
+              targetMatchingId = data['matchingDeclarationId'];
+            }
+          }
+
+          if (targetMatchingId) {
+            const lostDeclarationRef = doc(this.firestore, 'declarations', targetMatchingId);
+            await updateDoc(lostDeclarationRef, { 
+              active: false, 
+              status: 'resolved',
+              resolvedAt: new Date().toISOString()
+            });
+          }
+        }
+      })
+    );
   }
 }

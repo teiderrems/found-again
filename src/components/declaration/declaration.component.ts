@@ -92,7 +92,7 @@ export class DeclarationComponent implements OnInit {
          description: ['', [Validators.required, Validators.minLength(10)]],
          location: ['', Validators.required],
          date: ['', Validators.required],
-         contactEmail: ['', [Validators.required, Validators.email]],
+         contactEmail: [this.authService.getCurrentUserEmail() || '', [Validators.required, Validators.email]],
          contactPhone: ['', [Validators.pattern('^[0-9]{10}$')]],
       });
    }
@@ -111,7 +111,6 @@ export class DeclarationComponent implements OnInit {
    onCategorySelected(categoryId: string): void {
       this.selectedCategory = categoryId;
       this.declarationForm.patchValue({ category: categoryId });
-      console.log('Catégorie sélectionnée:', categoryId);
    }
 
    get currentTexts() {

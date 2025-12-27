@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { DeclarationComponent } from '../../components/declaration/declaration.component';
@@ -19,15 +20,16 @@ export class FoundObjectComponent {
 
   private declarationService = inject(DeclarationService);
   private snackBar = inject(MatSnackBar);
+  private readonly router = inject(Router);
   
   handleSubmit($event: DeclarationCreate) {
     this.declarationService.createDeclaration($event,DeclarationType.FOUND).subscribe({
       next: (response) => {
-        console.log('Déclaration créée avec succès :', response);
         this.snackBar.open('Déclaration d\'objet trouvé créée avec succès !', 'OK', {
           duration: 5000,
           verticalPosition: 'top'
         });
+        this.router.navigate(['/']);
         // Vous pouvez ajouter une logique supplémentaire ici, comme la navigation ou l'affichage d'un message de succès.
       },
       error: (error) => {

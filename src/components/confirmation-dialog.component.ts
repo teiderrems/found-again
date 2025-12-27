@@ -20,16 +20,14 @@ export interface ConfirmationDialogData {
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, MatIconModule, CommonModule, FormsModule],
   template: `
-    <div class="p-6 w-full max-w-md">
-      <!-- Header avec icône -->
-      <div class="flex items-center gap-3 mb-6">
-        <div [ngClass]="getIconClass()">
-          <mat-icon class="text-white text-2xl">{{ getIcon() }}</mat-icon>
-        </div>
-        <h2 class="text-2xl font-bold text-gray-900">{{ data.title }}</h2>
+    <h2 mat-dialog-title class="flex items-center gap-3">
+      <div [ngClass]="getIconClass()">
+        <mat-icon class="text-white text-2xl">{{ getIcon() }}</mat-icon>
       </div>
+      <span class="text-xl font-bold text-gray-900">{{ data.title }}</span>
+    </h2>
 
-      <!-- Message -->
+    <mat-dialog-content>
       <p class="text-gray-600 mb-6 text-base">
         {{ data.message }}
       </p>
@@ -48,31 +46,26 @@ export interface ConfirmationDialogData {
             placeholder="Écrivez le texte de confirmation">
         </div>
       }
+    </mat-dialog-content>
 
-      <!-- Boutons d'action -->
-      <div class="flex gap-3 justify-end">
-        <button
-          mat-stroked-button
-          (click)="onCancel()"
-          class="text-gray-600">
-          {{ data.cancelText || 'Annuler' }}
-        </button>
-        <button
-          mat-raised-button
-          (click)="onConfirm()"
-          [disabled]="isConfirmDisabled()"
-          [ngClass]="getButtonClass()">
-          {{ data.confirmText || 'Confirmer' }}
-        </button>
-      </div>
-    </div>
+    <mat-dialog-actions align="end" class="gap-2">
+      <button
+        mat-stroked-button
+        (click)="onCancel()"
+        class="text-gray-600">
+        {{ data.cancelText || 'Annuler' }}
+      </button>
+      <button
+        mat-raised-button
+        (click)="onConfirm()"
+        [disabled]="isConfirmDisabled()"
+        [ngClass]="getButtonClass()">
+        {{ data.confirmText || 'Confirmer' }}
+      </button>
+    </mat-dialog-actions>
   `,
   styles: [`
-    :host ::ng-deep {
-      .mat-mdc-dialog-container {
-        padding: 0;
-      }
-    }
+    /* No custom styles needed for padding reset as we use standard directives */
   `]
 })
 export class ConfirmationDialogComponent {

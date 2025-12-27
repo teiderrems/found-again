@@ -22,6 +22,7 @@ export interface UserProfile {
   lastname: string;
   createdAt: Date;
   role: 'standard' | 'admin';
+  isActive?: boolean;
   preferences: {
     theme: 'light' | 'dark';
     notifications: boolean;

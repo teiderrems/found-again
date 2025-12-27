@@ -13,6 +13,7 @@ export interface VerificationData {
   updatedAt?: string;
   adminNotes?: string;
   rejectionReason?: string;
+  matchingDeclarationId?: string; // ID de la déclaration correspondante (optionnel)
 }
 
 /**

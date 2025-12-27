@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RouterModule } from '@angular/router';
 import { NotificationService, Notification } from '../../services/notification.service';
+import { AuthService } from '../../services/auth.service';
 import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 
 @Component({
@@ -23,6 +24,7 @@ import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 })
 export class NotificationComponent implements OnInit {
   private notificationService = inject(NotificationService);
+  private authService = inject(AuthService);
   
   notifications = signal<Notification[]>([]);
   filteredNotifications = signal<Notification[]>([]);
@@ -89,7 +91,7 @@ export class NotificationComponent implements OnInit {
   }
 
   markAllAsRead() {
-    const userId = this.notificationService['authService'].getCurrentUserId();
+    const userId = this.authService.getCurrentUserId();
     if (userId) {
       this.notificationService.markAllAsRead(userId).subscribe();
     }

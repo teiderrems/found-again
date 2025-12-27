@@ -54,12 +54,6 @@ export class RegisterComponent {
    }
 
    async signUp() {
-      console.log('Statut du formulaire : ', this.registerForm.status);
-      console.log('Erreurs firstname : ', this.firstname?.errors);
-      console.log('Erreurs lastname : ', this.lastname?.errors);
-      console.log('Erreurs email : ', this.email?.errors);
-      console.log('Erreurs password : ', this.password?.errors);
-
       this.registerForm.markAllAsTouched();
 
       if (this.registerForm.valid) {
@@ -79,9 +73,9 @@ export class RegisterComponent {
                this.registerForm.reset();
             }
          } catch (err: any) {
-            console.log(err);
-            this.errorMessage = 'Identifiants Incorrects.';
+            console.error(err);
             const errorMessage = this.getErrorMessage(err);
+            this.errorMessage = errorMessage;
             this.snackBar.open(errorMessage, 'Fermer', {
                duration: 5000,
                verticalPosition: 'top'
@@ -105,13 +99,13 @@ export class RegisterComponent {
          
          // Ignorer silencieusement si l'utilisateur ferme la popup
          if (errorCode === 'auth/popup-closed-by-user') {
-            console.log('Authentification Google annulée par l\'utilisateur');
             return;
          }
          
          // Pour les autres erreurs, les logger et afficher un message
          console.error('Erreur lors de la connexion Google:', error);
          const errorMessage = this.getErrorMessage(error);
+         this.errorMessage = errorMessage;
          this.snackBar.open(errorMessage, 'Fermer', {
             duration: 5000,
             verticalPosition: 'top'
@@ -121,6 +115,11 @@ export class RegisterComponent {
    }
 
    private getErrorMessage(error: any): string {
+      // Gérer les erreurs personnalisées lancées par AuthService
+      if (error.message && (error.message.includes('désactivé') || error.message.includes('disabled'))) {
+         return 'Votre compte a été désactivé. Veuillez contacter l\'administrateur.';
+      }
+
       const code = error?.code;
       switch (code) {
          case 'auth/email-already-in-use':
@@ -133,6 +132,8 @@ export class RegisterComponent {
             return 'Le mot de passe est trop faible.';
          case 'auth/network-request-failed':
             return 'Erreur de connexion réseau. Vérifiez votre connexion internet.';
+         case 'auth/user-disabled':
+            return 'Votre compte a été désactivé. Veuillez contacter l\'administrateur.';
          default:
             return 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
       }

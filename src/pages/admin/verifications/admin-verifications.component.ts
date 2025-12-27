@@ -132,7 +132,8 @@ export class AdminVerificationsComponent implements OnInit {
 
   viewVerification(verification: VerificationData): void {
     const dialogRef = this.dialog.open(VerificationDetailsDialogComponent, {
-      width: '600px',
+      width: '800px',
+      maxWidth: '95vw',
       data: verification
     });
 
@@ -159,14 +160,20 @@ export class AdminVerificationsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        // Récupérer l'ID de la déclaration correspondante si disponible dans les données de vérification
+        // Supposons que verification.matchingDeclarationId existe ou est passé dans les données
+        // Si ce n'est pas le cas, il faudrait peut-être le récupérer autrement
+        const matchingDeclarationId = (verification as any).matchingDeclarationId;
+
         this.verificationService.approveVerification(
           verification.declarationId,
           verification.id,
-          'Approuvé par l\'administrateur'
+          'Approuvé par l\'administrateur',
+          matchingDeclarationId
         ).subscribe({
           next: () => {
-            this.snackBar.open('Vérification approuvée', 'Fermer', { duration: 3000 });
-            this.loadVerifications();
+            this.snackBar.open('Vérification approuvée et déclarations mises à jour', 'Fermer', { duration: 3000 });
+            // Plus besoin de recharger manuellement, le flux est en temps réel
           },
           error: (error) => {
             console.error('Error approving verification:', error);
@@ -189,7 +196,7 @@ export class AdminVerificationsComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.snackBar.open('Vérification rejetée', 'Fermer', { duration: 3000 });
-        this.loadVerifications();
+        // Plus besoin de recharger manuellement
       },
       error: (error) => {
         console.error('Error rejecting verification:', error);
@@ -218,7 +225,7 @@ export class AdminVerificationsComponent implements OnInit {
         ).subscribe({
           next: () => {
             this.snackBar.open('Vérification supprimée', 'Fermer', { duration: 3000 });
-            this.loadVerifications();
+            // Plus besoin de recharger manuellement
           },
           error: (error) => {
             console.error('Error deleting verification:', error);

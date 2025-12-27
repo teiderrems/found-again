@@ -57,7 +57,6 @@ export class HeaderComponent implements OnInit {
       this.authService.getCurrentUserProfile().subscribe({
          next: (value) => this.authUser.set(value),
          error: (error) => console.error(error),
-         complete: () => console.log('done'),
       });
    }
 
@@ -75,7 +74,6 @@ export class HeaderComponent implements OnInit {
    onLogout() {
       this.authService.logOut().subscribe({
          next: () => {
-            console.log('Déconnexion réussie !');
             // Rediriger l'utilisateur vers la page de connexion
             this.router.navigateByUrl(Pages.SIGN_IN, {
                skipLocationChange: true,
@@ -136,7 +134,6 @@ export class HeaderComponent implements OnInit {
          label: 'Profil',
          icon: 'person',
          action: ($event: any) => {
-            console.log($event);
             this.redirectTo(Pages.PROFILE);
 
          },
@@ -146,7 +143,6 @@ export class HeaderComponent implements OnInit {
          label: 'Mes Vérifications',
          icon: 'verified_user',
          action: ($event: any) => {
-            console.log($event);
             this.redirectTo('/mes-verifications');
          },
       },
@@ -155,8 +151,15 @@ export class HeaderComponent implements OnInit {
          label: 'Notifications',
          icon: 'notifications',
          action: ($event: any) => {
-            console.log($event);
             this.redirectTo('/notifications');
+         },
+      },
+      {
+         value: '4',
+         label: 'Paramètres',
+         icon: 'settings',
+         action: ($event: any) => {
+            this.redirectTo('/settings');
          },
       },
       {
@@ -171,7 +174,6 @@ export class HeaderComponent implements OnInit {
    ];
 
    onDropdownToggle(isOpen: boolean) {
-      console.log('Dropdown ouvert:', isOpen);
       this.dropdownOpen.set(isOpen);
    }
 

@@ -6,6 +6,7 @@ import {
   query,
   where,
   collectionData,
+  collectionGroup,
   Query,
   getDocs,
   getDoc,
@@ -13,12 +14,20 @@ import {
   updateDoc,
   deleteDoc,
 } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { UserProfile } from '@/types/user';
 import { VerificationData } from '@/types/verification';
 
+export interface VerificationWithDetails extends VerificationData {
+  userName?: string;
+  declarationTitle?: string;
+}
+
 export interface AdminStats {
   totalUsers: number;
+  activeUsers: number;
+  inactiveUsers: number;
   totalDeclarations: number;
   foundDeclarations: number;
   lostDeclarations: number;
@@ -27,7 +36,9 @@ export interface AdminStats {
   pendingVerifications: number;
   recentDeclarations: DeclarationData[];
   recentUsers: UserProfile[];
-  recentVerifications: VerificationData[];
+  recentVerifications: VerificationWithDetails[];
+  allDeclarations: DeclarationData[];
+  allUsers: UserProfile[];
 }
 
 export interface DeclarationWithUser extends DeclarationData {
@@ -39,175 +50,112 @@ export interface DeclarationWithUser extends DeclarationData {
 })
 export class AdminService {
   private firestore: Firestore = inject(Firestore);
+  private functions: Functions = inject(Functions);
 
   /**
-   * Récupère les statistiques principales du dashboard admin
+   * Récupère les statistiques principales du dashboard admin - Temps réel
    */
   getAdminStats(): Observable<AdminStats> {
-    return from(Promise.all([
-      this.getTotalUsers(),
-      this.getTotalDeclarations(),
-      this.getFoundDeclarations(),
-      this.getLostDeclarations(),
-      this.getActiveDeclarations(),
-      this.getInactiveDeclarations(),
-      this.getPendingVerifications(),
-      this.getRecentDeclarations(),
-      this.getRecentUsers(),
-      this.getRecentVerifications(),
-    ])).pipe(
-      map(([totalUsers, totalDeclarations, foundDeclarations, lostDeclarations, activeDeclarations, inactiveDeclarations, pendingVerifications, recentDeclarations, recentUsers, recentVerifications]) => ({
-        totalUsers,
-        totalDeclarations,
-        foundDeclarations,
-        lostDeclarations,
-        activeDeclarations,
-        inactiveDeclarations,
-        pendingVerifications,
-        recentDeclarations,
-        recentUsers,
-        recentVerifications,
-      }))
+    const usersRef = collection(this.firestore, 'users');
+    const declarationsRef = collection(this.firestore, 'declarations');
+    const verificationsGroup = collectionGroup(this.firestore, 'verifications');
+
+    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
+    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+    const verifications$ = collectionData(verificationsGroup, { idField: 'id' });
+
+    return combineLatest([users$, declarations$, verifications$]).pipe(
+      map(([users, declarations, verifications]) => {
+        const totalUsers = users.length;
+        const activeUsers = users.filter(u => u.isActive !== false).length; // Default to true if undefined
+        const inactiveUsers = users.filter(u => u.isActive === false).length;
+
+        const totalDeclarations = declarations.length;
+        
+        const foundDeclarations = declarations.filter(d => d.type === DeclarationType.FOUND).length;
+        const lostDeclarations = declarations.filter(d => d.type === DeclarationType.LOSS).length;
+        const activeDeclarations = declarations.filter(d => d.active === true).length;
+        const inactiveDeclarations = declarations.filter(d => d.active === false).length;
+        
+        const pendingVerifications = verifications.filter(v => v['status'] === 'pending').length;
+
+        // Recent items
+        const recentDeclarations = [...declarations]
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, 5);
+
+        const recentUsers = [...users]
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 5);
+
+        const recentVerifications = verifications
+            .map(v => {
+                const data = v as any;
+                let timestamp = new Date();
+                if (data.timestamp) {
+                    if (typeof data.timestamp.toDate === 'function') {
+                        timestamp = data.timestamp.toDate();
+                    } else {
+                        timestamp = new Date(data.timestamp);
+                    }
+                }
+
+                // Enrichir avec les infos utilisateur et déclaration
+                const user = users.find(u => u.uid === data.userId);
+                const userName = user ? `${user.firstname} ${user.lastname}` : 'Utilisateur inconnu';
+
+                const declaration = declarations.find(d => d.id === data.declarationId);
+                const declarationTitle = declaration ? declaration.title : 'Déclaration inconnue';
+
+                return { 
+                  ...data, 
+                  timestamp,
+                  userName,
+                  declarationTitle
+                } as VerificationWithDetails;
+            })
+            .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+            .slice(0, 5);
+
+        return {
+          totalUsers,
+          activeUsers,
+          inactiveUsers,
+          totalDeclarations,
+          foundDeclarations,
+          lostDeclarations,
+          activeDeclarations,
+          inactiveDeclarations,
+          pendingVerifications,
+          recentDeclarations,
+          recentUsers,
+          recentVerifications,
+          allDeclarations: declarations,
+          allUsers: users
+        };
+      })
     );
   }
 
   /**
-   * Récupère le nombre total d'utilisateurs
-   */
-  private async getTotalUsers(): Promise<number> {
-    const usersRef = collection(this.firestore, 'users');
-    const snapshot = await getDocs(usersRef);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre total de déclarations
-   */
-  private async getTotalDeclarations(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const snapshot = await getDocs(declarationsRef);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre de déclarations actives
-   */
-  private async getActiveDeclarations(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const q = query(declarationsRef, where('active', '==', true));
-    const snapshot = await getDocs(q);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre de déclarations inactives
-   */
-  private async getInactiveDeclarations(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const q = query(declarationsRef, where('active', '==', false));
-    const snapshot = await getDocs(q);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre de déclarations trouvées
-   */
-  private async getFoundDeclarations(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const q = query(declarationsRef, where('type', '==', DeclarationType.FOUND));
-    const snapshot = await getDocs(q);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre de déclarations perdues
-   */
-  private async getLostDeclarations(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const q = query(declarationsRef, where('type', '==', DeclarationType.LOSS));
-    const snapshot = await getDocs(q);
-    return snapshot.size;
-  }
-
-  /**
-   * Récupère le nombre de vérifications en attente
-   */
-  private async getPendingVerifications(): Promise<number> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const snapshot = await getDocs(declarationsRef);
-    let pendingCount = 0;
-
-    for (const doc of snapshot.docs) {
-      const verificationsRef = collection(this.firestore, 'declarations', doc.id, 'verifications');
-      const verificationsSnapshot = await getDocs(query(verificationsRef, where('status', '==', 'pending')));
-      pendingCount += verificationsSnapshot.size;
-    }
-
-    return pendingCount;
-  }
-
-  /**
-   * Récupère les déclarations récentes (derniers 10)
-   */
-  private async getRecentDeclarations(): Promise<DeclarationData[]> {
-    const declarationsRef = collection(this.firestore, 'declarations');
-    const snapshot = await getDocs(declarationsRef);
-    const declarations = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as DeclarationData));
-    
-    return declarations
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 5);
-  }
-
-  /**
-   * Récupère les utilisateurs récents (derniers 5)
-   */
-  private async getRecentUsers(): Promise<UserProfile[]> {
-    const usersRef = collection(this.firestore, 'users');
-    const snapshot = await getDocs(usersRef);
-    const users = snapshot.docs.map(doc => doc.data() as UserProfile);
-    
-    return users
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5);
-  }
-
-  /**
-   * Récupère toutes les déclarations avec les détails des utilisateurs
+   * Récupère toutes les déclarations avec les détails des utilisateurs - Temps réel
    */
   getAllDeclarationsWithUsers(): Observable<DeclarationWithUser[]> {
     const declarationsRef = collection(this.firestore, 'declarations');
-    return from(getDocs(declarationsRef)).pipe(
-      switchMap(snapshot => {
-        if (snapshot.empty) {
-          return of([]);
-        }
+    const usersRef = collection(this.firestore, 'users');
 
-        const observables = snapshot.docs.map(declarationDoc => {
-          const declaration = {
-            id: declarationDoc.id,
-            ...declarationDoc.data()
-          } as DeclarationData;
+    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
 
-          if (declaration.userId) {
-            return from(getDoc(doc(this.firestore, 'users', declaration.userId))).pipe(
-              map(userDoc => ({
-                ...declaration,
-                userDetails: userDoc.exists() ? (userDoc.data() as UserProfile) : undefined
-              } as DeclarationWithUser))
-            );
-          }
-
-          return of({
+    return combineLatest([declarations$, users$]).pipe(
+      map(([declarations, users]) => {
+        return declarations.map(declaration => {
+          const user = users.find(u => u.uid === declaration.userId);
+          return {
             ...declaration,
-            userDetails: undefined
-          } as DeclarationWithUser);
+            userDetails: user
+          } as DeclarationWithUser;
         });
-
-        return combineLatest(observables);
       })
     );
   }
@@ -218,10 +166,35 @@ export class AdminService {
   updateVerificationStatus(
     declarationId: string,
     verificationId: string,
-    status: 'pending' | 'verified' | 'rejected'
+    status: 'pending' | 'verified' | 'rejected',
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
     const verificationRef = doc(this.firestore, 'declarations', declarationId, 'verifications', verificationId);
-    return from(updateDoc(verificationRef, { status, updatedAt: new Date().toISOString() }));
+    
+    return from(updateDoc(verificationRef, { status, updatedAt: new Date().toISOString() })).pipe(
+      switchMap(async () => {
+        // Si la vérification est validée, on désactive les deux déclarations
+        if (status === 'verified') {
+          // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
+          const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
+          await updateDoc(foundDeclarationRef, { 
+            active: false, 
+            status: 'resolved',
+            resolvedAt: new Date().toISOString()
+          });
+
+          // 2. Désactiver la déclaration d'objet perdu correspondante (si l'ID est fourni)
+          if (matchingDeclarationId) {
+            const lostDeclarationRef = doc(this.firestore, 'declarations', matchingDeclarationId);
+            await updateDoc(lostDeclarationRef, { 
+              active: false, 
+              status: 'resolved',
+              resolvedAt: new Date().toISOString()
+            });
+          }
+        }
+      })
+    );
   }
 
   /**
@@ -241,56 +214,49 @@ export class AdminService {
   }
 
   /**
-   * Récupère les déclarations avec vérifications en attente
+   * Active ou désactive un utilisateur via Cloud Function (Auth + Firestore)
+   */
+  toggleUserStatus(targetUid: string, isActive: boolean): Observable<void> {
+    const toggleStatus = httpsCallable(this.functions, 'toggleUserStatus');
+    return from(toggleStatus({ targetUid, isActive }).then(() => void 0));
+  }
+
+  /**
+   * Récupère les déclarations avec vérifications en attente - Temps réel
    */
   getDeclarationsWithPendingVerifications(): Observable<DeclarationWithUser[]> {
     const declarationsRef = collection(this.firestore, 'declarations');
-    return from(getDocs(declarationsRef)).pipe(
-      switchMap(snapshot => {
-        const promises = snapshot.docs.map(async (declarationDoc) => {
-          const declaration = {
-            id: declarationDoc.id,
-            ...declarationDoc.data()
-          } as DeclarationData;
+    const usersRef = collection(this.firestore, 'users');
+    const verificationsGroup = collectionGroup(this.firestore, 'verifications');
 
-          // Check for pending verifications
-          const verificationsRef = collection(this.firestore, 'declarations', declaration.id, 'verifications');
-          const verificationsSnapshot = await getDocs(query(verificationsRef, where('status', '==', 'pending')));
+    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
+    const verifications$ = collectionData(verificationsGroup, { idField: 'id' });
 
-          if (verificationsSnapshot.size > 0 && declaration.userId) {
-            const userDoc = await getDoc(doc(this.firestore, 'users', declaration.userId));
+    return combineLatest([declarations$, users$, verifications$]).pipe(
+      map(([declarations, users, verifications]) => {
+        const pendingVerifications = verifications.filter(v => v['status'] === 'pending');
+        const declarationIdsWithPending = new Set(pendingVerifications.map(v => v['declarationId']));
+
+        return declarations
+          .filter(d => declarationIdsWithPending.has(d.id))
+          .map(declaration => {
+            const user = users.find(u => u.uid === declaration.userId);
             return {
               ...declaration,
-              userDetails: userDoc.exists() ? (userDoc.data() as UserProfile) : undefined
+              userDetails: user
             } as DeclarationWithUser;
-          }
-
-          return null;
-        });
-
-        return from(Promise.all(promises)).pipe(
-          map(results => results.filter((r): r is DeclarationWithUser => r !== null))
-        );
+          });
       })
     );
   }
 
   /**
-   * Récupère tous les utilisateurs de la collection 'users'
+   * Récupère tous les utilisateurs de la collection 'users' - Temps réel
    */
   getAllUsers(): Observable<UserProfile[]> {
     const usersRef = collection(this.firestore, 'users');
-    return from(getDocs(usersRef)).pipe(
-      map(snapshot => {
-        if (snapshot.empty) {
-          return [];
-        }
-        return snapshot.docs.map(doc => ({
-          uid: doc.id,
-          ...doc.data()
-        } as UserProfile));
-      })
-    );
+    return collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
   }
 
   /**
@@ -299,21 +265,5 @@ export class AdminService {
   deleteUser(userId: string): Observable<void> {
     const userRef = doc(this.firestore, 'users', userId);
     return from(deleteDoc(userRef));
-  }
-
-  /**
-   * Récupère les vérifications récentes (dernières 5)
-   */
-  private async getRecentVerifications(): Promise<VerificationData[]> {
-    const verificationsRef = collection(this.firestore, 'verifications');
-    const snapshot = await getDocs(verificationsRef);
-    const verifications = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    } as VerificationData));
-    
-    return verifications
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 5);
   }
 }
