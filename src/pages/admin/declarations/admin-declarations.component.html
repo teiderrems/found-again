@@ -6,11 +6,11 @@
 
   <!-- Search and Filter -->
   <div class="bg-white rounded-lg shadow p-4 mb-6">
-    <mat-form-field class="w-full">
-      <mat-label>Rechercher une déclaration...</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Titre, catégorie, localisation...">
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
+    <div class="relative">
+      <input (keyup)="applyFilter($event)" placeholder="Rechercher une déclaration (Titre, catégorie, localisation...)"
+        class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+      <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+    </div>
   </div>
 
   <!-- Table -->

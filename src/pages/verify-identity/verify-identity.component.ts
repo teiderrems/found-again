@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DeclarationService } from '@/services/declaration.service';
 import { VerificationService } from '@/services/verification.service';
 import { AuthService } from '@/services/auth.service';
@@ -15,7 +16,7 @@ import { DeclarationData } from '@/types/declaration';
   templateUrl: './verify-identity.component.html',
   styleUrl: './verify-identity.component.css',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatIconModule, MatButtonModule]
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule]
 })
 export class VerifyIdentityComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -96,11 +97,15 @@ export class VerifyIdentityComponent implements OnInit {
       serialNumber: this.verifyForm.get('serialNumber')?.value || null,
     };
 
+    // Récupérer l'ID de la déclaration correspondante depuis les query params
+    const matchingDeclarationId = this.route.snapshot.queryParamMap.get('matchingDeclarationId') || undefined;
+
     // Utiliser le service de vérification
     this.verificationService.createVerification(
       this.objectDeclaration.id,
       currentUserId,
-      verificationData
+      verificationData,
+      matchingDeclarationId
     ).subscribe({
       next: (verificationId) => {
         this.isLoading.set(false);
@@ -130,7 +135,7 @@ export class VerifyIdentityComponent implements OnInit {
         if (destinationLat !== undefined && destinationLng !== undefined) {
           // Rediriger vers la map avec les paramètres
           setTimeout(() => {
-            this.router.navigate(['/map-view'], {
+            this.router.navigate(['/map'], {
               queryParams: {
                 originLat: userPosition.latitude,
                 originLng: userPosition.longitude,

@@ -11,23 +11,23 @@
         <mat-card-title class="text-lg font-semibold text-gray-900">Général</mat-card-title>
       </mat-card-header>
       <mat-card-content class="p-4 space-y-4">
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>Nom de l'application</mat-label>
-          <input matInput [(ngModel)]="settings().appName" placeholder="Ex: Found Again">
-          <mat-icon matSuffix>web</mat-icon>
-        </mat-form-field>
+        <div class="flex flex-col space-y-2">
+          <label class="text-sm font-semibold text-gray-700">Nom de l'application</label>
+          <input [(ngModel)]="settings().appName" placeholder="Ex: Found Again"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+        </div>
 
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>Email de contact</mat-label>
-          <input matInput [(ngModel)]="settings().contactEmail" placeholder="contact@example.com" type="email">
-          <mat-icon matSuffix>email</mat-icon>
-        </mat-form-field>
+        <div class="flex flex-col space-y-2">
+          <label class="text-sm font-semibold text-gray-700">Email de contact</label>
+          <input [(ngModel)]="settings().contactEmail" placeholder="contact@example.com" type="email"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+        </div>
 
-        <mat-form-field class="w-full" appearance="outline">
-          <mat-label>Éléments par page (Tableaux)</mat-label>
-          <input matInput [(ngModel)]="settings().itemsPerPage" type="number" min="5" max="100">
-          <mat-icon matSuffix>list</mat-icon>
-        </mat-form-field>
+        <div class="flex flex-col space-y-2">
+          <label class="text-sm font-semibold text-gray-700">Éléments par page (Tableaux)</label>
+          <input [(ngModel)]="settings().itemsPerPage" type="number" min="5" max="100"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+        </div>
       </mat-card-content>
     </mat-card>
 
@@ -54,11 +54,11 @@
         </div>
 
         <div class="pt-4 border-t border-gray-100">
-          <mat-form-field class="w-full" appearance="outline">
-            <mat-label>Taille max. upload (MB)</mat-label>
-            <input matInput [(ngModel)]="settings().maxUploadSize" type="number" min="1" max="50">
-            <span matSuffix>MB</span>
-          </mat-form-field>
+          <div class="flex flex-col space-y-2">
+            <label class="text-sm font-semibold text-gray-700">Taille max. upload (MB)</label>
+            <input [(ngModel)]="settings().maxUploadSize" type="number" min="1" max="50"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

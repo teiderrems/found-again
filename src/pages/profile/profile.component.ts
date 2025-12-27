@@ -723,9 +723,11 @@ export class UserProfileComponent implements OnInit {
   /**
    * Affiche la déclaration correspondante
    */
-  viewMatchingDeclaration(declarationId: string) {
-    // Navigation vers la page de détail de la déclaration
-    this.router.navigate(['/verifier-identite', declarationId]);
+  viewMatchingDeclaration(declarationId: string, matchingDeclarationId?: string) {
+    // Navigation vers la page de détail de la déclaration avec l'ID de la déclaration correspondante
+    this.router.navigate(['/verifier-identite', declarationId], {
+      queryParams: { matchingDeclarationId }
+    });
   }
 
   /**

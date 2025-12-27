@@ -137,7 +137,6 @@ export class AdminUsersComponent implements OnInit {
         this.adminService.updateUserRole(user.uid, newRole).subscribe({
           next: () => {
             this.snackBar.open('Rôle mis à jour avec succès', 'Fermer', { duration: 3000 });
-            this.loadUsers();
           },
           error: (error) => {
             console.error('Error updating role:', error);
@@ -145,6 +144,40 @@ export class AdminUsersComponent implements OnInit {
           }
         });
       }
+    });
+  }
+
+  toggleUserStatus(user: UserProfile) {
+    const newStatus = !(user.isActive ?? true);
+    const action = newStatus ? 'activer' : 'désactiver';
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: `${newStatus ? 'Activer' : 'Désactiver'} l'utilisateur`,
+        message: `Êtes-vous sûr de vouloir ${action} l'utilisateur "${user.firstname} ${user.lastname}" ? ${!newStatus ? 'Il ne pourra plus se connecter.' : ''}`,
+        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+        cancelText: 'Annuler',
+        type: newStatus ? 'info' : 'warning'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (!confirmed) return;
+
+      this.adminService.toggleUserStatus(user.uid, newStatus).subscribe({
+        next: () => {
+          this.snackBar.open(`Utilisateur ${newStatus ? 'activé' : 'désactivé'} avec succès`, 'Fermer', {
+            duration: 3000
+          });
+        },
+        error: (error) => {
+          console.error('Erreur lors du changement de statut:', error);
+          this.snackBar.open('Erreur lors du changement de statut', 'Fermer', {
+            duration: 3000
+          });
+        }
+      });
     });
   }
 
@@ -165,7 +198,6 @@ export class AdminUsersComponent implements OnInit {
         this.adminService.deleteUser(user.uid).subscribe({
           next: () => {
             this.snackBar.open('Utilisateur supprimé avec succès', 'Fermer', { duration: 3000 });
-            this.loadUsers();
           },
           error: (error) => {
             console.error('Error deleting user:', error);

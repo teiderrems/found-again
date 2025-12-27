@@ -1,0 +1,157 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+  <!-- Background Elements -->
+  <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-blue-100/40 to-transparent blur-3xl"></div>
+    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-teal-100/40 to-transparent blur-3xl"></div>
+  </div>
+
+  <div class="max-w-3xl mx-auto relative z-10">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Paramètres</h1>
+      <p class="text-gray-600 mt-2">Gérez vos préférences et la configuration de votre compte</p>
+    </div>
+
+    @if (loading()) {
+      <div class="flex justify-center items-center py-12">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+    } @else {
+      <div class="space-y-6">
+        <!-- Préférences d'apparence -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <mat-icon class="text-blue-600">palette</mat-icon>
+            Apparence
+          </h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Mode sombre</span>
+                <span class="text-gray-500 text-sm">Activer le thème sombre pour l'interface</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.theme === 'dark'"
+                (change)="toggleTheme($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <!-- Préférences de notification -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <mat-icon class="text-blue-600">notifications</mat-icon>
+            Notifications
+          </h3>
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Notifications Push</span>
+                <span class="text-gray-500 text-sm">Recevoir des notifications sur cet appareil</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.notifications"
+                (change)="toggleNotifications($event)"
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Notifications par email</span>
+                <span class="text-gray-500 text-sm">Recevoir des emails importants</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.emailNotifications"
+                (change)="toggleEmailNotifications($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Mises à jour de déclarations</span>
+                <span class="text-gray-500 text-sm">Être notifié des changements sur vos déclarations</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.declarationUpdates"
+                (change)="toggleDeclarationUpdates($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Alertes de correspondance</span>
+                <span class="text-gray-500 text-sm">Être notifié quand un objet correspond à votre recherche</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.matchAlerts"
+                (change)="toggleMatchAlerts($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <!-- Préférences de confidentialité -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <mat-icon class="text-blue-600">privacy_tip</mat-icon>
+            Confidentialité
+          </h3>
+          <div class="space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Profil public</span>
+                <span class="text-gray-500 text-sm">Rendre votre profil visible aux autres utilisateurs</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.publicProfile"
+                (change)="togglePublicProfile($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-gray-900 font-medium block">Montrer mes déclarations</span>
+                <span class="text-gray-500 text-sm">Afficher vos déclarations sur votre profil public</span>
+              </div>
+              <mat-slide-toggle 
+                [checked]="userProfile()?.preferences?.showDeclarations"
+                (change)="toggleShowDeclarations($event)" 
+                [disabled]="isSaving()">
+              </mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone de danger -->
+        <div class="bg-white rounded-xl border border-red-200 p-6">
+          <h3 class="text-lg font-semibold text-red-700 mb-4 flex items-center gap-2">
+            <mat-icon>warning</mat-icon>
+            Zone de Danger
+          </h3>
+          <p class="text-gray-600 text-sm mb-6">
+            La suppression de votre compte est irréversible. Toutes vos données, y compris vos déclarations et votre historique, seront définitivement effacées.
+          </p>
+          <button 
+            mat-stroked-button 
+            color="warn"
+            class="w-full sm:w-auto"
+            (click)="deleteAccount()" 
+            [disabled]="isDeleting()">
+            @if (isDeleting()) {
+              <mat-spinner diameter="20" class="mr-2 inline-block"></mat-spinner>
+              Suppression en cours...
+            } @else {
+              <span class="flex items-center justify-center gap-2">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Supprimer mon compte</span>
+              </span>
+            }
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -126,6 +126,11 @@ export class UserProfileService {
       const updateData: any = {};
       if (preferences.theme !== undefined) updateData['preferences.theme'] = preferences.theme;
       if (preferences.notifications !== undefined) updateData['preferences.notifications'] = preferences.notifications;
+      if (preferences.emailNotifications !== undefined) updateData['preferences.emailNotifications'] = preferences.emailNotifications;
+      if (preferences.declarationUpdates !== undefined) updateData['preferences.declarationUpdates'] = preferences.declarationUpdates;
+      if (preferences.matchAlerts !== undefined) updateData['preferences.matchAlerts'] = preferences.matchAlerts;
+      if (preferences.publicProfile !== undefined) updateData['preferences.publicProfile'] = preferences.publicProfile;
+      if (preferences.showDeclarations !== undefined) updateData['preferences.showDeclarations'] = preferences.showDeclarations;
       
       if (Object.keys(updateData).length > 0) {
         await updateDoc(userDoc, updateData);
@@ -220,15 +225,15 @@ export class UserProfileService {
   // Supprimer le compte utilisateur
   async deleteUserAccount(uid: string): Promise<void> {
     try {
-      // Supprimer le compte d'authentification Firebase
+      // 1. Supprimer le document utilisateur (avant de perdre l'auth)
+      const userDoc = doc(this.firestore, `users/${uid}`);
+      await deleteDoc(userDoc);
+
+      // 2. Supprimer le compte d'authentification Firebase
       const authUser = this.auth.currentUser;
       if (authUser) {
         await deleteUser(authUser);
       }
-
-      // Supprimer le document utilisateur
-      const userDoc = doc(this.firestore, `users/${uid}`);
-      await deleteDoc(userDoc);
     } catch (error) {
       console.error('Error deleting user account:', error);
       throw error;

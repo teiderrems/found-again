@@ -17,13 +17,13 @@ if (typeof firebase !== 'undefined' && firebase.initializeApp) {
   try {
     // Configuration Firebase
     const firebaseConfig = {
-      apiKey: 'AIzaSyCn0RLGIb75n4LKVg_Aq9LSJxDMiI5bI_E',
-      authDomain: 'found-again-b0e9a.firebaseapp.com',
-      projectId: 'found-again-b0e9a',
-      storageBucket: 'found-again-b0e9a.appspot.com',
-      messagingSenderId: '851154405255',
-      appId: '1:851154405255:web:5f7b7b8f5e9c7a8b9c0d1e',
-      measurementId: 'G-ABC123XYZ'
+      apiKey: 'AIzaSyB8pX5HHUmYMCaUt3YmzD0FyWcqS7_iuEY',
+      authDomain: 'found-again-4a0e0.firebaseapp.com',
+      databaseURL: 'https://found-again-4a0e0-default-rtdb.firebaseio.com',
+      projectId: 'found-again-4a0e0',
+      storageBucket: 'found-again-4a0e0.firebasestorage.app',
+      messagingSenderId: '1019330466468',
+      appId: '1:1019330466468:web:9eb199fc069d945827cc31'
     };
 
     // Initialiser Firebase

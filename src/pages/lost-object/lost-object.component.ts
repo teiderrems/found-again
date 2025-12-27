@@ -3,6 +3,7 @@ import { DeclarationComponent } from '../../components/declaration/declaration.c
 import { DeclarationCreate, DeclarationType } from '../../types/declaration';
 import { DeclarationService } from '../../services/declaration.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 @Component({
    selector: 'app-lost-object',
@@ -16,15 +17,16 @@ export class LostObjectComponent {
 
    private declarationService = inject(DeclarationService);
    private snackBar = inject(MatSnackBar);
+   private readonly router = inject(Router);
 
    handleSubmit($event: DeclarationCreate) {
       this.declarationService.createDeclaration($event, DeclarationType.LOSS).subscribe({
          next: (response) => {
-            console.log('Déclaration créée avec succès :', response);
             this.snackBar.open('Déclaration d\'objet perdu créée avec succès !', 'OK', {
                duration: 5000,
                verticalPosition: 'top'
             });
+            this.router.navigate(['/']);
             // Vous pouvez ajouter une logique supplémentaire ici, comme la navigation ou l'affichage d'un message de succès.
          },
          error: (error) => {

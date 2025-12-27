@@ -18,7 +18,7 @@ import {
    verifyPasswordResetCode
 } from '@angular/fire/auth';
 import { GoogleAuthProvider } from '@angular/fire/auth';
-import { doc, Firestore, setDoc, docData, updateDoc, query, collection, where, getDocs } from '@angular/fire/firestore';
+import { doc, Firestore, setDoc, docData, updateDoc, query, collection, where, getDocs, getDoc } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { from, lastValueFrom, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators'; // Ajout de 'map'
@@ -55,27 +55,34 @@ export class AuthService {
       provider.addScope('profile');
       provider.addScope('email');
       try {
-         const userCredential = await signInWithPopup(this.auth, provider);
+         const userCredential = await signInWithPopup(this.auth, provider).catch((error) => {
+            if (error.code === 'auth/user-disabled') {
+               throw new Error('Votre compte a été désactivé. Veuillez contacter l\'administrateur.');
+            }
+            throw error;
+         });
          const userEmail = userCredential.user.email as string;
          const newUid = userCredential.user.uid; // UID créé par Google
-
-         console.log('Google Sign-In - Email:', userEmail, 'Nouvel UID:', newUid);
 
          // Vérifier si un document utilisateur existe déjà avec cet email
          const existingUser = await this.findUserByEmail(userEmail, false);
          
+         // Note: Firebase Auth gère déjà le statut "disabled" pour Google Sign-In aussi.
+         // Si le compte est désactivé dans Auth, signInWithPopup échouera avant d'arriver ici.
+         // Cependant, on garde cette vérification au cas où le statut Firestore serait désynchronisé (peu probable avec la Cloud Function)
+         if (existingUser && existingUser.isActive === false) {
+            await this.auth.signOut();
+            throw new Error('Votre compte a été désactivé. Veuillez contacter l\'administrateur.');
+         }
+
          if (existingUser && existingUser.uid !== newUid) {
             // Un utilisateur existe avec le même email mais un UID différent
             // Il faut fusionner les données au nouvel UID
-            console.log('Fusion de compte détectée. Ancien UID:', existingUser.uid, 'Nouvel UID:', newUid);
             return await this.mergeUserAccounts(newUid, existingUser);
          } else if (existingUser && existingUser.uid === newUid) {
             // C'est le même utilisateur qui se reconnecte avec Google
-            console.log('✓ Utilisateur réauthentifié avec le même UID');
             return true;
          }
-
-         console.log('Aucun utilisateur existant, création d\'un nouveau compte...');
 
          const displayName = userCredential.user.displayName || '';
          const nameParts = displayName.split(' ');
@@ -109,7 +116,13 @@ export class AuthService {
 
    signIn(credential: credentialType.LoginCredentials): Observable<UserCredential> {
       return from(
-         signInWithEmailAndPassword(this.auth, credential.email!, credential.password!),
+         signInWithEmailAndPassword(this.auth, credential.email!, credential.password!)
+            .catch((error) => {
+               if (error.code === 'auth/user-disabled') {
+                  throw new Error('Votre compte a été désactivé. Veuillez contacter l\'administrateur.');
+               }
+               throw error;
+            })
       );
    }
 
@@ -163,12 +176,10 @@ export class AuthService {
 
             const userId = user.uid;
             const userDocRef = doc(this.firestore, this.userCollectionName, userId);
-            const alreadyExists = await lastValueFrom(
-               docData(userDocRef),
-            ).then((docData) => !!docData);
+            const userSnapshot = await getDoc(userDocRef);
+            const alreadyExists = userSnapshot.exists();
 
             if (alreadyExists) {
-               console.log('Le profil utilisateur existe déjà dans Firestore.');
                return true;
             }
             else {
@@ -184,10 +195,6 @@ export class AuthService {
                   },
                   deleted: false,
                } as any);
-
-               console.log(
-                  'Utilisateur créé et données supplémentaires enregistrées avec succès !',
-               );
             }
             return true;
          } else {
@@ -206,10 +213,6 @@ export class AuthService {
                deleted: false,
             } as any);
             await updatePassword(user,data.password);
-
-            console.log(
-               'Utilisateur créé et données supplémentaires enregistrées avec succès !',
-            );
          }
          return true;
       } catch (error: any) {
@@ -293,13 +296,11 @@ export class AuthService {
                const isDeleted = data.deleted === true;
                
                if (includeDeleted || !isDeleted) {
-                  console.log('Utilisateur trouvé:', { email, deleted: isDeleted });
                   return { uid: docSnapshot.id, ...data } as UserProfile;
                }
             }
          }
 
-         console.log('Aucun utilisateur trouvé avec l\'email:', email);
          return null;
       } catch (error) {
          console.error('Erreur lors de la recherche de l\'utilisateur:', error);
@@ -377,12 +378,20 @@ export class AuthService {
             mergedToUid: newUid,
          });
 
-         console.log('Comptes fusionnés avec succès. Ancien UID:', existingUser.uid, '-> Nouvel UID:', newUid);
          return true;
       } catch (error) {
          console.error('Erreur lors de la fusion des comptes:', error);
          throw error;
       }
+   }
+
+   /**   
+    * Retourne l'adresse email de l'utilisateur actuellement connecté.
+    * @returns string | null
+    */ 
+   public getCurrentUserEmail(): string | null {
+      const currentUser = this.auth.currentUser;
+      return currentUser ? currentUser.email : null;
    }
 
    /**
@@ -425,10 +434,8 @@ export class AuthService {
 
          await setDoc(userDocRef, dataToSave);
 
-         console.log('Compte supprimé restauré avec succès pour le nouvel UID:', newUid);
          return true;
       } catch (error) {
-         console.error('Erreur lors de la restauration du compte:', error);
          throw error;
       }
    }

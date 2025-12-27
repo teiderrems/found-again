@@ -72,7 +72,13 @@ export class FirebaseMessagingService {
    */
   async getMessagingToken(): Promise<string | null> {
     try {
-      const vapidKey = environment.firebaseConfig.apiKey || 'BKxmyZqfZ5ZN3Mj7W4zJGzFXs6LsUw9-_0x3dBzTHlL8jKqYhc2pNvO4wE1dTfGhS5lP7zX9bV3aK2qR6uH8vQc';
+      // La clé VAPID (Web Push Certificate) est nécessaire pour les notifications Web
+      const vapidKey = environment.vapidKey;
+      
+      if (!vapidKey || vapidKey === 'REMPLACER_PAR_VOTRE_CLE_VAPID_ICI') {
+         console.warn('Clé VAPID non configurée dans environment.ts');
+         return null;
+      }
       
       const token = await getToken(this.messaging, { 
         vapidKey: vapidKey 
@@ -86,7 +92,11 @@ export class FirebaseMessagingService {
         console.warn('Impossible de récupérer le token FCM');
         return null;
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.code === 'messaging/permission-blocked') {
+        console.log('Permission de notification refusée par l\'utilisateur.');
+        return null;
+      }
       console.warn('Erreur lors de la récupération du token FCM:', error);
       // Retourner null au lieu de lever une erreur pour ne pas bloquer l'app
       return null;

@@ -27,6 +27,32 @@
         </div>
       </div>
 
+      <!-- Active Users -->
+      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-cyan-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Utilisateurs Actifs</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().activeUsers }}</p>
+          </div>
+          <div class="bg-cyan-100 rounded-full p-3">
+            <mat-icon class="text-cyan-600 text-2xl">person_check</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inactive Users -->
+      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-pink-500">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Utilisateurs Inactifs</p>
+            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().inactiveUsers }}</p>
+          </div>
+          <div class="bg-pink-100 rounded-full p-3">
+            <mat-icon class="text-pink-600 text-2xl">person_off</mat-icon>
+          </div>
+        </div>
+      </div>
+
       <!-- Total Declarations -->
       <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
         <div class="flex items-center justify-between">
@@ -90,6 +116,82 @@
             <mat-icon class="text-slate-600 text-2xl">cancel</mat-icon>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Users Chart -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition des Utilisateurs</h3>
+        <div class="flex justify-center">
+          <apx-chart
+            [series]="userChartOptions.series"
+            [chart]="userChartOptions.chart"
+            [labels]="userChartOptions.labels"
+            [responsive]="userChartOptions.responsive"
+            [colors]="userChartOptions.colors"
+          ></apx-chart>
+        </div>
+      </div>
+
+      <!-- Declarations Chart -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition des Déclarations</h3>
+        <div class="flex justify-center">
+          <apx-chart
+            [series]="declarationChartOptions.series"
+            [chart]="declarationChartOptions.chart"
+            [labels]="declarationChartOptions.labels"
+            [responsive]="declarationChartOptions.responsive"
+            [colors]="declarationChartOptions.colors"
+          ></apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progression Chart -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-900">Progression de l'activité</h3>
+        <div class="flex bg-gray-100 rounded-lg p-1 mt-4 sm:mt-0">
+          <button 
+            (click)="setFilter('week')"
+            [class.bg-white]="timeFilter() === 'week'"
+            [class.shadow-sm]="timeFilter() === 'week'"
+            [class.text-blue-600]="timeFilter() === 'week'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            Semaine
+          </button>
+          <button 
+            (click)="setFilter('month')"
+            [class.bg-white]="timeFilter() === 'month'"
+            [class.shadow-sm]="timeFilter() === 'month'"
+            [class.text-blue-600]="timeFilter() === 'month'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            Mois
+          </button>
+          <button 
+            (click)="setFilter('year')"
+            [class.bg-white]="timeFilter() === 'year'"
+            [class.shadow-sm]="timeFilter() === 'year'"
+            [class.text-blue-600]="timeFilter() === 'year'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            Année
+          </button>
+        </div>
+      </div>
+      
+      <div class="w-full">
+        <apx-chart
+          [series]="progressionChartOptions.series"
+          [chart]="progressionChartOptions.chart"
+          [xaxis]="progressionChartOptions.xaxis"
+          [stroke]="progressionChartOptions.stroke"
+          [tooltip]="progressionChartOptions.tooltip"
+          [dataLabels]="progressionChartOptions.dataLabels"
+          [colors]="progressionChartOptions.colors"
+        ></apx-chart>
       </div>
     </div>
 
@@ -175,37 +277,34 @@
                       <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
                           <!-- View Button -->
-                          <button 
+                          <button mat-icon-button color="primary"
                             (click)="viewDeclaration(declaration.id)"
-                            class="p-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors"
                             title="Voir les détails">
-                            <mat-icon class="text-base">visibility</mat-icon>
+                            <mat-icon>visibility</mat-icon>
                           </button>
                           
                           <!-- Toggle Active Button -->
-                          <button 
+                          <button mat-icon-button
                             (click)="toggleDeclarationActive(declaration.id, declaration.active ?? true, declaration.title)"
-                            [class]="'p-1 rounded transition-colors ' + ((declaration.active ?? true) ? 'text-orange-600 hover:text-orange-900 hover:bg-orange-50' : 'text-green-600 hover:text-green-900 hover:bg-green-50')"
+                            [color]="(declaration.active ?? true) ? 'warn' : 'primary'"
                             [title]="(declaration.active ?? true) ? 'Désactiver' : 'Activer'">
-                            <mat-icon class="text-base">{{ (declaration.active ?? true) ? 'visibility_off' : 'visibility_on' }}</mat-icon>
+                            <mat-icon>{{ (declaration.active ?? true) ? 'visibility_off' : 'visibility_on' }}</mat-icon>
                           </button>
 
                           <!-- Mark as Resolved (only for LOSS type) -->
                           @if (declaration.type === 'loss' && (declaration.active ?? true)) {
-                            <button 
+                            <button mat-icon-button color="accent"
                               (click)="markLossAsResolved(declaration.id, declaration.title)"
-                              class="p-1 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors"
                               title="Marquer comme retrouvé">
-                              <mat-icon class="text-base">check_circle</mat-icon>
+                              <mat-icon>check_circle</mat-icon>
                             </button>
                           }
                           
                           <!-- Delete Button -->
-                          <button 
+                          <button mat-icon-button color="warn"
                             (click)="deleteDeclaration(declaration.id, declaration.title)"
-                            class="p-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
                             title="Supprimer">
-                            <mat-icon class="text-base">delete</mat-icon>
+                            <mat-icon>delete</mat-icon>
                           </button>
                         </div>
                       </td>
@@ -248,16 +347,14 @@
                         <td class="py-4 px-6 text-gray-900 text-sm">{{ verification.title }}</td>
                         <td class="py-4 px-6 text-right">
                           <div class="flex items-center justify-end gap-2">
-                            <button 
-                              (click)="approveVerification(verification.verificationId!)" 
-                              class="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 rounded-md text-sm font-medium transition-colors border border-green-200">
-                              <mat-icon class="text-base mr-1.5">check</mat-icon>
+                            <button mat-stroked-button color="primary"
+                              (click)="approveVerification(verification.verificationId!)">
+                              <mat-icon class="mr-1">check</mat-icon>
                               Approuver
                             </button>
-                            <button 
-                              (click)="rejectVerification(verification.verificationId!)" 
-                              class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 rounded-md text-sm font-medium transition-colors border border-red-200">
-                              <mat-icon class="text-base mr-1.5">close</mat-icon>
+                            <button mat-stroked-button color="warn"
+                              (click)="rejectVerification(verification.verificationId!)">
+                              <mat-icon class="mr-1">close</mat-icon>
                               Rejeter
                             </button>
                           </div>
@@ -282,6 +379,7 @@
                     <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Nom</th>
                     <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Email</th>
                     <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Rôle</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Statut</th>
                     <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Inscrit le</th>
                     <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
                   </tr>
@@ -297,14 +395,27 @@
                           {{ user.role === 'admin' ? 'Admin' : 'Utilisateur' }}
                         </span>
                       </td>
+                      <td class="py-4 px-6">
+                        <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
+                                      ((user.isActive ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                          {{ (user.isActive ?? true) ? 'Actif' : 'Inactif' }}
+                        </span>
+                      </td>
                       <td class="py-4 px-6 text-gray-600 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
                       <td class="py-4 px-6 text-right">
-                        <button 
-                          class="p-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors" 
-                          (click)="openRoleModal(user)"
-                          title="Modifier le rôle">
-                          <mat-icon class="text-base">edit</mat-icon>
-                        </button>
+                        <div class="flex items-center justify-end gap-2">
+                          <button mat-icon-button color="primary"
+                            (click)="openRoleModal(user)"
+                            title="Modifier le rôle">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button mat-icon-button
+                            (click)="toggleUserStatus(user)"
+                            [color]="(user.isActive ?? true) ? 'warn' : 'primary'"
+                            [title]="(user.isActive ?? true) ? 'Désactiver' : 'Activer'">
+                            <mat-icon>{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   }
@@ -339,8 +450,18 @@
                   <tbody class="divide-y divide-gray-200">
                     @for (verification of stats().recentVerifications; track verification.id) {
                       <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-4 px-6 text-gray-900 font-medium text-sm">{{ verification.userId | slice:0:8 }}...</td>
-                        <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.declarationId | slice:0:8 }}...</td>
+                        <td class="py-4 px-6 text-gray-900 font-medium text-sm">
+                          <div class="flex flex-col">
+                            <span class="font-medium">{{ verification.userName }}</span>
+                            <span class="text-xs text-gray-500">{{ verification.userId | slice:0:8 }}...</span>
+                          </div>
+                        </td>
+                        <td class="py-4 px-6 text-gray-600 text-sm">
+                          <div class="flex flex-col">
+                            <span class="font-medium text-gray-900">{{ verification.declarationTitle }}</span>
+                            <span class="text-xs text-gray-500">{{ verification.declarationId | slice:0:8 }}...</span>
+                          </div>
+                        </td>
                         <td class="py-4 px-6">
                           <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
                                         (verification.status === 'verified' ? 'bg-green-100 text-green-800' : 
@@ -351,10 +472,10 @@
                         </td>
                         <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.timestamp | date: 'short' }}</td>
                         <td class="py-4 px-6 text-right">
-                          <button 
-                            class="p-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors"
+                          <button mat-icon-button color="primary"
+                            (click)="viewVerification(verification)"
                             title="Voir les détails">
-                            <mat-icon class="text-base">visibility</mat-icon>
+                            <mat-icon>visibility</mat-icon>
                           </button>
                         </td>
                       </tr>
@@ -369,92 +490,3 @@
     </div>
   </div>
 </div>
-<!-- Role Change Modal -->
-@if (showRoleModal()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-      <!-- Header -->
-      <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900">Modifier le Rôle de l'Utilisateur</h3>
-        <button
-          (click)="closeRoleModal()"
-          class="text-gray-400 hover:text-gray-600">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-
-      <!-- Body -->
-      <div class="px-6 py-4">
-        @if (selectedUserForRoleChange()) {
-          <div class="space-y-4">
-            <!-- User Info -->
-            <div class="bg-gray-50 rounded-lg p-4">
-              <p class="text-sm text-gray-600 mb-2">Utilisateur:</p>
-              <p class="font-semibold text-gray-900">
-                {{ selectedUserForRoleChange()!.firstname }} {{ selectedUserForRoleChange()!.lastname }}
-              </p>
-              <p class="text-sm text-gray-600 mt-2">Email:</p>
-              <p class="font-medium text-gray-900">{{ selectedUserForRoleChange()!.email }}</p>
-            </div>
-
-            <!-- Current Role -->
-            <div>
-              <p class="text-sm text-gray-600 mb-2">Rôle actuel:</p>
-              <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold"
-                [class]="selectedUserForRoleChange()!.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'">
-                {{ selectedUserForRoleChange()!.role === 'admin' ? 'Administrateur' : 'Utilisateur Standard' }}
-              </div>
-            </div>
-
-            <!-- Role Selection -->
-            <div>
-              <p class="text-sm font-semibold text-gray-900 mb-3">Nouveau rôle:</p>
-              <div class="space-y-2">
-                <!-- Standard User Option -->
-                <button
-                  (click)="updateUserRole('standard')"
-                  [disabled]="selectedUserForRoleChange()!.role === 'standard' || isLoading()"
-                  class="w-full text-left p-3 rounded-lg border-2 transition-all"
-              [class]="selectedUserForRoleChange()!.role === 'standard' 
-                ? 'border-gray-300 bg-gray-50 cursor-not-allowed opacity-50' 
-                : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'">
-                  <div class="font-medium text-gray-900">Utilisateur Standard</div>
-                  <p class="text-xs text-gray-600 mt-1">Accès aux fonctionnalités standard de l'application</p>
-                </button>
-
-                <!-- Admin Option -->
-                <button
-                  (click)="updateUserRole('admin')"
-                  [disabled]="selectedUserForRoleChange()!.role === 'admin' || isLoading()"
-                  class="w-full text-left p-3 rounded-lg border-2 transition-all"
-              [class]="selectedUserForRoleChange()!.role === 'admin' 
-                ? 'border-purple-300 bg-purple-50 cursor-not-allowed opacity-50' 
-                : 'border-gray-200 hover:border-purple-400 hover:bg-purple-50'">
-                  <div class="font-medium text-gray-900">Administrateur</div>
-                  <p class="text-xs text-gray-600 mt-1">Accès complet au tableau de bord d'administration</p>
-                </button>
-              </div>
-            </div>
-
-            <!-- Warning -->
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p class="text-xs text-yellow-800">
-                <strong>Attention:</strong> Cette action changera les permissions de cet utilisateur dans l'application.
-              </p>
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Footer -->
-      <div class="border-t border-gray-200 px-6 py-4 flex justify-end space-x-3">
-        <button
-          (click)="closeRoleModal()"
-          [disabled]="isLoading()"
-          class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50">
-          Annuler
-        </button>
-      </div>
-    </div>
-  </div>
-}

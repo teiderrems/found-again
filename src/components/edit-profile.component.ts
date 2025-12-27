@@ -22,15 +22,15 @@ import { UserProfile } from '../types/user';
     MatIconModule
 ],
   template: `
-    <div class=" p-6 w-full">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="p-2 bg-[#009245] rounded-lg">
-          <mat-icon class="text-white">edit</mat-icon>
-        </div>
-        <h2 class="text-2xl font-bold text-gray-900">Modifier le profil</h2>
+    <h2 mat-dialog-title class="flex items-center gap-3">
+      <div class="p-2 bg-[#009245] rounded-lg">
+        <mat-icon class="text-white">edit</mat-icon>
       </div>
+      <span class="text-2xl font-bold text-gray-900">Modifier le profil</span>
+    </h2>
     
-      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-4  flex flex-col justify-center">
+    <mat-dialog-content>
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="space-y-4 flex flex-col justify-center pt-2">
         <!-- Prénom -->
         <div class="space-y-2">
           <label class="block text-sm font-semibold text-gray-700">
@@ -94,28 +94,32 @@ import { UserProfile } from '../types/user';
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] resize-none"
           placeholder="Parlez un peu de vous..."></textarea>
         </div>
-    
-        <!-- Boutons -->
-        <div class="flex justify-end gap-3 mt-6">
-          <button
-            type="button"
-            (click)="onCancel()"
-            class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-            Annuler
-          </button>
-          <button
-            type="submit"
-            [disabled]="!editForm.valid || editForm.pristine"
-            class="px-4 py-2 bg-[#009245] text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-            Enregistrer
-          </button>
-        </div>
       </form>
-    </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" class="gap-2">
+      <button
+        mat-stroked-button
+        (click)="onCancel()">
+        Annuler
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onSubmit()"
+        [disabled]="!editForm.valid || editForm.pristine">
+        Enregistrer
+      </button>
+    </mat-dialog-actions>
     `,
   styles: [`
     :host {
       display: block;
+    }
+    /* Override primary color for this component if needed, or rely on global theme */
+    .mat-mdc-raised-button.mat-primary {
+        --mdc-protected-button-container-color: #009245;
+        --mdc-protected-button-label-text-color: white;
     }
   `]
 })

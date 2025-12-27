@@ -45,6 +45,11 @@ export const routes: Routes = [
             title: 'Tableau de Bord',
          },
          {
+            path: 'settings',
+            loadComponent: () => import('@/pages/settings/settings.component').then(c => c.SettingsComponent),
+            title: 'Paramètres'
+         },
+         {
             path: preparePathForRouter(Pages.OBJECTS_LOST_CREATE),
             loadComponent: () =>
                import('@/pages/lost-object/lost-object.component').then(

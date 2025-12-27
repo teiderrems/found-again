@@ -132,7 +132,8 @@ export class AdminVerificationsComponent implements OnInit {
 
   viewVerification(verification: VerificationData): void {
     const dialogRef = this.dialog.open(VerificationDetailsDialogComponent, {
-      width: '600px',
+      width: '800px',
+      maxWidth: '95vw',
       data: verification
     });
 
@@ -172,7 +173,7 @@ export class AdminVerificationsComponent implements OnInit {
         ).subscribe({
           next: () => {
             this.snackBar.open('Vérification approuvée et déclarations mises à jour', 'Fermer', { duration: 3000 });
-            this.loadVerifications();
+            // Plus besoin de recharger manuellement, le flux est en temps réel
           },
           error: (error) => {
             console.error('Error approving verification:', error);
@@ -195,7 +196,7 @@ export class AdminVerificationsComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.snackBar.open('Vérification rejetée', 'Fermer', { duration: 3000 });
-        this.loadVerifications();
+        // Plus besoin de recharger manuellement
       },
       error: (error) => {
         console.error('Error rejecting verification:', error);
@@ -224,7 +225,7 @@ export class AdminVerificationsComponent implements OnInit {
         ).subscribe({
           next: () => {
             this.snackBar.open('Vérification supprimée', 'Fermer', { duration: 3000 });
-            this.loadVerifications();
+            // Plus besoin de recharger manuellement
           },
           error: (error) => {
             console.error('Error deleting verification:', error);

@@ -7,15 +7,15 @@
   <!-- Search and Filter -->
   <div class="bg-white rounded-lg shadow p-4 mb-6">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <mat-form-field class="w-full">
-        <mat-label>Rechercher par utilisateur...</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Email, ID utilisateur...">
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
+      <div class="relative">
+        <input (keyup)="applyFilter($event)" placeholder="Rechercher par utilisateur (Email, ID...)"
+          class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+      </div>
       <div class="flex items-center">
         <select 
           (change)="filterByStatus($event)"
-          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+          class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 bg-white">
           <option value="">Tous les statuts</option>
           <option value="pending">En attente</option>
           <option value="verified">Approuvé</option>

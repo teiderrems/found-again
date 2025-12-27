@@ -1,0 +1,9 @@
+
+/* Fix for Tailwind Forms plugin adding borders to Angular Material inputs */
+.mat-mdc-form-field input, 
+.mat-mdc-form-field textarea,
+.mat-mdc-form-field select {
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
