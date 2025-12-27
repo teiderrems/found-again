@@ -8,6 +8,7 @@ import {
    Validators,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { Router, RouterModule } from '@angular/router';
    templateUrl: './login.component.html',
    styleUrls: ['./login.component.css'],
    standalone: true,
-   imports: [ReactiveFormsModule, FormsModule, RouterModule],
+   imports: [ReactiveFormsModule, FormsModule, RouterModule, MatSnackBarModule],
 })
 export class LoginComponent {
    loginForm: FormGroup;
@@ -25,6 +26,7 @@ export class LoginComponent {
       private fb: FormBuilder,
       private authService: AuthService,
       private readonly router: Router,
+      private snackBar: MatSnackBar
    ) {
       //Initialiser notre formulaire
       this.loginForm = this.fb.group({
@@ -83,6 +85,10 @@ export class LoginComponent {
       try {
          const response=await this.authService.signInGoogle();
          if (response) {
+            this.snackBar.open('Connexion réussie !', 'OK', {
+               duration: 3000,
+               verticalPosition: 'top'
+            });
             this.router.navigateByUrl('/');
             this.loginForm.reset();
          }
@@ -97,6 +103,11 @@ export class LoginComponent {
          
          // Pour les autres erreurs, les logger et afficher un message
          console.error('Erreur lors de la connexion Google:', error);
+         const errorMessage = this.getErrorMessage(error);
+         this.snackBar.open(errorMessage, 'Fermer', {
+            duration: 5000,
+            verticalPosition: 'top'
+         });
          // Vous pouvez ajouter ici une notification visuelle à l'utilisateur
       }
    }
@@ -117,12 +128,43 @@ export class LoginComponent {
             })
             .subscribe({
                next: () => {
+                  this.snackBar.open('Connexion réussie !', 'OK', {
+                     duration: 3000,
+                     verticalPosition: 'top'
+                  });
                   this.router.navigateByUrl('/');
                   this.loginForm.reset();
                },
-               error: (error) => console.error(error),
+               error: (error) => {
+                  console.error(error);
+                  const errorMessage = this.getErrorMessage(error);
+                  this.snackBar.open(errorMessage, 'Fermer', {
+                     duration: 5000,
+                     verticalPosition: 'top'
+                  });
+               },
                complete: () => console.log('done'),
             });
+      }
+   }
+
+   private getErrorMessage(error: any): string {
+      const code = error?.code;
+      switch (code) {
+         case 'auth/invalid-credential':
+         case 'auth/wrong-password':
+         case 'auth/user-not-found':
+            return 'Email ou mot de passe incorrect.';
+         case 'auth/invalid-email':
+            return 'L\'adresse email est invalide.';
+         case 'auth/too-many-requests':
+            return 'Trop de tentatives de connexion. Veuillez réessayer plus tard.';
+         case 'auth/network-request-failed':
+            return 'Erreur de connexion réseau. Vérifiez votre connexion internet.';
+         case 'auth/user-disabled':
+            return 'Ce compte a été désactivé.';
+         default:
+            return 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
       }
    }
 
