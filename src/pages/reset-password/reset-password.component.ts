@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { AuthService } from '@/services/auth.service';
@@ -56,19 +59,34 @@ export class ResetPasswordComponent implements OnInit {
       ],
     });
 
-    this.resetForm = this.fb.group({
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(4),
-          Validators.maxLength(10),
-          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z]).*$'),
+    this.resetForm = this.fb.group(
+      {
+        password: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(6),
+            Validators.maxLength(20),
+            Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z]).*$'),
+          ],
         ],
-      ],
-      confirmPassword: ['', [Validators.required]],
-    });
+        confirmPassword: ['', [Validators.required]],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
+
+  /**
+   * Validateur personnalisé pour vérifier que les mots de passe correspondent
+   */
+  passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+
+    return password && confirmPassword && password.value === confirmPassword.value
+      ? null
+      : { mismatch: true };
+  };
 
   ngOnInit(): void {
     // Vérifier si on a un code de reset dans les query params
@@ -180,16 +198,18 @@ export class ResetPasswordComponent implements OnInit {
 
     if (this.resetForm.invalid) {
       this.resetForm.markAllAsTouched();
+      if (this.resetForm.hasError('mismatch')) {
+        this.errorMessage = 'Les mots de passe ne correspondent pas.';
+        this.snackBar.open('Les mots de passe ne correspondent pas.', 'Fermer', {
+          duration: 3000,
+          verticalPosition: 'top'
+        });
+      }
       return;
     }
 
     const password = this.resetForm.get('password')?.value;
-    const confirmPassword = this.resetForm.get('confirmPassword')?.value;
-
-    if (password !== confirmPassword) {
-      this.errorMessage = 'Les mots de passe ne correspondent pas.';
-      return;
-    }
+    // La vérification de correspondance est déjà faite par le validateur du formulaire
 
     this.isLoading = true;
     try {
