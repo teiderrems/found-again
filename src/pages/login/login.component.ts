@@ -31,7 +31,7 @@ export class LoginComponent {
       //Initialiser notre formulaire
       this.loginForm = this.fb.group({
          email: [
-            'user@gmail.com',
+            '',
             [
                Validators.required,
                Validators.email,
@@ -41,7 +41,7 @@ export class LoginComponent {
             ],
          ],
          password: [
-            'user1234',
+            '',
             [
                Validators.required,
                Validators.minLength(4),

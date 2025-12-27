@@ -32,7 +32,7 @@ export class RegisterComponent {
          firstname: ['', [Validators.required, Validators.minLength(2)]],
          lastname: ['', [Validators.required, Validators.minLength(2)]],
          email: [
-            'user@gmail.com',
+            '',
             [
                Validators.required,
                Validators.email,
@@ -42,7 +42,7 @@ export class RegisterComponent {
             ],
          ],
          password: [
-            'user1234',
+            '',
             [
                Validators.required,
                Validators.minLength(4),
