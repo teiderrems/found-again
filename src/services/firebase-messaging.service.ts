@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Messaging, getToken, onMessage } from '@angular/fire/messaging';
+import { Firestore, doc, updateDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -16,6 +17,7 @@ export interface FCMNotification {
 })
 export class FirebaseMessagingService {
   private messaging = inject(Messaging);
+  private firestore = inject(Firestore);
   
   private messageSubject = new BehaviorSubject<any>(null);
   public message$ = this.messageSubject.asObservable();
@@ -25,34 +27,43 @@ export class FirebaseMessagingService {
 
   constructor() {
     // Vérifier si l'environnement supporte les notifications
-    if ('Notification' in window && navigator.serviceWorker) {
-      this.initializeMessaging();
-    } else {
+    if (!('Notification' in window) || !navigator.serviceWorker) {
       console.warn('Les notifications ne sont pas supportées sur cet appareil/navigateur');
     }
   }
 
-  private async initializeMessaging() {
+  async requestPermission(): Promise<boolean> {
+    if (!('Notification' in window) || !navigator.serviceWorker) {
+      return false;
+    }
+
     try {
       // Vérifier la permission de notification
       const permission = Notification.permission;
       
       if (permission === 'granted') {
         console.log('Permission de notification accordée');
-        await this.getMessagingToken();
-        this.listenForMessages();
+        const token = await this.getMessagingToken();
+        if (token) {
+          this.listenForMessages();
+          return true;
+        }
       } else if (permission !== 'denied') {
         // Demander la permission seulement si elle n'a pas déjà été refusée
         const result = await Notification.requestPermission();
         if (result === 'granted') {
           console.log('Permission de notification accordée');
-          await this.getMessagingToken();
-          this.listenForMessages();
+          const token = await this.getMessagingToken();
+          if (token) {
+            this.listenForMessages();
+            return true;
+          }
         }
       }
+      return false;
     } catch (error) {
       console.warn('Erreur lors de l\'initialisation des notifications:', error);
-      // Ne pas bloquer l'application si les notifications échouent
+      return false;
     }
   }
 
@@ -143,13 +154,12 @@ export class FirebaseMessagingService {
     try {
       const token = await this.getMessagingToken();
       if (token && userId) {
-        // Vous pouvez utiliser votre service Firestore existant ici
         console.log('Token à sauvegarder pour l\'utilisateur', userId, ':', token);
         
-        // Exemple d'implémentation :
-        // await this.firestore.collection('users').doc(userId).update({
-        //   fcmTokens: firebase.firestore.FieldValue.arrayUnion(token)
-        // });
+        const userRef = doc(this.firestore, 'users', userId);
+        await updateDoc(userRef, {
+          fcmTokens: arrayUnion(token)
+        });
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde du token:', error);
@@ -165,10 +175,10 @@ export class FirebaseMessagingService {
       if (token && userId) {
         console.log('Token à supprimer pour l\'utilisateur', userId, ':', token);
         
-        // Exemple d'implémentation :
-        // await this.firestore.collection('users').doc(userId).update({
-        //   fcmTokens: firebase.firestore.FieldValue.arrayRemove(token)
-        // });
+        const userRef = doc(this.firestore, 'users', userId);
+        await updateDoc(userRef, {
+          fcmTokens: arrayRemove(token)
+        });
       }
     } catch (error) {
       console.error('Erreur lors de la suppression du token:', error);

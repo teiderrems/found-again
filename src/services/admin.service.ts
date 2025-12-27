@@ -218,10 +218,35 @@ export class AdminService {
   updateVerificationStatus(
     declarationId: string,
     verificationId: string,
-    status: 'pending' | 'verified' | 'rejected'
+    status: 'pending' | 'verified' | 'rejected',
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
     const verificationRef = doc(this.firestore, 'declarations', declarationId, 'verifications', verificationId);
-    return from(updateDoc(verificationRef, { status, updatedAt: new Date().toISOString() }));
+    
+    return from(updateDoc(verificationRef, { status, updatedAt: new Date().toISOString() })).pipe(
+      switchMap(async () => {
+        // Si la vérification est validée, on désactive les deux déclarations
+        if (status === 'verified') {
+          // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
+          const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
+          await updateDoc(foundDeclarationRef, { 
+            active: false, 
+            status: 'resolved',
+            resolvedAt: new Date().toISOString()
+          });
+
+          // 2. Désactiver la déclaration d'objet perdu correspondante (si l'ID est fourni)
+          if (matchingDeclarationId) {
+            const lostDeclarationRef = doc(this.firestore, 'declarations', matchingDeclarationId);
+            await updateDoc(lostDeclarationRef, { 
+              active: false, 
+              status: 'resolved',
+              resolvedAt: new Date().toISOString()
+            });
+          }
+        }
+      })
+    );
   }
 
   /**

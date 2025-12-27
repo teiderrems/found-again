@@ -400,92 +400,21 @@ export class UserProfileComponent implements OnInit {
     try {
       console.log('Début de enableFCMNotifications...');
 
-      // 1️⃣ Vérifier le support des notifications du navigateur
-      if (!('Notification' in window)) {
-        console.warn('Les notifications ne sont pas supportées par ce navigateur');
-        this.snackBar.open('Les notifications ne sont pas supportées par ce navigateur', 'Fermer', {
-          duration: 5000
-        });
-        return false;
-      }
-
-      console.log('Notifications supportées par le navigateur');
-
-      // 2️⃣ Vérifier l'état actuel et afficher à la console
-      const currentPermission = Notification.permission;
-      console.log('Permission actuelle:', currentPermission);
+      // Utiliser le service centralisé pour demander la permission
+      const success = await this.firebaseMessaging.requestPermission();
       
-      // Si déjà accordée, continuer
-      if (currentPermission === 'granted') {
-        console.log('Permission déjà accordée, continuation...');
-        // Passer directement à l'enregistrement du Service Worker
-      } 
-      // Si déjà refusée
-      else if (currentPermission === 'denied') {
-        console.warn('Les notifications ont été refusées');
-        this.snackBar.open('Les notifications ont été refusées. Réautorisez-les dans les paramètres du navigateur.', 'Fermer', {
+      if (!success) {
+        console.warn('Échec de l\'activation des notifications via le service');
+        this.snackBar.open('Impossible d\'activer les notifications. Vérifiez les paramètres du navigateur.', 'Fermer', {
           duration: 5000
         });
         return false;
       }
-      // Si par défaut, demander la permission
-      else if (currentPermission === 'default') {
-        console.log('Affichage de la popup du navigateur...');
-        this.snackBar.open('Une popup devrait apparaître. Cliquez sur "Autoriser"', 'Fermer', {
-          duration: 10000
-        });
-        
-        // Attendre un peu et afficher la popup
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        console.log('Appel de Notification.requestPermission()...');
-        const permission = await Notification.requestPermission();
-        console.log('Réponse de la popup:', permission);
-        
-        if (permission === 'denied') {
-          console.warn('L\'utilisateur a refusé les notifications');
-          this.snackBar.open('Les notifications ont été refusées. Vous pouvez les autoriser dans les paramètres du navigateur.', 'Fermer', {
-            duration: 5000
-          });
-          return false;
-        }
-        
-        if (permission !== 'granted') {
-          console.warn('Permission non accordée:', permission);
-          this.snackBar.open('Les notifications n\'ont pas pu être activées', 'Fermer', {
-            duration: 3000
-          });
-          return false;
-        }
-        
-        console.log('Permission accordée par l\'utilisateur');
-      }
 
-      console.log('Toutes les vérifications de permission OK');
-
-      // 4️⃣ Enregistrer le Service Worker
-      console.log('Enregistrement du Service Worker...');
-      if ('serviceWorker' in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-            scope: '/'
-          });
-          console.log('Service Worker enregistré:', registration);
-        } catch (swError) {
-          console.warn('Erreur lors de l\'enregistrement du Service Worker:', swError);
-          this.snackBar.open('Avertissement: Service Worker non enregistré', 'Fermer', {
-            duration: 3000
-          });
-        }
-      } else {
-        console.warn('Les Service Workers ne sont pas supportés');
-        this.snackBar.open('Les Service Workers ne sont pas supportés par ce navigateur', 'Fermer', {
-          duration: 3000
-        });
-      }
-
-      // 5️⃣ Obtenir le token FCM
+      // 5️⃣ Obtenir le token FCM (maintenant qu'on a la permission)
       console.log('Récupération du token FCM...');
+      // Note: requestPermission a déjà appelé getMessagingToken, donc le token devrait être en cache ou disponible
+      // Mais on le récupère ici pour le sauvegarder
       const token = await this.firebaseMessaging.getMessagingToken();
       
       if (token) {

@@ -159,13 +159,19 @@ export class AdminVerificationsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        // Récupérer l'ID de la déclaration correspondante si disponible dans les données de vérification
+        // Supposons que verification.matchingDeclarationId existe ou est passé dans les données
+        // Si ce n'est pas le cas, il faudrait peut-être le récupérer autrement
+        const matchingDeclarationId = (verification as any).matchingDeclarationId;
+
         this.verificationService.approveVerification(
           verification.declarationId,
           verification.id,
-          'Approuvé par l\'administrateur'
+          'Approuvé par l\'administrateur',
+          matchingDeclarationId
         ).subscribe({
           next: () => {
-            this.snackBar.open('Vérification approuvée', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Vérification approuvée et déclarations mises à jour', 'Fermer', { duration: 3000 });
             this.loadVerifications();
           },
           error: (error) => {

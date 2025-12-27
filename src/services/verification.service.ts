@@ -32,7 +32,8 @@ export class VerificationService {
   createVerification(
     declarationId: string,
     userId: string,
-    verification: VerificationCreate
+    verification: VerificationCreate,
+    matchingDeclarationId?: string // ID de la déclaration correspondante (optionnel)
   ): Observable<string> {
     const verificationsRef = collection(
       this.firestore,
@@ -49,6 +50,7 @@ export class VerificationService {
       serialNumber: verification.serialNumber || null,
       status: VerificationStatus.PENDING,
       timestamp: new Date().toISOString(),
+      matchingDeclarationId: matchingDeclarationId || null // Stocker l'ID correspondant
     };
 
     return from(addDoc(verificationsRef, verificationData)).pipe(
@@ -208,12 +210,13 @@ export class VerificationService {
   approveVerification(
     declarationId: string,
     verificationId: string,
-    adminNotes?: string
+    adminNotes?: string,
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
-    return this.updateVerification(declarationId, verificationId, {
+    return this.updateVerificationStatus(declarationId, verificationId, {
       status: VerificationStatus.VERIFIED,
       adminNotes,
-    });
+    }, matchingDeclarationId);
   }
 
   /**
@@ -338,7 +341,8 @@ export class VerificationService {
   updateVerificationStatus(
     declarationId: string,
     verificationId: string,
-    update: VerificationUpdate
+    update: VerificationUpdate,
+    matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
     const verificationRef = doc(
       this.firestore,
@@ -353,6 +357,29 @@ export class VerificationService {
       adminNotes: update.adminNotes || null,
       rejectionReason: update.rejectionReason || null,
       updatedAt: new Date().toISOString()
-    } as any));
+    } as any)).pipe(
+      switchMap(async () => {
+        // Si la vérification est validée, on désactive les deux déclarations
+        if (update.status === VerificationStatus.VERIFIED) {
+          // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
+          const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
+          await updateDoc(foundDeclarationRef, { 
+            active: false, 
+            status: 'resolved',
+            resolvedAt: new Date().toISOString()
+          });
+
+          // 2. Désactiver la déclaration d'objet perdu correspondante (si l'ID est fourni)
+          if (matchingDeclarationId) {
+            const lostDeclarationRef = doc(this.firestore, 'declarations', matchingDeclarationId);
+            await updateDoc(lostDeclarationRef, { 
+              active: false, 
+              status: 'resolved',
+              resolvedAt: new Date().toISOString()
+            });
+          }
+        }
+      })
+    );
   }
 }
