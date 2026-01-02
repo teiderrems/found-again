@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { HomeComponent } from '@/pages/home/home.component';
-import { MapViewComponent } from '@/pages/map-view/map-view.component';
 import { Pages } from '@/config/constant';
 import { preparePathForRouter } from '@/app/utils';
 import {
@@ -127,7 +126,10 @@ export const routes: Routes = [
          },
          {
             path: 'map',
-            component: MapViewComponent,
+            loadComponent: () =>
+               import('@/pages/map-view/map-view.component').then(
+                  (c) => c.MapViewComponent,
+               ),
             pathMatch: 'full',
             title: 'Carte',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
