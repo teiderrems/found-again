@@ -28,27 +28,27 @@ import { AdminService } from '@/services/admin.service';
     <mat-dialog-content>
       <div class="space-y-4">
         <!-- User Info -->
-        <div class="bg-gray-50 rounded-lg p-4">
-          <p class="text-sm text-gray-600 mb-2">Utilisateur:</p>
-          <p class="font-semibold text-gray-900">
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Utilisateur:</p>
+          <p class="font-semibold text-gray-900 dark:text-white">
             {{ data.user.firstname }} {{ data.user.lastname }}
           </p>
-          <p class="text-sm text-gray-600 mt-2">Email:</p>
-          <p class="font-medium text-gray-900">{{ data.user.email }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Email:</p>
+          <p class="font-medium text-gray-900 dark:text-white">{{ data.user.email }}</p>
         </div>
 
         <!-- Current Role -->
         <div>
-          <p class="text-sm text-gray-600 mb-2">Rôle actuel:</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Rôle actuel:</p>
           <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                        (data.user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800')">
+                        (data.user.role === 'admin' ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200')">
             {{ data.user.role === 'admin' ? 'Administrateur' : 'Utilisateur Standard' }}
           </span>
         </div>
 
         <!-- Action -->
         <div class="pt-2">
-          <p class="text-sm text-gray-600 mb-3">Nouveau rôle:</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Nouveau rôle:</p>
           <div class="flex gap-3">
             <button 
               mat-stroked-button

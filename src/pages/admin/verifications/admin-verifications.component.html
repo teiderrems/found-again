@@ -1,21 +1,21 @@
-<div class="p-4 md:p-6">
+<div class="p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">Gestion des Vérifications</h1>
-    <p class="text-gray-600">Consultez et approuvez les vérifications d'identité des utilisateurs</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gestion des Vérifications</h1>
+    <p class="text-gray-600 dark:text-gray-400">Consultez et approuvez les vérifications d'identité des utilisateurs</p>
   </div>
 
   <!-- Search and Filter -->
-  <div class="bg-white rounded-lg shadow p-4 mb-6">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 border border-gray-200 dark:border-gray-700 transition-colors">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="relative">
         <input (keyup)="applyFilter($event)" placeholder="Rechercher par utilisateur (Email, ID...)"
-          class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
-        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+          class="w-full px-4 py-3 pl-10 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+        <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">search</mat-icon>
       </div>
       <div class="flex items-center">
         <select 
           (change)="filterByStatus($event)"
-          class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 bg-white">
+          class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
           <option value="">Tous les statuts</option>
           <option value="pending">En attente</option>
           <option value="verified">Approuvé</option>
@@ -26,85 +26,95 @@
   </div>
 
   <!-- Table -->
-  <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors">
     <div class="overflow-x-auto">
       <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
           <tr>
-            <th (click)="sortData('userId')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('userId')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Utilisateur
                 @if (sortColumn() === 'userId') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('declarationId')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('declarationId')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Déclaration
                 @if (sortColumn() === 'declarationId') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('status')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('status')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Statut
                 @if (sortColumn() === 'status') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('timestamp')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('timestamp')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Date
                 @if (sortColumn() === 'timestamp') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+            <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
           @for (verification of pagedVerifications(); track verification.id) {
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="py-4 px-6 text-gray-900 font-medium text-sm">{{ verification.userId | slice:0:8 }}...</td>
-              <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.declarationId | slice:0:8 }}...</td>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-gray-200 transition-colors">
+              <td class="py-4 px-6 text-sm">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900 dark:text-white dark:group-hover:text-gray-900">{{ verification.userName }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-600">{{ verification.userEmail || (verification.userId | slice:0:12) + '...' }}</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-sm">
+                <div class="flex flex-col">
+                  <span class="font-medium text-gray-900 dark:text-white dark:group-hover:text-gray-900">{{ verification.declarationTitle }}</span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-600">{{ verification.declarationId | slice:0:12 }}...</span>
+                </div>
+              </td>
               <td class="py-4 px-6">
                 <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                              (verification.status === 'verified' ? 'bg-green-100 text-green-800' : 
-                               verification.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                               'bg-yellow-100 text-yellow-800')">
+                              (verification.status === 'verified' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 
+                               verification.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' : 
+                               'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300')">
                   {{ verification.status === 'verified' ? 'Approuvé' : verification.status === 'rejected' ? 'Rejeté' : 'En attente' }}
                 </span>
               </td>
-              <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.timestamp | firebaseDate: 'dd/MM/yyyy' }}</td>
+              <td class="py-4 px-6 text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-700 text-sm">{{ verification.timestamp | firebaseDate: 'dd/MM/yyyy' }}</td>
               <td class="py-4 px-6 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button 
                     (click)="viewVerification(verification)" 
-                    class="p-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors"
+                    class="p-1 text-blue-600 hover:cursor-pointer dark:text-blue-400 dark:group-hover:text-blue-700 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:group-hover:bg-blue-100 rounded transition-colors"
                     title="Voir les détails">
                     <mat-icon class="text-base">visibility</mat-icon>
                   </button>
                   @if (verification.status === 'pending') {
                     <button 
                       (click)="approveVerification(verification)" 
-                      class="p-1 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors"
+                      class="p-1 text-green-600 dark:text-green-400 dark:group-hover:text-green-700 hover:text-green-900 hover:bg-green-50 dark:hover:bg-green-900/30 dark:group-hover:bg-green-100 rounded transition-colors"
                       title="Approuver">
                       <mat-icon class="text-base">check_circle</mat-icon>
                     </button>
                     <button 
                       (click)="rejectVerification(verification)" 
-                      class="p-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
+                      class="p-1 text-red-600 dark:text-red-400 dark:group-hover:text-red-700 hover:text-red-900 hover:bg-red-50 dark:hover:bg-red-900/30 dark:group-hover:bg-red-100 rounded transition-colors"
                       title="Rejeter">
                       <mat-icon class="text-base">cancel</mat-icon>
                     </button>
                   }
                   <button 
                     (click)="deleteVerification(verification)" 
-                    class="p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors"
+                    class="p-1 text-red-600 hover:cursor-pointer dark:text-red-400 hover:text-red-900 hover:bg-red-50 dark:hover:bg-red-900/30 dark:group-hover:text-red-700 dark:group-hover:bg-red-100 rounded transition-colors"
                     title="Supprimer">
                     <mat-icon class="text-base">delete</mat-icon>
                   </button>
@@ -114,7 +124,7 @@
           }
           @if (pagedVerifications().length === 0) {
             <tr>
-              <td colspan="5" class="py-8 text-center text-gray-500">Aucune vérification trouvée</td>
+              <td colspan="5" class="py-8 text-center text-gray-500 dark:text-gray-400">Aucune vérification trouvée</td>
             </tr>
           }
         </tbody>

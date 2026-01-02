@@ -6,8 +6,8 @@ let firebaseLoaded = false;
 let messaging = null;
 
 try {
-  importScripts('https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js');
-  importScripts('https://www.gstatic.com/firebasejs/11.2.0/firebase-messaging.js');
+  importScripts('https://www.gstatic.com/firebasejs/11.2.0/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/11.2.0/firebase-messaging-compat.js');
 } catch (error) {
   console.error('[firebase-messaging-sw] Erreur lors du chargement des scripts Firebase:', error);
 }
@@ -83,6 +83,19 @@ self.addEventListener('notificationclick', (event) => {
       }
     })
   );
+});
+
+// Gérer les messages entrants pour éviter l'erreur de canal fermé
+self.addEventListener('message', (event) => {
+  // Si le message attend une réponse, répondre immédiatement
+  if (event.ports && event.ports[0]) {
+    event.ports[0].postMessage({ received: true });
+  }
+});
+
+// Activation du service worker
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
 if (!firebaseLoaded) {

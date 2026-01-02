@@ -1,6 +1,6 @@
 // services/auth.service.ts
 
-import { Injectable } from '@angular/core';
+import { Injectable, Injector, runInInjectionContext } from '@angular/core';
 import * as credentialType from '../types/user';
 import {
    Auth,
@@ -37,7 +37,8 @@ export class AuthService {
       private readonly firestore: Firestore,
       private readonly auth: Auth,
       private readonly functions: Functions,
-      private snackBar: MatSnackBar
+      private snackBar: MatSnackBar,
+      private readonly injector: Injector
    ) {
       this.currentUser$ = user(auth);
       this.currentUser$.subscribe((u) => {
@@ -242,7 +243,7 @@ export class AuthService {
    public getUserProfile(userId: string): Observable<UserProfile | undefined> {
       const userDocRef = doc(this.firestore, this.userCollectionName, userId);
       // docData émet les données du document, et se met à jour en temps réel
-      return docData(userDocRef) as Observable<UserProfile | undefined>;
+      return runInInjectionContext(this.injector, () => docData(userDocRef)) as Observable<UserProfile | undefined>;
    }
 
    /**

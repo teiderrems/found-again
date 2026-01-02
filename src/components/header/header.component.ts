@@ -6,10 +6,11 @@ import {
    signal,
    TemplateRef,
    ViewChild,
+   inject,
 } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
+import { ThemeService } from '@/services/theme.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +32,6 @@ export type LinkType = {
    templateUrl: './header.component.html',
    styleUrl: './header.component.css',
    imports: [
-    MatMenuModule,
     MatInputModule,
     MatIconModule,
     RouterLink,
@@ -47,11 +47,17 @@ export class HeaderComponent implements OnInit {
    dropdownOpen = signal<boolean>(false);
    authUser = signal<UserProfile | undefined>(undefined);
    mobileMenuOpen = signal<boolean>(false);
+   
+   readonly themeService = inject(ThemeService);
 
    constructor(
       private readonly authService: AuthService,
       public readonly router: Router,
    ) {}
+
+   toggleTheme() {
+      this.themeService.toggleTheme();
+   }
 
    ngOnInit(): void {
       this.authService.getCurrentUserProfile().subscribe({

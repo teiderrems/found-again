@@ -1,11 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DropdownComponent, DropdownOption } from '../dropdown/dropdown.component';
 import { AuthService } from '@/services/auth.service';
+import { ThemeService } from '@/services/theme.service';
 import { UserProfile } from '@/types/user';
 import { Pages } from '@/config/constant';
 
@@ -24,7 +24,6 @@ export type AdminLinkType = {
     CommonModule,
     RouterLink,
     RouterLinkActive,
-    MatMenuModule,
     MatIconModule,
     MatButtonModule,
     DropdownComponent,
@@ -33,10 +32,15 @@ export type AdminLinkType = {
   styleUrl: './admin-header.component.css',
 })
 export class AdminHeaderComponent implements OnInit {
+  readonly themeService = inject(ThemeService);
   authUser = signal<UserProfile | undefined>(undefined);
   mobileMenuOpen = signal(false);
 
   Pages = Pages;
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
 
   adminLinks: AdminLinkType[] = [
     {

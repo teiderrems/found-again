@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
+  <div class="max-w-3xl mx-auto">
+    
+    <!-- Bouton retour -->
+    <div class="mb-6">
+      <button 
+        (click)="goBack()"
+        class="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+        <mat-icon class="mr-2">arrow_back</mat-icon>
+        Retour aux notifications
+      </button>
+    </div>
+
+    <!-- État de chargement -->
+    @if (isLoading()) {
+      <div class="flex justify-center py-20">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+
+    <!-- État d'erreur -->
+    @if (!isLoading() && error()) {
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-12 text-center transition-colors">
+        <div class="w-16 h-16 mx-auto mb-6 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
+          <mat-icon class="text-red-600 dark:text-red-400 text-3xl">error_outline</mat-icon>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Erreur</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">{{ error() }}</p>
+        <button 
+          (click)="goBack()"
+          class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+          Retour aux notifications
+        </button>
+      </div>
+    }
+
+    <!-- Contenu de la notification -->
+    @if (!isLoading() && !error() && notification()) {
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors">
+        
+        <!-- En-tête -->
+        <div class="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-start space-x-6">
+            <!-- Icône -->
+            <div [ngClass]="getIconClasses(notification()!.type)">
+              <mat-icon>{{ getIcon(notification()!.type) }}</mat-icon>
+            </div>
+            
+            <!-- Titre et métadonnées -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center space-x-3 mb-2">
+                <span [ngClass]="getTypeBadgeClasses(notification()!.type)">
+                  {{ getTypeLabel(notification()!.type) }}
+                </span>
+                @if (!notification()!.read) {
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300">
+                    Non lu
+                  </span>
+                }
+              </div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {{ notification()!.title }}
+              </h1>
+              <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                <mat-icon class="text-base mr-1">schedule</mat-icon>
+                {{ notification()!.createdAt | firebaseDate:'full' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corps du message -->
+        <div class="p-6 sm:p-8">
+          <div class="prose dark:prose-invert max-w-none">
+            <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed whitespace-pre-wrap">
+              {{ notification()!.message }}
+            </p>
+          </div>
+
+          <!-- Données additionnelles -->
+          @if (notification()!.data) {
+            <div class="mt-8 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <mat-icon class="mr-2 text-gray-500 dark:text-gray-400">info</mat-icon>
+                Informations supplémentaires
+              </h3>
+              
+              <div class="space-y-4">
+                @if (notification()!.data.confidence) {
+                  <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center">
+                      <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mr-3">
+                        <mat-icon class="text-green-600 dark:text-green-400">trending_up</mat-icon>
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300 font-medium">Niveau de confiance</span>
+                    </div>
+                    <span class="text-2xl font-bold text-green-600 dark:text-green-400">
+                      {{ notification()!.data.confidence }}%
+                    </span>
+                  </div>
+                }
+
+                @if (notification()!.data.similarityReasons && notification()!.data.similarityReasons.length > 0) {
+                  <div class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center mb-3">
+                      <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center mr-3">
+                        <mat-icon class="text-yellow-600 dark:text-yellow-400">compare</mat-icon>
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300 font-medium">Raisons de similarité</span>
+                    </div>
+                    <ul class="space-y-2 ml-13">
+                      @for (reason of notification()!.data.similarityReasons; track reason) {
+                        <li class="flex items-start">
+                          <mat-icon class="text-green-500 mr-2 text-base mt-0.5">check_circle</mat-icon>
+                          <span class="text-gray-600 dark:text-gray-400">{{ reason }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+
+                @if (notification()!.data.declarationId) {
+                  <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center">
+                      <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mr-3">
+                        <mat-icon class="text-blue-600 dark:text-blue-400">assignment</mat-icon>
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300 font-medium">ID Déclaration</span>
+                    </div>
+                    <span class="text-sm font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">
+                      {{ notification()!.data.declarationId | slice:0:12 }}...
+                    </span>
+                  </div>
+                }
+
+                @if (notification()!.data.matchedDeclarationId) {
+                  <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center">
+                      <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mr-3">
+                        <mat-icon class="text-purple-600 dark:text-purple-400">link</mat-icon>
+                      </div>
+                      <span class="text-gray-700 dark:text-gray-300 font-medium">Correspondance trouvée</span>
+                    </div>
+                    <span class="text-sm font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded">
+                      {{ notification()!.data.matchedDeclarationId | slice:0:12 }}...
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Actions -->
+        <div class="p-6 sm:p-8 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+              @if (notification()!.actionUrl) {
+                <button 
+                  (click)="goToAction()"
+                  class="flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl">
+                  <mat-icon class="mr-2">open_in_new</mat-icon>
+                  Voir les détails
+                </button>
+              }
+              <button 
+                (click)="goBack()"
+                class="flex items-center px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                <mat-icon class="mr-2">arrow_back</mat-icon>
+                Retour
+              </button>
+            </div>
+            
+            <button 
+              (click)="deleteNotification()"
+              class="flex items-center px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+              <mat-icon class="mr-1">delete</mat-icon>
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

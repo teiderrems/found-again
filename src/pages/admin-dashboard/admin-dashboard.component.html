@@ -1,119 +1,119 @@
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300">
   <!-- Background Elements -->
   <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-blue-100/40 to-transparent blur-3xl"></div>
-    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-teal-100/40 to-transparent blur-3xl"></div>
+    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-blue-100/40 dark:from-blue-900/20 to-transparent blur-3xl"></div>
+    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-teal-100/40 dark:from-teal-900/20 to-transparent blur-3xl"></div>
   </div>
 
   <div class="max-w-7xl mx-auto relative z-10">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Tableau de Bord Admin</h1>
-      <p class="text-gray-600 mt-2">Bienvenue sur le panneau d'administration</p>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Tableau de Bord Admin</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Bienvenue sur le panneau d'administration</p>
     </div>
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Users -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-blue-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Utilisateurs Total</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().totalUsers }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Utilisateurs Total</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().totalUsers }}</p>
           </div>
-          <div class="bg-blue-100 rounded-full p-3">
-            <mat-icon class="text-blue-600 text-2xl">people</mat-icon>
+          <div class="bg-blue-100 dark:bg-blue-900/50 rounded-full p-3">
+            <mat-icon class="text-blue-600 dark:text-blue-400 text-2xl">people</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Active Users -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-cyan-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-cyan-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Utilisateurs Actifs</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().activeUsers }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Utilisateurs Actifs</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().activeUsers }}</p>
           </div>
-          <div class="bg-cyan-100 rounded-full p-3">
-            <mat-icon class="text-cyan-600 text-2xl">person_check</mat-icon>
+          <div class="bg-cyan-100 dark:bg-cyan-900/50 rounded-full p-3">
+            <mat-icon class="text-cyan-600 dark:text-cyan-400 text-2xl">person_check</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Inactive Users -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-pink-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-pink-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Utilisateurs Inactifs</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().inactiveUsers }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Utilisateurs Inactifs</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().inactiveUsers }}</p>
           </div>
-          <div class="bg-pink-100 rounded-full p-3">
-            <mat-icon class="text-pink-600 text-2xl">person_off</mat-icon>
+          <div class="bg-pink-100 dark:bg-pink-900/50 rounded-full p-3">
+            <mat-icon class="text-pink-600 dark:text-pink-400 text-2xl">person_off</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Total Declarations -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-green-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Déclarations Total</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().totalDeclarations }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Déclarations Total</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().totalDeclarations }}</p>
           </div>
-          <div class="bg-green-100 rounded-full p-3">
-            <mat-icon class="text-green-600 text-2xl">assignment</mat-icon>
+          <div class="bg-green-100 dark:bg-green-900/50 rounded-full p-3">
+            <mat-icon class="text-green-600 dark:text-green-400 text-2xl">assignment</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Found Declarations -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-orange-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-orange-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Objets Trouvés</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().foundDeclarations }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Objets Trouvés</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().foundDeclarations }}</p>
           </div>
-          <div class="bg-orange-100 rounded-full p-3">
-            <mat-icon class="text-orange-600 text-2xl">done_all</mat-icon>
+          <div class="bg-orange-100 dark:bg-orange-900/50 rounded-full p-3">
+            <mat-icon class="text-orange-600 dark:text-orange-400 text-2xl">done_all</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Lost Declarations -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-red-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Objets Perdus</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().lostDeclarations }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Objets Perdus</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().lostDeclarations }}</p>
           </div>
-          <div class="bg-red-100 rounded-full p-3">
-            <mat-icon class="text-red-600 text-2xl">search</mat-icon>
+          <div class="bg-red-100 dark:bg-red-900/50 rounded-full p-3">
+            <mat-icon class="text-red-600 dark:text-red-400 text-2xl">search</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Active Declarations -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-emerald-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-emerald-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Déclarations Actives</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().activeDeclarations }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Déclarations Actives</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().activeDeclarations }}</p>
           </div>
-          <div class="bg-emerald-100 rounded-full p-3">
-            <mat-icon class="text-emerald-600 text-2xl">check_circle</mat-icon>
+          <div class="bg-emerald-100 dark:bg-emerald-900/50 rounded-full p-3">
+            <mat-icon class="text-emerald-600 dark:text-emerald-400 text-2xl">check_circle</mat-icon>
           </div>
         </div>
       </div>
 
       <!-- Inactive Declarations -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-slate-400">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-slate-400 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Déclarations Inactives</p>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ stats().inactiveDeclarations }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Déclarations Inactives</p>
+            <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ stats().inactiveDeclarations }}</p>
           </div>
-          <div class="bg-slate-100 rounded-full p-3">
-            <mat-icon class="text-slate-600 text-2xl">cancel</mat-icon>
+          <div class="bg-slate-100 dark:bg-slate-700 rounded-full p-3">
+            <mat-icon class="text-slate-600 dark:text-slate-400 text-2xl">cancel</mat-icon>
           </div>
         </div>
       </div>
@@ -122,8 +122,8 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <!-- Users Chart -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition des Utilisateurs</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Répartition des Utilisateurs</h3>
         <div class="flex justify-center">
           <apx-chart
             [series]="userChartOptions.series"
@@ -136,8 +136,8 @@
       </div>
 
       <!-- Declarations Chart -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Répartition des Déclarations</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Répartition des Déclarations</h3>
         <div class="flex justify-center">
           <apx-chart
             [series]="declarationChartOptions.series"
@@ -151,32 +151,38 @@
     </div>
 
     <!-- Progression Chart -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8 transition-colors">
       <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-900">Progression de l'activité</h3>
-        <div class="flex bg-gray-100 rounded-lg p-1 mt-4 sm:mt-0">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Progression de l'activité</h3>
+        <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 mt-4 sm:mt-0">
           <button 
             (click)="setFilter('week')"
             [class.bg-white]="timeFilter() === 'week'"
+            [class.dark:bg-gray-600]="timeFilter() === 'week'"
             [class.shadow-sm]="timeFilter() === 'week'"
             [class.text-blue-600]="timeFilter() === 'week'"
-            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            [class.dark:text-blue-400]="timeFilter() === 'week'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             Semaine
           </button>
           <button 
             (click)="setFilter('month')"
             [class.bg-white]="timeFilter() === 'month'"
+            [class.dark:bg-gray-600]="timeFilter() === 'month'"
             [class.shadow-sm]="timeFilter() === 'month'"
             [class.text-blue-600]="timeFilter() === 'month'"
-            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            [class.dark:text-blue-400]="timeFilter() === 'month'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             Mois
           </button>
           <button 
             (click)="setFilter('year')"
             [class.bg-white]="timeFilter() === 'year'"
+            [class.dark:bg-gray-600]="timeFilter() === 'year'"
             [class.shadow-sm]="timeFilter() === 'year'"
             [class.text-blue-600]="timeFilter() === 'year'"
-            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 hover:text-gray-900">
+            [class.dark:text-blue-400]="timeFilter() === 'year'"
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             Année
           </button>
         </div>
@@ -198,47 +204,47 @@
     <!-- Additional Stats -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
       <!-- Pending Verifications -->
-      <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-l-4 border-purple-500 transition-colors">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-gray-600 text-sm font-medium">Vérifications en Attente</p>
-            <p class="text-3xl font-bold text-purple-600 mt-2">{{ stats().pendingVerifications }}</p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm font-medium">Vérifications en Attente</p>
+            <p class="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">{{ stats().pendingVerifications }}</p>
           </div>
-          <div class="bg-purple-100 rounded-full p-3">
-            <mat-icon class="text-purple-600 text-2xl">verified_user</mat-icon>
+          <div class="bg-purple-100 dark:bg-purple-900/50 rounded-full p-3">
+            <mat-icon class="text-purple-600 dark:text-purple-400 text-2xl">verified_user</mat-icon>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white rounded-lg shadow">
-      <div class="border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow transition-colors">
+      <div class="border-b border-gray-200 dark:border-gray-700">
         <div class="flex space-x-8 px-6">
           <button
             (click)="activeTab.set('recent-declarations')"
-            [class]="'py-4 px-1 border-b-2 font-medium text-sm transition-colors ' + 
+            [class]="'py-4 px-1 hover:cursor-pointer border-b-2 font-medium text-sm transition-colors ' + 
                      (activeTab() === 'recent-declarations' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300')">
             <mat-icon class="inline mr-2">assignment</mat-icon>
             Déclarations Récentes
           </button>
           <button
             (click)="activeTab.set('pending-verifications')"
-            [class]="'py-4 px-1 border-b-2 font-medium text-sm transition-colors ' + 
+            [class]="'py-4 px-1 hover:cursor-pointer border-b-2 font-medium text-sm transition-colors ' + 
                      (activeTab() === 'pending-verifications' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300')">
             <mat-icon class="inline mr-2">verified_user</mat-icon>
             Vérifications en Attente
           </button>
           <button
             (click)="activeTab.set('recent-verifications')"
-            [class]="'py-4 px-1 border-b-2 font-medium text-sm transition-colors ' + 
+            [class]="'py-4 px-1 hover:cursor-pointer border-b-2 font-medium text-sm transition-colors ' + 
                      (activeTab() === 'recent-verifications' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300')">
             <mat-icon class="inline mr-2">check_circle</mat-icon>
             Vérifications Récentes
           </button>
           <button
             (click)="activeTab.set('recent-users')"
-            [class]="'py-4 px-1 border-b-2 font-medium text-sm transition-colors ' + 
+            [class]="'py-4 px-1 border-b-2 hover:cursor-pointer font-medium text-sm transition-colors ' + 
                      (activeTab() === 'recent-users' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300')">
             <mat-icon class="inline mr-2">people</mat-icon>
             Utilisateurs Récents
@@ -250,61 +256,64 @@
         <!-- Recent Declarations Tab -->
         @if (activeTab() === 'recent-declarations') {
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Déclarations Récentes</h3>
-            <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Déclarations Récentes</h3>
+            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
               <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                   <tr>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Titre</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Type</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Date</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Catégorie</th>
-                    <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Titre</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Type</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Date</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Catégorie</th>
+                    <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                   @for (declaration of stats().recentDeclarations; track declaration) {
-                    <tr class="hover:bg-gray-50 transition-colors">
-                      <td class="py-4 px-6 text-gray-900 font-medium text-sm">{{ declaration.title }}</td>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <td class="py-4 px-6 text-gray-900 dark:text-white font-medium text-sm">{{ declaration.title }}</td>
                       <td class="py-4 px-6">
                         <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                                      (declaration.type === 'found' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800')">
+                                      (declaration.type === 'found' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-300')">
                           {{ declaration.type === 'found' ? 'Trouvé' : 'Perdu' }}
                         </span>
                       </td>
-                      <td class="py-4 px-6 text-gray-600 text-sm">{{ declaration.date | date: 'dd/MM/yyyy' }}</td>
-                      <td class="py-4 px-6 text-gray-600 text-sm">{{ declaration.category }}</td>
+                      <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ declaration.date | date: 'dd/MM/yyyy' }}</td>
+                      <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ declaration.category }}</td>
                       <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
                           <!-- View Button -->
-                          <button mat-icon-button color="primary"
+                          <button 
                             (click)="viewDeclaration(declaration.id)"
+                            class="p-1 text-blue-600 hover:cursor-pointer dark:text-blue-400 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                             title="Voir les détails">
-                            <mat-icon>visibility</mat-icon>
+                            <mat-icon class="text-base">visibility</mat-icon>
                           </button>
                           
                           <!-- Toggle Active Button -->
-                          <button mat-icon-button
+                          <button 
                             (click)="toggleDeclarationActive(declaration.id, declaration.active ?? true, declaration.title)"
-                            [color]="(declaration.active ?? true) ? 'warn' : 'primary'"
+                            [class]="'p-1 rounded hover:cursor-pointer transition-colors ' + ((declaration.active ?? true) ? 'text-orange-600 dark:text-orange-400 hover:text-orange-900 hover:bg-orange-50 dark:hover:bg-orange-900/30' : 'text-green-600 dark:text-green-400 hover:text-green-900 hover:bg-green-50 dark:hover:bg-green-900/30')"
                             [title]="(declaration.active ?? true) ? 'Désactiver' : 'Activer'">
-                            <mat-icon>{{ (declaration.active ?? true) ? 'visibility_off' : 'visibility_on' }}</mat-icon>
+                            <mat-icon class="text-base">{{ (declaration.active ?? true) ? 'visibility_off' : 'visibility_on' }}</mat-icon>
                           </button>
 
                           <!-- Mark as Resolved (only for LOSS type) -->
                           @if (declaration.type === 'loss' && (declaration.active ?? true)) {
-                            <button mat-icon-button color="accent"
+                            <button 
                               (click)="markLossAsResolved(declaration.id, declaration.title)"
+                              class="p-1 text-green-600 hover:cursor-pointer dark:text-green-400 hover:text-green-900 hover:bg-green-50 dark:hover:bg-green-900/30 rounded transition-colors"
                               title="Marquer comme retrouvé">
-                              <mat-icon>check_circle</mat-icon>
+                              <mat-icon class="text-base">check_circle</mat-icon>
                             </button>
                           }
                           
                           <!-- Delete Button -->
-                          <button mat-icon-button color="warn"
+                          <button 
                             (click)="deleteDeclaration(declaration.id, declaration.title)"
+                            class="p-1 text-red-600 hover:cursor-pointer dark:text-red-400 hover:text-red-900 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
                             title="Supprimer">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon class="text-base">delete</mat-icon>
                           </button>
                         </div>
                       </td>
@@ -319,42 +328,44 @@
         <!-- Pending Verifications Tab -->
         @if (activeTab() === 'pending-verifications') {
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Vérifications en Attente</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Vérifications en Attente</h3>
             @if (pendingVerifications().length === 0) {
-              <div class="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <mat-icon class="text-4xl text-gray-400 mx-auto mb-2">check_circle</mat-icon>
-                <p class="text-gray-600">Aucune vérification en attente</p>
+              <div class="text-center py-12 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
+                <mat-icon class="text-4xl hover:cursor-pointer text-gray-400 dark:text-gray-500 mx-auto mb-2">check_circle</mat-icon>
+                <p class="text-gray-600 dark:text-gray-400">Aucune vérification en attente</p>
               </div>
             }
             @if (pendingVerifications().length > 0) {
-              <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                 <table class="w-full">
-                  <thead class="bg-gray-50 border-b border-gray-200">
+                  <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                     <tr>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Utilisateur</th>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Email</th>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Déclaration</th>
-                      <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Utilisateur</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Email</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Déclaration</th>
+                      <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Actions</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-gray-200">
+                  <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @for (verification of pendingVerifications(); track verification) {
-                      <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-4 px-6 text-gray-900 font-medium text-sm">
+                      <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td class="py-4 px-6 text-gray-900 dark:text-white font-medium text-sm">
                           {{ verification.userDetails?.firstname }} {{ verification.userDetails?.lastname }}
                         </td>
-                        <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.userDetails?.email }}</td>
-                        <td class="py-4 px-6 text-gray-900 text-sm">{{ verification.title }}</td>
+                        <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ verification.userDetails?.email }}</td>
+                        <td class="py-4 px-6 text-gray-900 dark:text-white text-sm">{{ verification.title }}</td>
                         <td class="py-4 px-6 text-right">
                           <div class="flex items-center justify-end gap-2">
-                            <button mat-stroked-button color="primary"
-                              (click)="approveVerification(verification.verificationId!)">
-                              <mat-icon class="mr-1">check</mat-icon>
+                            <button 
+                              (click)="approveVerification(verification.verificationId!)"
+                              class="inline-flex items-center hover:cursor-pointer px-3 py-1.5 text-sm font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors">
+                              <mat-icon class="mr-1 text-base">check</mat-icon>
                               Approuver
                             </button>
-                            <button mat-stroked-button color="warn"
-                              (click)="rejectVerification(verification.verificationId!)">
-                              <mat-icon class="mr-1">close</mat-icon>
+                            <button 
+                              (click)="rejectVerification(verification.verificationId!)"
+                              class="inline-flex items-center hover:cursor-pointer px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 border border-red-600 dark:border-red-400 rounded hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">
+                              <mat-icon class="mr-1 text-base">close</mat-icon>
                               Rejeter
                             </button>
                           </div>
@@ -371,49 +382,50 @@
         <!-- Recent Users Tab -->
         @if (activeTab() === 'recent-users') {
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Utilisateurs Récents</h3>
-            <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Utilisateurs Récents</h3>
+            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
               <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                   <tr>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Nom</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Email</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Rôle</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Statut</th>
-                    <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Inscrit le</th>
-                    <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Nom</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Email</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Rôle</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Statut</th>
+                    <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Inscrit le</th>
+                    <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                   @for (user of stats().recentUsers; track user) {
-                    <tr class="hover:bg-gray-50 transition-colors">
-                      <td class="py-4 px-6 text-gray-900 font-medium text-sm">{{ user.firstname }} {{ user.lastname }}</td>
-                      <td class="py-4 px-6 text-gray-600 text-sm">{{ user.email }}</td>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <td class="py-4 px-6 text-gray-900 dark:text-white font-medium text-sm">{{ user.firstname }} {{ user.lastname }}</td>
+                      <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ user.email }}</td>
                       <td class="py-4 px-6">
                         <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                                      (user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800')">
+                                      (user.role === 'admin' ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200')">
                           {{ user.role === 'admin' ? 'Admin' : 'Utilisateur' }}
                         </span>
                       </td>
                       <td class="py-4 px-6">
                         <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                                      ((user.isActive ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                                      ((user.isActive ?? true) ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300')">
                           {{ (user.isActive ?? true) ? 'Actif' : 'Inactif' }}
                         </span>
                       </td>
-                      <td class="py-4 px-6 text-gray-600 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
+                      <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
                       <td class="py-4 px-6 text-right">
                         <div class="flex items-center justify-end gap-2">
-                          <button mat-icon-button color="primary"
+                          <button 
                             (click)="openRoleModal(user)"
+                            class="p-1 text-blue-600 hover:cursor-pointer dark:text-blue-400 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                             title="Modifier le rôle">
-                            <mat-icon>edit</mat-icon>
+                            <mat-icon class="text-base">edit</mat-icon>
                           </button>
-                          <button mat-icon-button
+                          <button 
                             (click)="toggleUserStatus(user)"
-                            [color]="(user.isActive ?? true) ? 'warn' : 'primary'"
+                            [class]="'p-1 rounded transition-colors hover:cursor-pointer ' + ((user.isActive ?? true) ? 'text-orange-600 dark:text-orange-400 hover:text-orange-900 hover:bg-orange-50 dark:hover:bg-orange-900/30' : 'text-green-600 dark:text-green-400 hover:text-green-900 hover:bg-green-50 dark:hover:bg-green-900/30')"
                             [title]="(user.isActive ?? true) ? 'Désactiver' : 'Activer'">
-                            <mat-icon>{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
+                            <mat-icon class="text-base">{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
                           </button>
                         </div>
                       </td>
@@ -428,54 +440,55 @@
         <!-- Recent Verifications Tab -->
         @if (activeTab() === 'recent-verifications') {
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Vérifications Récentes</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Vérifications Récentes</h3>
             @if (stats().recentVerifications.length === 0) {
-              <div class="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <mat-icon class="text-4xl text-gray-400 mx-auto mb-2">check_circle</mat-icon>
-                <p class="text-gray-600">Aucune vérification</p>
+              <div class="text-center py-12 bg-gray-50 dark:bg-gray-700 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
+                <mat-icon class="text-4xl text-gray-400 dark:text-gray-500 mx-auto mb-2">check_circle</mat-icon>
+                <p class="text-gray-600 dark:text-gray-400">Aucune vérification</p>
               </div>
             }
             @if (stats().recentVerifications.length > 0) {
-              <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                 <table class="w-full">
-                  <thead class="bg-gray-50 border-b border-gray-200">
+                  <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                     <tr>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Utilisateur</th>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Déclaration</th>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Statut</th>
-                      <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Date</th>
-                      <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Utilisateur</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Déclaration</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Statut</th>
+                      <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Date</th>
+                      <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-300 text-sm">Actions</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-gray-200">
+                  <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                     @for (verification of stats().recentVerifications; track verification.id) {
-                      <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-4 px-6 text-gray-900 font-medium text-sm">
+                      <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td class="py-4 px-6 text-gray-900 dark:text-white font-medium text-sm">
                           <div class="flex flex-col">
                             <span class="font-medium">{{ verification.userName }}</span>
-                            <span class="text-xs text-gray-500">{{ verification.userId | slice:0:8 }}...</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ verification.userId | slice:0:8 }}...</span>
                           </div>
                         </td>
-                        <td class="py-4 px-6 text-gray-600 text-sm">
+                        <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">
                           <div class="flex flex-col">
-                            <span class="font-medium text-gray-900">{{ verification.declarationTitle }}</span>
-                            <span class="text-xs text-gray-500">{{ verification.declarationId | slice:0:8 }}...</span>
+                            <span class="font-medium text-gray-900 dark:text-white">{{ verification.declarationTitle }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ verification.declarationId | slice:0:8 }}...</span>
                           </div>
                         </td>
                         <td class="py-4 px-6">
                           <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                                        (verification.status === 'verified' ? 'bg-green-100 text-green-800' : 
-                                         verification.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                                         'bg-yellow-100 text-yellow-800')">
+                                        (verification.status === 'verified' ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 
+                                         verification.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' : 
+                                         'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300')">
                             {{ verification.status === 'verified' ? 'Vérifiée' : verification.status === 'rejected' ? 'Rejetée' : 'En attente' }}
                           </span>
                         </td>
-                        <td class="py-4 px-6 text-gray-600 text-sm">{{ verification.timestamp | date: 'short' }}</td>
+                        <td class="py-4 px-6 text-gray-600 dark:text-gray-400 text-sm">{{ verification.timestamp | date: 'short' }}</td>
                         <td class="py-4 px-6 text-right">
-                          <button mat-icon-button color="primary"
+                          <button 
                             (click)="viewVerification(verification)"
+                            class="p-1 text-blue-600 hover:cursor-pointer dark:text-blue-400 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
                             title="Voir les détails">
-                            <mat-icon>visibility</mat-icon>
+                            <mat-icon class="text-base">visibility</mat-icon>
                           </button>
                         </td>
                       </tr>

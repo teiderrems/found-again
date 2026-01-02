@@ -1,6 +1,6 @@
 // services/notification.service.ts
 // services/notification.service.ts
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import { Observable, BehaviorSubject, from, map, switchMap } from 'rxjs';
 import { User } from '@angular/fire/auth';
 import { 
@@ -55,6 +55,7 @@ export class NotificationService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private fcmService = inject(FirebaseMessagingService);
+  private injector = inject(Injector);
   
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
@@ -94,7 +95,7 @@ export class NotificationService {
       limit(50)
     );
 
-    collectionData(q, { idField: 'id' }).subscribe({
+    runInInjectionContext(this.injector, () => collectionData(q, { idField: 'id' })).subscribe({
       next: (data: any[]) => {
         const notifications: Notification[] = data.map(doc => ({
           id: doc['id'] as string,

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, Injector, runInInjectionContext } from '@angular/core';
 import { Firestore, doc, setDoc, docData } from '@angular/fire/firestore';
 import { Observable, map, tap } from 'rxjs';
 import { AppSettings } from '@/types/settings';
@@ -10,6 +10,7 @@ import { Title } from '@angular/platform-browser';
 export class SettingsService {
   private firestore = inject(Firestore);
   private titleService = inject(Title);
+  private injector = inject(Injector);
   
   private readonly SETTINGS_COLLECTION = 'settings';
   private readonly CONFIG_DOC_ID = 'config';
@@ -31,7 +32,7 @@ export class SettingsService {
 
   private loadSettings() {
     const docRef = doc(this.firestore, this.SETTINGS_COLLECTION, this.CONFIG_DOC_ID);
-    docData(docRef).pipe(
+    runInInjectionContext(this.injector, () => docData(docRef)).pipe(
       map(data => {
         if (!data) {
           return this.getDefaultSettings();
@@ -46,7 +47,7 @@ export class SettingsService {
 
   getSettings(): Observable<AppSettings> {
     const docRef = doc(this.firestore, this.SETTINGS_COLLECTION, this.CONFIG_DOC_ID);
-    return docData(docRef).pipe(
+    return runInInjectionContext(this.injector, () => docData(docRef)).pipe(
       map(data => {
         if (!data) {
           return this.getDefaultSettings();

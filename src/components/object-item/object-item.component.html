@@ -1,6 +1,6 @@
-<div class="group flex flex-col h-full bg-white rounded-2xl shadow-md hover:shadow-2xl border border-gray-200/50 overflow-hidden transition-all duration-300 hover:border-[#FC4E00]/30 hover:-translate-y-1">
+<div class="group flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl border border-gray-200/50 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:border-[#FC4E00]/30 hover:-translate-y-1">
     <!-- Image Container with Carousel -->
-    <div class="relative h-32 sm:h-40 bg-gray-100 overflow-hidden cursor-pointer" (click)="openPreview()">
+    <div class="relative h-32 sm:h-40 bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer" (click)="openPreview()">
         <img [src]="currentImageUrl" [alt]="item().title"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
@@ -12,8 +12,8 @@
         }
 
         <!-- Fullscreen Icon on hover -->
-        <div class="absolute top-3 left-3 bg-white/80 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-800" viewBox="0 0 24 24" fill="currentColor">
+        <div class="absolute top-3 left-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-800 dark:text-gray-200" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
             </svg>
         </div>
@@ -21,7 +21,7 @@
         <!-- Previous Button -->
         @if (item().images.length > 1) {
             <button (click)="prevImage($event)"
-            class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
+            class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -31,7 +31,7 @@
         <!-- Next Button -->
         @if (item().images.length > 1) {
             <button (click)="nextImage($event)"
-            class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
+            class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -45,35 +45,35 @@
     <div class="p-3 sm:p-4 flex flex-col grow space-y-3">
         <!-- Date Info -->
         <div class="flex items-center justify-between text-xs sm:text-sm">
-            <span class="font-medium text-gray-700">{{ item().date | date: 'short' }}</span>
-            <span class="text-gray-500">{{ item().date | date: 'EEEE' }}</span>
+            <span class="font-medium text-gray-700 dark:text-gray-300">{{ item().date | date: 'short' }}</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ item().date | date: 'EEEE' }}</span>
         </div>
 
         <!-- Title -->
         <div>
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-[#009245] transition-colors duration-200">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-[#009245] transition-colors duration-200">
                 {{ item().title }}
             </h3>
         </div>
 
         <!-- Description -->
         <div class="space-y-1">
-            <p class="text-xs sm:text-sm text-gray-700 leading-snug line-clamp-1">
+            <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-snug line-clamp-1">
                 {{ item().description }}
             </p>
-            <p class="text-xs text-gray-600 leading-tight italic">
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-tight italic">
                 {{ getHelpText() }}
             </p>
         </div>
 
         <!-- Location -->
-        <div class="flex items-start space-x-2 pt-1 border-t border-gray-100">
+        <div class="flex items-start space-x-2 pt-1 border-t border-gray-100 dark:border-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mt-0.5 text-[#009245] shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
             </svg>
             <div class="flex flex-col min-w-0">
-                <span class="font-semibold text-gray-900 text-xs">{{ getLocationLabel() }}</span>
-                <span class="text-gray-600 text-xs leading-tight wrap-break-word">{{ item().location }}</span>
+                <span class="font-semibold text-gray-900 dark:text-white text-xs">{{ getLocationLabel() }}</span>
+                <span class="text-gray-600 dark:text-gray-400 text-xs leading-tight wrap-break-word">{{ item().location }}</span>
             </div>
         </div>
 

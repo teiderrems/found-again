@@ -1,13 +1,13 @@
 <!-- declaration.component.html -->
-<div class="min-h-screen bg-gray-50 py-8 sm:py-12 px-4 relative overflow-hidden">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 sm:py-12 px-4 relative overflow-hidden transition-colors duration-300">
   <!-- Background Elements -->
   <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-orange-100/40 to-transparent blur-3xl"></div>
-    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-100/40 to-transparent blur-3xl"></div>
+    <div class="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-linear-to-br from-orange-100/40 dark:from-orange-900/20 to-transparent blur-3xl"></div>
+    <div class="absolute top-[20%] -left-[10%] w-[40%] h-[40%] rounded-full bg-linear-to-tr from-blue-100/40 dark:from-blue-900/20 to-transparent blur-3xl"></div>
   </div>
 
   <div class="max-w-6xl mx-auto relative z-10">
-    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200/50">
+    <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden border border-gray-200/50 dark:border-gray-700 transition-colors">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-0">
         <!-- Left Side - Illustration & Stats -->
                 <div class="lg:flex items-center justify-center p-8 lg:p-12 bg-linear-to-br 
@@ -87,17 +87,17 @@
         <!-- Right Side - Form -->
         <div class="p-8 lg:p-12">
           <div class="mb-8">
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{{ currentTexts.mainTitle }}</h1>
-            <p class="text-gray-600">Remplissez ce formulaire pour déclarer votre
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">{{ currentTexts.mainTitle }}</h1>
+            <p class="text-gray-600 dark:text-gray-400">Remplissez ce formulaire pour déclarer votre
             {{ declarationType === DeclarationType.LOSS ? 'perte' : 'objet retrouvé' }}</p>
           </div>
 
           <form [formGroup]="declarationForm" (ngSubmit)="onSubmit()" class="space-y-6">
             <!-- Titre -->
             <div class="flex flex-col space-y-2">
-              <label for="title" class="text-sm font-semibold text-gray-700">Titre <span class="text-red-500">*</span></label>
+              <label for="title" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Titre <span class="text-red-500">*</span></label>
               <input id="title" type="text" formControlName="title"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
                 [placeholder]="'Ex: ' + (declarationType === DeclarationType.LOSS ? 'Portefeuille perdu au centre-ville' : 'Portefeuille noir trouvé au parc')">
               @if (title?.invalid && title?.touched) {
                 <div class="text-red-500 text-xs mt-1 flex items-center space-x-1">
@@ -122,9 +122,9 @@
 
             <!-- Description -->
             <div class="flex flex-col space-y-2">
-              <label for="description" class="text-sm font-semibold text-gray-700">Description <span class="text-red-500">*</span></label>
+              <label for="description" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Description <span class="text-red-500">*</span></label>
               <textarea id="description" formControlName="description"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 resize-none h-32"
+                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 resize-none h-32"
               [placeholder]="currentTexts.descriptionPlaceholder"></textarea>
               @if (description?.invalid && description?.touched) {
                 <div class="text-red-500 text-xs mt-1 flex items-center space-x-1">
@@ -145,10 +145,10 @@
 
             <!-- Location -->
             <div class="flex flex-col space-y-2">
-              <label for="location" class="text-sm font-semibold text-gray-700">{{ currentTexts.locationLabel }} <span class="text-red-500">*</span></label>
+              <label for="location" class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ currentTexts.locationLabel }} <span class="text-red-500">*</span></label>
               <div class="relative">
                 <input id="location" (input)="showSuggestioLocation.set(true)" type="text" formControlName="location"
-                  class="w-full px-4 py-3 pr-24 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                  class="w-full px-4 py-3 pr-24 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
                   [placeholder]="declarationType === DeclarationType.LOSS ? 'Où avez-vous perdu l\'objet ?' : 'Où avez-vous trouvé l\'objet ?'"
                   autocomplete="off">
                 <button type="button" (click)="useCurrentLocation()" [disabled]="isGettingCurrentLocation()"
@@ -160,16 +160,16 @@
               </div>
               @if (showSuggestioLocation() || location==null) {
                 <div class="relative z-10">
-                  <div class="absolute z-20 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                  <div class="absolute z-20 w-full mt-1 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl shadow-xl max-h-60 overflow-y-auto">
                     @for (suggestion of locationSuggestions(); track suggestion) {
                       <div
                         (click)="selectLocationSuggestion(suggestion);showSuggestioLocation.set(false)"
-                        class="px-4 py-3 hover:bg-[#009245]/5 cursor-pointer border-b border-gray-100 last:border-b-0 transition-colors">
-                        <div class="font-medium text-gray-900 text-sm truncate">
+                        class="px-4 py-3 hover:bg-[#009245]/5 dark:hover:bg-[#009245]/20 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white text-sm truncate">
                           {{ suggestion.display_name }}
                         </div>
                         @if (suggestion.address) {
-                          <div class="text-xs text-gray-500 mt-1">
+                          <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             {{ getAddressString(suggestion.address) }}
                           </div>
                         }
@@ -198,9 +198,9 @@
 
             <!-- Date -->
             <div class="flex flex-col space-y-2">
-              <label for="date" class="text-sm font-semibold text-gray-700">{{ currentTexts.dateLabel }} <span class="text-red-500">*</span></label>
+              <label for="date" class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ currentTexts.dateLabel }} <span class="text-red-500">*</span></label>
               <input id="date" type="date" formControlName="date"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
                 @if (date?.invalid && date?.touched) {
                   <div class="text-red-500 text-xs mt-1">
                     La date est obligatoire
@@ -208,12 +208,36 @@
                 }
               </div>
 
+            <!-- État de l'objet -->
+            <div class="flex flex-col space-y-2">
+              <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">État de l'objet</label>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                @for (option of conditionOptions; track option.value) {
+                  <label 
+                    class="relative flex flex-col items-center p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:border-[#009245]/50"
+                    [class.border-[#009245]]="declarationForm.get('condition')?.value === option.value"
+                    [class.bg-[#009245]/5]="declarationForm.get('condition')?.value === option.value"
+                    [class.border-gray-200]="declarationForm.get('condition')?.value !== option.value"
+                    [class.dark:border-gray-600]="declarationForm.get('condition')?.value !== option.value">
+                    <input 
+                      type="radio" 
+                      formControlName="condition" 
+                      [value]="option.value"
+                      class="sr-only">
+                    <span class="text-2xl mb-1">{{ option.icon }}</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ option.label }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 text-center hidden sm:block">{{ option.description }}</span>
+                  </label>
+                }
+              </div>
+            </div>
+
               <!-- Contact Info -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col space-y-2">
-                  <label for="contactEmail" class="text-sm font-semibold text-gray-700">Email <span class="text-red-500">*</span></label>
+                  <label for="contactEmail" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Email <span class="text-red-500">*</span></label>
                   <input id="contactEmail" type="email" formControlName="contactEmail"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                    class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
                     placeholder="votre@email.com">
                   @if (contactEmail?.invalid && contactEmail?.touched) {
                     <div
@@ -229,9 +253,9 @@
                 </div>
 
                 <div class="flex flex-col space-y-2">
-                  <label for="contactPhone" class="text-sm font-semibold text-gray-700">Téléphone</label>
+                  <label for="contactPhone" class="text-sm font-semibold text-gray-700 dark:text-gray-300">Téléphone</label>
                   <input id="contactPhone" type="tel" formControlName="contactPhone"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
+                    class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200"
                     placeholder="0123456789">
                   @if (contactPhone?.invalid && contactPhone?.touched) {
                     <div
@@ -244,7 +268,7 @@
 
               <!-- Images -->
               <div class="flex flex-col space-y-2">
-                <label class="text-sm font-semibold text-gray-700">Images</label>
+                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Images</label>
                 <input type="file" id="images" multiple accept="image/*" (change)="onFileSelected($event)" class="hidden">
                 <div class="flex flex-col justify-center items-center border-2 border-dashed rounded-2xl p-8 transition-all duration-200 cursor-pointer"
                   [class.border-[#009245]]="isDragOver()"
@@ -259,15 +283,15 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[#009245]/40 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                   </svg>
-                  <p class="text-gray-700 text-center font-medium">
+                  <p class="text-gray-700 dark:text-gray-300 text-center font-medium">
                     {{ isDragOver() ? 'Déposez vos images ici' : 'Ajouter des photos' }}
                   </p>
-                  <p class="text-gray-500 text-sm mt-1">JPG, PNG (max 5MB) - Glissez-déposez ou cliquez</p>
+                  <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">JPG, PNG (max 5MB) - Glissez-déposez ou cliquez</p>
                 </div>
 
                 @if (imagePreviews.length > 0) {
                   <div class="mt-4">
-                    <p class="text-sm font-medium text-gray-700 mb-3">Images sélectionnées:</p>
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Images sélectionnées:</p>
                     <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
                       @for (preview of imagePreviews; track preview; let i = $index) {
                         <div class="relative group">

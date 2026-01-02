@@ -64,20 +64,20 @@ interface DialogData {
             </div>
           </div>
         } @else {
-          <div class="p-6 border-b border-gray-100 flex justify-between items-start">
+          <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-start">
             <div>
               <div class="flex items-center gap-2 mb-2">
-                <span [class]="'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ' + (data.declaration.type === DeclarationType.FOUND ? 'bg-green-100 text-[#009245]' : 'bg-orange-100 text-orange-700')">
+                <span [class]="'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ' + (data.declaration.type === DeclarationType.FOUND ? 'bg-green-100 dark:bg-green-900/50 text-[#009245] dark:text-green-400' : 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-400')">
                   {{ data.declaration.type === DeclarationType.FOUND ? 'Objet Trouvé' : 'Objet Perdu' }}
                 </span>
-                <span class="text-sm text-gray-500">{{ data.declaration.date | date:'dd MMMM yyyy' }}</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ data.declaration.date | date:'dd MMMM yyyy' }}</span>
               </div>
-              <h2 class="text-2xl font-bold text-gray-900">{{ data.declaration.title }}</h2>
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ data.declaration.title }}</h2>
             </div>
-            <button mat-icon-button (click)="close()" class="text-gray-400 hover:text-gray-600">
+            <button mat-icon-button (click)="close()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
               <mat-icon>close</mat-icon>
             </button>
-            <button mat-icon-button (click)="share()" class="text-gray-400 hover:text-gray-600 mr-2">
+            <button mat-icon-button (click)="share()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 mr-2">
               <mat-icon>share</mat-icon>
             </button>
           </div>
@@ -93,20 +93,20 @@ interface DialogData {
             
             <!-- Description -->
             <div>
-              <h3 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <mat-icon class="text-gray-400">description</mat-icon>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <mat-icon class="text-gray-400 dark:text-gray-500">description</mat-icon>
                 Description
               </h3>
-              <p class="text-gray-600 leading-relaxed whitespace-pre-wrap text-base">{{ data.declaration.description }}</p>
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap text-base">{{ data.declaration.description }}</p>
             </div>
 
             <!-- Additional Images -->
             @if (data.declaration.images && data.declaration.images.length > 1) {
               <div>
-                <h3 class="text-lg font-bold text-gray-900 mb-3">Autres photos</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Autres photos</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   @for (img of data.declaration.images.slice(1); track img; let i = $index) {
-                    <div class="aspect-square rounded-xl overflow-hidden border border-gray-200 cursor-pointer hover:shadow-lg transition-all group relative" (click)="openPreview(i + 1)">
+                    <div class="aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-lg transition-all group relative" (click)="openPreview(i + 1)">
                       <img [src]="img.downloadURL" [alt]="data.declaration.title" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500">
                       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                         <mat-icon class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">fullscreen</mat-icon>
@@ -119,8 +119,8 @@ interface DialogData {
 
             <!-- Distance & Travel Info -->
             @if (data.userLocation) {
-              <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
-                <h3 class="text-blue-900 font-bold mb-4 flex items-center gap-2">
+              <div class="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-5 border border-blue-100 dark:border-blue-800">
+                <h3 class="text-blue-900 dark:text-blue-300 font-bold mb-4 flex items-center gap-2">
                   <mat-icon>directions</mat-icon>
                   Itinéraire depuis votre position
                 </h3>
@@ -131,40 +131,40 @@ interface DialogData {
                   </div>
                 } @else if (distance && duration) {
                   <div class="flex flex-wrap gap-4">
-                    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-lg shadow-sm">
-                      <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm">
+                      <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400">
                         <mat-icon>straighten</mat-icon>
                       </div>
                       <div>
-                        <p class="text-xs text-gray-500 uppercase font-bold">Distance</p>
-                        <p class="text-lg font-bold text-gray-900">{{ distance }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Distance</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">{{ distance }}</p>
                       </div>
                     </div>
 
-                    <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-lg shadow-sm">
-                      <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                    <div class="flex items-center gap-3 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm">
+                      <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center text-orange-600 dark:text-orange-400">
                         <mat-icon>timer</mat-icon>
                       </div>
                       <div>
-                        <p class="text-xs text-gray-500 uppercase font-bold">Durée estimée</p>
-                        <p class="text-lg font-bold text-gray-900">{{ duration }}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold">Durée estimée</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">{{ duration }}</p>
                       </div>
                     </div>
 
                     <div class="flex items-center gap-2 ml-auto">
-                       <button mat-icon-button [class]="travelMode === 'DRIVING' ? 'text-blue-600 bg-blue-100' : 'text-gray-400'" (click)="setTravelMode('DRIVING')" matTooltip="Voiture">
+                       <button mat-icon-button [class]="travelMode === 'DRIVING' ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50' : 'text-gray-400 dark:text-gray-500'" (click)="setTravelMode('DRIVING')" matTooltip="Voiture">
                          <mat-icon>directions_car</mat-icon>
                        </button>
-                       <button mat-icon-button [class]="travelMode === 'WALKING' ? 'text-blue-600 bg-blue-100' : 'text-gray-400'" (click)="setTravelMode('WALKING')" matTooltip="Marche">
+                       <button mat-icon-button [class]="travelMode === 'WALKING' ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50' : 'text-gray-400 dark:text-gray-500'" (click)="setTravelMode('WALKING')" matTooltip="Marche">
                          <mat-icon>directions_walk</mat-icon>
                        </button>
-                       <button mat-icon-button [class]="travelMode === 'TRANSIT' ? 'text-blue-600 bg-blue-100' : 'text-gray-400'" (click)="setTravelMode('TRANSIT')" matTooltip="Transports">
+                       <button mat-icon-button [class]="travelMode === 'TRANSIT' ? 'text-blue-600 bg-blue-100 dark:bg-blue-900/50' : 'text-gray-400 dark:text-gray-500'" (click)="setTravelMode('TRANSIT')" matTooltip="Transports">
                          <mat-icon>directions_transit</mat-icon>
                        </button>
                     </div>
                   </div>
                 } @else {
-                  <p class="text-sm text-gray-500 italic">Impossible de calculer l'itinéraire.</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 italic">Impossible de calculer l'itinéraire.</p>
                 }
               </div>
             }
@@ -173,23 +173,23 @@ interface DialogData {
           <!-- Sidebar Info (Right Column) -->
           <div class="space-y-6">
             <!-- Key Details Card -->
-            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+            <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-2xl border border-gray-100 dark:border-gray-600">
               <div class="space-y-4">
                 <div>
-                  <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Catégorie</h3>
+                  <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Catégorie</h3>
                   <div class="flex items-center gap-2">
-                    <mat-icon class="text-gray-500">category</mat-icon>
-                    <p class="text-gray-900 font-medium">{{ data.declaration.category }}</p>
+                    <mat-icon class="text-gray-500 dark:text-gray-400">category</mat-icon>
+                    <p class="text-gray-900 dark:text-white font-medium">{{ data.declaration.category }}</p>
                   </div>
                 </div>
                 
-                <div class="h-px bg-gray-200"></div>
+                <div class="h-px bg-gray-200 dark:bg-gray-600"></div>
 
                 <div>
-                  <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Lieu</h3>
+                  <h3 class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Lieu</h3>
                   <div class="flex items-start gap-2">
-                    <mat-icon class="text-gray-500 mt-0.5">location_on</mat-icon>
-                    <p class="text-gray-900 font-medium">{{ data.declaration.location }}</p>
+                    <mat-icon class="text-gray-500 dark:text-gray-400 mt-0.5">location_on</mat-icon>
+                    <p class="text-gray-900 dark:text-white font-medium">{{ data.declaration.location }}</p>
                   </div>
                 </div>
               </div>
@@ -197,7 +197,7 @@ interface DialogData {
 
             <!-- Contact Actions -->
             <div class="space-y-3">
-              <h3 class="text-lg font-bold text-gray-900">Contacter</h3>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white">Contacter</h3>
               @if (data.declaration.contactEmail) {
                 <a [href]="'mailto:' + data.declaration.contactEmail" 
                    class="flex items-center justify-center gap-3 w-full px-6 py-4 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
@@ -213,7 +213,7 @@ interface DialogData {
                 </a>
               }
               @if (!data.declaration.contactEmail && !data.declaration.contactPhone) {
-                <div class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 text-sm">
+                <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-xl text-center text-gray-500 dark:text-gray-400 text-sm">
                   Aucune information de contact disponible
                 </div>
               }

@@ -45,7 +45,7 @@ export class AdminUsersComponent implements OnInit {
   constructor() {
     effect(() => {
       this.pageSize.set(this.settingsService.itemsPerPage());
-    }, { allowSignalWrites: true });
+    });
   }
   
   // Sorting

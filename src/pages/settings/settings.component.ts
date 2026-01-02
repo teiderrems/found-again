@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -33,7 +33,7 @@ import { UserProfile } from '@/types/user';
 export class SettingsComponent implements OnInit {
   private userProfileService = inject(UserProfileService);
   private authService = inject(AuthService);
-  private themeService = inject(ThemeService);
+  readonly themeService = inject(ThemeService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private router = inject(Router);
@@ -42,16 +42,6 @@ export class SettingsComponent implements OnInit {
   loading = signal(true);
   isSaving = signal(false);
   isDeleting = signal(false);
-
-  constructor() {
-    // Effect to sync theme with user profile
-    effect(() => {
-      const profile = this.userProfile();
-      if (profile?.preferences?.theme) {
-        this.themeService.setTheme(profile.preferences.theme);
-      }
-    });
-  }
 
   ngOnInit() {
     this.loadUserProfile();

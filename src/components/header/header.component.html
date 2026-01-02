@@ -1,17 +1,17 @@
-<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] dark:bg-gray-800 fixed top-0 w-full z-50 transition-colors duration-300">
   <div class="flex items-center px-4 lg:px-8 h-full justify-between">
     <!-- Logo -->
     <a routerLink="/" class="no-underline hover:cursor-pointer h-full flex items-center">
-      <img class="h-full max-h-14 md:max-h-30 w-auto" src="/images/header_logo.png" alt="Your Company">
+      <img class="h-full max-h-14 md:max-h-30 w-auto dark:brightness-110" src="/images/header_logo.png" alt="Your Company">
     </a>
 
     <!-- Desktop Navigation -->
     <nav class="hidden lg:flex justify-center items-center space-x-1">
       @for (link of links_; track link.id) {
         <a [routerLink]="link.url"
-          routerLinkActive="after:w-full text-[#009245] bg-gray-200"
+          routerLinkActive="after:w-full text-[#009245] bg-gray-200 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors text-gray-700 font-medium no-underline relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#009245] after:to-green-700 after:transition-all after:duration-300">
+          class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 font-medium no-underline relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#009245] after:to-green-700 after:transition-all after:duration-300">
           @if (link.icon) {
             <mat-icon [fontIcon]="link.icon" class="text-lg"></mat-icon>
           }
@@ -22,6 +22,15 @@
 
     <!-- User Menu & Actions -->
     <div class="flex items-center space-x-4">
+      <!-- Theme Toggle Button (Desktop) -->
+      <button
+        (click)="toggleTheme()"
+        class="hidden lg:flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+        [attr.aria-label]="themeService.isDark() ? 'Activer le mode clair' : 'Activer le mode sombre'">
+        <mat-icon [fontIcon]="themeService.isDark() ? 'light_mode' : 'dark_mode'" 
+          class="text-gray-700 dark:text-gray-200"></mat-icon>
+      </button>
+
       <!-- Notifications Panel (Desktop) -->
       <div class="hidden lg:block">
         <app-notification-panel></app-notification-panel>
@@ -31,20 +40,20 @@
       <div class="hidden lg:block">
         <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
           <ng-template #dropdownTrigger let-context>
-            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center hover:bg-gray-50 transition-colors hover:cursor-pointer">
+            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border border-gray-200 dark:border-gray-600 p-1 items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer">
               <span class="flex items-center justify-center w-10 h-10 rounded-full border bg-[#009245] text-white font-bold">
                 {{getAvatar()}}
               </span>
-              <span class="capitalize font-medium">{{ getDisplayName()}}</span>
-              <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+              <span class="capitalize font-medium text-gray-900 dark:text-gray-100">{{ getDisplayName()}}</span>
+              <mat-icon fontIcon="keyboard_arrow_down" class="text-gray-700 dark:text-gray-200"></mat-icon>
             </button>
           </ng-template>
           <ng-template #dropdownOption let-option let-selected="selected" let-select="select" let-closeDropdown="closeDropdown">
-            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
               (click)="option.action(option);closeDropdown()">
               <div class="flex-1 flex space-x-2">
-                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
-                <div class="font-medium text-gray-900">{{ option.label }}</div>
+                <mat-icon class="text-base text-gray-600 dark:text-gray-300" [fontIcon]="option.icon"></mat-icon>
+                <div class="font-medium text-gray-900 dark:text-gray-100">{{ option.label }}</div>
               </div>
             </div>
           </ng-template>
@@ -53,25 +62,25 @@
 
       <!-- Mobile Menu Button -->
       <button
-        class="lg:hidden p-2 rounded-md hover:bg-gray-200 transition-colors hover:cursor-pointer"
+        class="lg:hidden p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer"
         (click)="toggleMobileMenu()"
         [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
         [attr.aria-expanded]="mobileMenuOpen()">
-        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700"></mat-icon>
+        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700 dark:text-gray-200"></mat-icon>
       </button>
     </div>
   </div>
 
   <!-- Mobile Menu -->
   @if (mobileMenuOpen()) {
-    <nav class="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+    <nav class="lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto transition-colors duration-300">
       <div class="flex flex-col p-4 space-y-2">
         @for (item of links_; track item.id) {
           <a
             [routerLink]="item.url"
-            routerLinkActive="bg-[#F5F5F5] text-[#009245]"
+            routerLinkActive="bg-[#F5F5F5] dark:bg-gray-700 text-[#009245]"
             (click)="closeMobileMenu()"
-            class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] no-underline">
+            class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] no-underline">
             @if (item.icon) {
               <mat-icon [fontIcon]="item.icon" class="text-xl"></mat-icon>
             }
@@ -79,11 +88,19 @@
           </a>
         }
 
-        <div class="border-t border-gray-200 my-2 pt-2">
+        <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2">
+          <!-- Mobile Theme Toggle -->
+          <button
+            (click)="toggleTheme()"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
+            <mat-icon [fontIcon]="themeService.isDark() ? 'light_mode' : 'dark_mode'" class="text-xl"></mat-icon>
+            <span class="font-medium">{{ themeService.isDark() ? 'Mode clair' : 'Mode sombre' }}</span>
+          </button>
+
           <!-- Mobile Notifications -->
           <button
             (click)="closeMobileMenu(); redirectTo('/notifications')"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="notifications" class="text-xl"></mat-icon>
             <span class="font-medium">Notifications</span>
           </button>
@@ -91,7 +108,7 @@
           <!-- Mobile User Profile -->
           <button
             (click)="closeMobileMenu(); redirectTo('/profil')"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="person" class="text-xl"></mat-icon>
             <span class="font-medium">Profil</span>
           </button>
@@ -99,20 +116,20 @@
           <!-- Mobile Verifications -->
           <button
             (click)="closeMobileMenu(); redirectTo('/mes-verifications')"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="verified_user" class="text-xl"></mat-icon>
             <span class="font-medium">Mes Vérifications</span>
           </button>
 
           <button
             (click)="closeMobileMenu(); redirectTo('/settings')"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="settings" class="text-xl"></mat-icon>
             <span class="font-medium">Paramètres</span>
           </button>
           <button
             (click)="closeMobileMenu(); onLogout()"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 transition-colors text-red-600 hover:text-red-700 hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:cursor-pointer">
             <mat-icon fontIcon="logout" class="text-xl"></mat-icon>
             <span class="font-medium">Se Déconnecter</span>
           </button>
