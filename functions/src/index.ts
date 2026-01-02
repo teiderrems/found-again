@@ -298,15 +298,26 @@ export const onDeclarationCreated = functions.firestore
   .document('declarations/{declarationId}')
   .onCreate(async (snap) => {
     try {
+
       const declaration = snap.data();
+      if (!declaration || !declaration.userId || !declaration.category || !declaration.type || declaration.type === 'loss') {
+        return;
+      }
       const userId = declaration.userId;
 
       // Récupérer l'utilisateur créateur
       const creatorDoc = await admin.firestore().collection('users').doc(userId).get();
       const creatorData = creatorDoc.data();
 
+      const userIds = await admin.firestore().collection('declarations').select('userId')
+      .where('active', '==', true)
+      .where('category', '==', declaration.category)
+      .where('type', '!=', declaration.type)
+      .where('userId', '!=', userId).get();
+
       // Récupérer tous les utilisateurs
-      const usersSnapshot = await admin.firestore().collection('users').get();
+      const usersSnapshot = await admin.firestore().collection('users').where('id','in', userIds.docs.map(d=>d.data().userId))
+      .where('role', '!=', 'admin').get();
       const users = usersSnapshot.docs;
 
       const transporter = getEmailTransporter();
@@ -317,12 +328,6 @@ export const onDeclarationCreated = functions.firestore
       for (const userDoc of users) {
         const userData = userDoc.data();
         const userId = userDoc.id;
-
-        // Skipped les admins et le créateur
-        if (userData.role === 'admin' || userId === declaration.userId) {
-          console.log(`Skipped ${userData.role === 'admin' ? 'admin' : 'creator'} ${userId}`);
-          continue;
-        }
 
         // Vérifier les préférences
         if (userData.emailNotifications === false) {
