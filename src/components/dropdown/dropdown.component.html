@@ -13,7 +13,7 @@
   } @else {
     <!-- Trigger par défaut avec icône -->
     <button type="button"
-      class="w-full px-4 py-3 text-left bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#009245]/50 focus:border-[#009245] transition-all duration-200 flex justify-between items-center cursor-pointer"
+      class="w-full px-4 py-3 text-left bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#009245]/50 focus:border-[#009245] transition-all duration-200 flex justify-between items-center cursor-pointer"
       [class.opacity-50]="disabled" 
       [class.cursor-not-allowed]="disabled" 
       [class.ring-2]="isOpen" 
@@ -24,12 +24,12 @@
       [attr.disabled]="disabled ? true : null">
 
       <div class="flex items-center space-x-2 truncate">
-        <span class="truncate font-medium text-gray-700">
+        <span class="truncate font-medium text-gray-700 dark:text-gray-200">
           {{ 'Sélectionnez...' }}
         </span>
       </div>
 
-      <svg class="w-5 h-5 text-gray-500 transition-transform duration-300 shrink-0" 
+      <svg class="w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300 shrink-0" 
         [class.rotate-180]="isOpen"
         fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -39,51 +39,65 @@
 
   <!-- Dropdown menu -->
   @if (isOpen) {
-    <div [class]="getPanelClasses() + ' border-2 border-gray-200 rounded-xl shadow-xl mt-2 bg-white z-50 animate-in fade-in slide-in-from-top-2 duration-200'" 
+    <div [class]="getPanelClasses() + ' border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-xl mt-2 bg-white dark:bg-gray-800 z-50 animate-in fade-in slide-in-from-top-2 duration-200'" 
       (click)="$event.stopPropagation()">
-      <ul class="py-2">
-        @for (option of options; track option.value) {
-          <li>
-            @if (optionTemplate) {
-              <ng-container *ngTemplateOutlet="optionTemplate; context: { 
-                $implicit: option,
-                closeDropdown: closeDropdown.bind(this)
-              }">
-              </ng-container>
-            } @else {
-              <!-- Option par défaut avec icône -->
-              <button type="button"
-                class="w-full px-4 py-3 text-left hover:bg-[#009245]/5 focus:bg-[#009245]/10 focus:outline-none transition-colors duration-150 flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
-                [class.text-gray-400]="option.disabled" 
-                [class.cursor-not-allowed]="option.disabled"
-                [class.cursor-pointer]="!option.disabled">
+      
+      <!-- Contenu personnalisé (si contentTemplate est défini) -->
+      @if (contentTemplate) {
+        <ng-container *ngTemplateOutlet="contentTemplate; context: { 
+          $implicit: {
+            isOpen: isOpen,
+            closeDropdown: closeDropdown.bind(this)
+          },
+          closeDropdown: closeDropdown.bind(this)
+        }">
+        </ng-container>
+      } @else {
+        <!-- Liste d'options standard -->
+        <ul class="py-2">
+          @for (option of options; track option.value) {
+            <li>
+              @if (optionTemplate) {
+                <ng-container *ngTemplateOutlet="optionTemplate; context: { 
+                  $implicit: option,
+                  closeDropdown: closeDropdown.bind(this)
+                }">
+                </ng-container>
+              } @else {
+                <!-- Option par défaut avec icône -->
+                <button type="button"
+                  class="w-full px-4 py-3 text-left hover:bg-[#009245]/5 dark:hover:bg-[#009245]/20 focus:bg-[#009245]/10 focus:outline-none transition-colors duration-150 flex items-center space-x-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+                  [class.text-gray-400]="option.disabled" 
+                  [class.cursor-not-allowed]="option.disabled"
+                  [class.cursor-pointer]="!option.disabled">
 
-                @if (showIcons && option.icon) {
-                  <span class="shrink-0 w-5 h-5 flex items-center justify-center text-[#009245]">
-                    @if (isEmoji(option.icon)) {
-                      <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
-                    } @else if (isImageUrl(option.icon)) {
-                      <img [src]="option.icon" class="w-5 h-5 object-contain" alt="" />
-                    } @else {
-                      <i [class]="option.icon"></i>
-                    }
-                  </span>
-                } @else if (showIcons) {
-                  <!-- Espace réservé pour l'alignement -->
-                  <span class="w-5 h-5 shrink-0"></span>
-                }
+                  @if (showIcons && option.icon) {
+                    <span class="shrink-0 w-5 h-5 flex items-center justify-center text-[#009245] dark:text-green-400">
+                      @if (isEmoji(option.icon)) {
+                        <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
+                      } @else if (isImageUrl(option.icon)) {
+                        <img [src]="option.icon" class="w-5 h-5 object-contain" alt="" />
+                      } @else {
+                        <i [class]="option.icon"></i>
+                      }
+                    </span>
+                  } @else if (showIcons) {
+                    <!-- Espace réservé pour l'alignement -->
+                    <span class="w-5 h-5 shrink-0"></span>
+                  }
 
-                <span class="flex-1 truncate font-medium text-gray-700">{{ option.label }}</span>
-              </button>
-            }
-          </li>
-        }
-        @if (options.length === 0) {
-          <li class="px-4 py-4 text-gray-500 text-center text-sm">
-            Aucune option disponible
-          </li>
-        }
-      </ul>
+                  <span class="flex-1 truncate font-medium text-gray-700 dark:text-gray-200">{{ option.label }}</span>
+                </button>
+              }
+            </li>
+          }
+          @if (options.length === 0) {
+            <li class="px-4 py-4 text-gray-500 dark:text-gray-400 text-center text-sm">
+              Aucune option disponible
+            </li>
+          }
+        </ul>
+      }
     </div>
   }
 </div>

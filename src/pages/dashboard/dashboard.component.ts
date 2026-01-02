@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   constructor() {
     effect(() => {
       this.pageSize.set(this.settingsService.itemsPerPage());
-    }, { allowSignalWrites: true });
+    });
   }
 
   // Sorting

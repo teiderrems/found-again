@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, from, switchMap, map, catchError } from 'rxjs';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
+import { Observable, from, switchMap, map, catchError, of, take } from 'rxjs';
 
 import {
    Firestore,
@@ -12,10 +12,17 @@ import {
    updateDoc,
    deleteDoc,
    getDoc,
+   getDocs,
    Query,
    query,
    where,
    or,
+   orderBy,
+   limit,
+   startAfter,
+   QueryDocumentSnapshot,
+   DocumentData,
+   and,
 } from '@angular/fire/firestore';
 
 import { FirebaseStorageService } from './firebase-storage.service';
@@ -26,12 +33,19 @@ import {
    ImageType,
 } from '../types/declaration';
 
+export interface PaginatedResult<T> {
+   items: T[];
+   lastDoc: QueryDocumentSnapshot<DocumentData> | null;
+   hasMore: boolean;
+}
+
 @Injectable({
    providedIn: 'root',
 })
 export class DeclarationService {
    private firestore: Firestore = inject(Firestore);
    private storageService: FirebaseStorageService = inject(FirebaseStorageService);
+   private injector = inject(Injector);
 
    private readonly LOSS_COLLECTION = 'loss';
    private readonly FOUND_COLLECTION = 'found';
@@ -104,6 +118,157 @@ export class DeclarationService {
       const activeFilter = where('active', '==', true);
       const declarationsQuery = query(colRef, activeFilter);
       return collectionData(declarationsQuery, { idField: 'id' }) as Observable<DeclarationData[]>;
+   }
+
+   /**
+    * Récupère les déclarations actives avec pagination côté Firestore.
+    * Utilise runInInjectionContext pour éviter les problèmes de contexte d'injection.
+    * @param pageSize Nombre d'éléments par page
+    * @param skipCount Nombre d'éléments à sauter (pour la pagination offset)
+    * @param filters Filtres optionnels (type, searchTerm, category, dateFrom, dateTo)
+    */
+   getActiveDeclarationsPaginated(
+      pageSize: number = 12,
+      skipCount: number = 0,
+      filters?: {
+         type?: 'all' | 'loss' | 'found';
+         searchTerm?: string;
+         category?: string;
+         condition?: string;
+         dateFrom?: Date | null;
+         dateTo?: Date | null;
+         location?: string;
+      },
+      userId?: string
+   ): Observable<PaginatedResult<DeclarationData>> {
+      // Exécuter dans le contexte d'injection Angular
+      return runInInjectionContext(this.injector, () => {
+         const colRef = this.getCollectionRef();
+         const simpleQuery = query(colRef, and(where('active', '==', true),where('userId', '!=', userId ?? '')));
+
+         return collectionData(simpleQuery, { idField: 'id' }).pipe(
+            take(1),
+            map((allItems) => {
+               let items = allItems as DeclarationData[];
+
+               // Filtrage côté client
+               if (filters?.type && filters.type !== 'all') {
+                  items = items.filter(item => item.type === filters.type);
+               }
+
+               if (filters?.category) {
+                  items = items.filter(item => 
+                     item.category.toLowerCase() === filters.category!.toLowerCase()
+                  );
+               }
+
+               if (filters?.condition) {
+                  items = items.filter(item => item.condition === filters.condition);
+               }
+
+               if (filters?.dateFrom) {
+                  const fromDate = filters.dateFrom.toISOString().split('T')[0];
+                  items = items.filter(item => item.date >= fromDate);
+               }
+
+               if (filters?.dateTo) {
+                  const toDate = filters.dateTo.toISOString().split('T')[0];
+                  items = items.filter(item => item.date <= toDate);
+               }
+
+               if (filters?.searchTerm) {
+                  const lowerCaseTerm = filters.searchTerm.toLowerCase().trim();
+                  items = items.filter((declaration) => {
+                     const inCategory = declaration.category.toLowerCase().includes(lowerCaseTerm);
+                     const inTitle = declaration.title.toLowerCase().includes(lowerCaseTerm);
+                     const inDescription = declaration.description.toLowerCase().includes(lowerCaseTerm);
+                     const inLocation = declaration.location.toLowerCase().includes(lowerCaseTerm);
+                     return inCategory || inTitle || inDescription || inLocation;
+                  });
+               }
+
+               if (filters?.location) {
+                  const lowerCaseLocation = filters.location.toLowerCase().trim();
+                  items = items.filter((declaration) => 
+                     declaration.location.toLowerCase().includes(lowerCaseLocation)
+                  );
+               }
+
+               // Trier par date décroissante
+               items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+               const totalFiltered = items.length;
+               
+               // Pagination offset-based
+               const paginatedItems = items.slice(skipCount, skipCount + pageSize);
+
+               return {
+                  items: paginatedItems,
+                  lastDoc: null,
+                  hasMore: skipCount + pageSize < totalFiltered,
+                  totalFiltered
+               };
+            }),
+            catchError((e) => {
+               console.error('Erreur lors de la récupération paginée des déclarations:', e);
+               return of({
+                  items: [],
+                  lastDoc: null,
+                  hasMore: false,
+                  totalFiltered: 0
+               });
+            })
+         );
+      });
+   }
+
+   /**
+    * Compte le nombre total de déclarations actives (pour affichage)
+    * Utilise runInInjectionContext pour éviter les problèmes de contexte d'injection.
+    */
+   getActiveDeclarationsCount(filters?: {
+      type?: 'all' | 'loss' | 'found';
+      category?: string;
+      dateFrom?: Date | null;
+      dateTo?: Date | null;
+   }): Observable<number> {
+      return runInInjectionContext(this.injector, () => {
+         const colRef = this.getCollectionRef();
+         const simpleQuery = query(colRef, where('active', '==', true));
+
+         return collectionData(simpleQuery, { idField: 'id' }).pipe(
+            take(1),
+            map((allItems) => {
+               let items = allItems as DeclarationData[];
+
+               if (filters?.type && filters.type !== 'all') {
+                  items = items.filter(item => item.type === filters.type);
+               }
+
+               if (filters?.category) {
+                  items = items.filter(item => 
+                     item.category.toLowerCase() === filters.category!.toLowerCase()
+                  );
+               }
+
+               if (filters?.dateFrom) {
+                  const fromDate = filters.dateFrom.toISOString().split('T')[0];
+                  items = items.filter(item => item.date >= fromDate);
+               }
+
+               if (filters?.dateTo) {
+                  const toDate = filters.dateTo.toISOString().split('T')[0];
+                  items = items.filter(item => item.date <= toDate);
+               }
+
+               return items.length;
+            }),
+            catchError((e) => {
+               console.error('Erreur lors du comptage des déclarations:', e);
+               return of(0);
+            })
+         );
+      });
    }
 
    /**

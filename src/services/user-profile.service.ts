@@ -1,11 +1,12 @@
 // user-profile.service.ts
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, Injector, runInInjectionContext, inject } from '@angular/core';
 import { Auth, user, deleteUser } from '@angular/fire/auth';
 import { 
   Firestore, 
   doc, 
   docData, 
   updateDoc,
+  setDoc,
   deleteDoc
 } from '@angular/fire/firestore';
 import { Observable, map, tap, switchMap } from 'rxjs';
@@ -22,14 +23,15 @@ export class UserProfileService {
   
   // Observables Firestore
   userProfile$: Observable<UserProfile | null > |null=null;
+
+  private auth = inject(Auth);
+  private firestore = inject(Firestore);
+  private declarationService = inject(DeclarationService);
+  private injector = inject(Injector);
   
-  constructor(
-    private auth: Auth,
-    private firestore: Firestore,
-    private declarationService: DeclarationService
-  ) {
+  constructor() {
     // Récupérer l'utilisateur connecté
-    const authUser = user(this.auth);
+    const authUser = runInInjectionContext(this.injector, () => user(this.auth));
     
      authUser.pipe(
       map(user => {
@@ -47,7 +49,7 @@ export class UserProfileService {
   // Récupérer le profil depuis Firestore
   getUserProfile(uid: string): Observable<UserProfile | null> {
     const userDoc = doc(this.firestore, `users/${uid}`);
-    return docData(userDoc).pipe(
+    return runInInjectionContext(this.injector, () => docData(userDoc)).pipe(
       map((data: any) => {
         if (!data) return null;
         
@@ -79,28 +81,38 @@ export class UserProfileService {
     );
   }
 
-  // Mettre à jour le profil
+  // Mettre à jour le profil (ou le créer s'il n'existe pas)
   async updateProfile(uid: string, updates: Partial<UserProfile>) {
     try {
       const userDoc = doc(this.firestore, `users/${uid}`);
       
-      // Préparer les données à mettre à jour
-      const updateData: any = {};
+      // Préparer les données à mettre à jour ou créer
+      const updateData: any = {
+        uid, // Toujours inclure l'uid pour la création
+      };
       
+      if (updates.email !== undefined) updateData.email = updates.email;
       if (updates.firstname !== undefined) updateData.firstname = updates.firstname;
       if (updates.lastname !== undefined) updateData.lastname = updates.lastname;
       if (updates.phone !== undefined) updateData.phone = updates.phone;
       if (updates.location !== undefined) updateData.location = updates.location;
       if (updates.bio !== undefined) updateData.bio = updates.bio;
+      if (updates.avatarUrl !== undefined) updateData.avatarUrl = updates.avatarUrl;
       
       if (updates.preferences) {
         updateData.preferences = {
           theme: updates.preferences.theme || 'light',
-          notifications: updates.preferences.notifications ?? true
+          notifications: updates.preferences.notifications ?? true,
+          emailNotifications: updates.preferences.emailNotifications ?? true,
+          declarationUpdates: updates.preferences.declarationUpdates ?? true,
+          matchAlerts: updates.preferences.matchAlerts ?? true,
+          publicProfile: updates.preferences.publicProfile ?? false,
+          showDeclarations: updates.preferences.showDeclarations ?? true
         };
       }
       
-      await updateDoc(userDoc, updateData);
+      // Utiliser setDoc avec merge: true pour créer ou mettre à jour
+      await setDoc(userDoc, updateData, { merge: true });
       
       // Mettre à jour le signal local
       const currentProfile = this.userProfile();
@@ -133,7 +145,7 @@ export class UserProfileService {
       if (preferences.showDeclarations !== undefined) updateData['preferences.showDeclarations'] = preferences.showDeclarations;
       
       if (Object.keys(updateData).length > 0) {
-        await updateDoc(userDoc, updateData);
+        await setDoc(userDoc, updateData, { merge: true });
       }
       
       // Mettre à jour le signal local
@@ -207,13 +219,13 @@ export class UserProfileService {
   updateUserPreferences(uid: string, preferences: any): Observable<void> {
     const userDoc = doc(this.firestore, `users/${uid}`);
     return new Observable(observer => {
-      updateDoc(userDoc, {
+      setDoc(userDoc, {
         'preferences.emailNotifications': preferences.emailNotifications,
         'preferences.declarationUpdates': preferences.declarationUpdates,
         'preferences.matchAlerts': preferences.matchAlerts,
         'preferences.publicProfile': preferences.publicProfile,
         'preferences.showDeclarations': preferences.showDeclarations
-      }).then(() => {
+      }, { merge: true }).then(() => {
         observer.next();
         observer.complete();
       }).catch(error => {
@@ -263,10 +275,10 @@ export class UserProfileService {
     return new Observable(observer => {
       try {
         const userDoc = doc(this.firestore, `users/${uid}`);
-        updateDoc(userDoc, {
+        setDoc(userDoc, {
           fcmTokens: token,
           fcmTokenUpdatedAt: new Date()
-        }).then(() => {
+        }, { merge: true }).then(() => {
           observer.next();
           observer.complete();
         }).catch(error => {
@@ -285,10 +297,10 @@ export class UserProfileService {
     return new Observable(observer => {
       try {
         const userDoc = doc(this.firestore, `users/${uid}`);
-        updateDoc(userDoc, {
+        setDoc(userDoc, {
           fcmTokens: null,
           fcmTokenRemovedAt: new Date()
-        }).then(() => {
+        }, { merge: true }).then(() => {
           observer.next();
           observer.complete();
         }).catch(error => {

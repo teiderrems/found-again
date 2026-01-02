@@ -1,4 +1,4 @@
-<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] fixed top-0 w-full z-50">
+<header class="backdrop-blur-md h-16 md:h-30 mx-auto shadow-sm bg-[#F5F5F5] dark:bg-gray-800 fixed top-0 w-full z-50 transition-colors duration-300">
   <div class="flex items-center px-4 lg:px-8 h-full justify-between">
     <!-- Logo -->
     <a routerLink="/" class="no-underline hover:cursor-pointer h-full flex items-center">
@@ -9,9 +9,9 @@
     <nav class="hidden lg:flex justify-center items-center space-x-1">
       @for (link of adminLinks; track link.id) {
         <a [routerLink]="link.url"
-          routerLinkActive="after:w-full text-[#009245] bg-gray-200"
+          routerLinkActive="after:w-full text-[#009245] bg-gray-200 dark:bg-gray-700"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors text-gray-700 font-medium no-underline relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#009245] after:to-green-700 after:transition-all after:duration-300">
+          class="flex items-center space-x-2 px-4 py-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 font-medium no-underline relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-linear-to-r after:from-[#009245] after:to-green-700 after:transition-all after:duration-300">
           <mat-icon [fontIcon]="link.icon" class="text-lg"></mat-icon>
           <span>{{ link.title }}</span>
           @if (link.badge && link.badge > 0) {
@@ -25,24 +25,33 @@
 
     <!-- User Menu & Actions -->
     <div class="flex items-center space-x-4">
+      <!-- Theme Toggle -->
+      <button
+        (click)="toggleTheme()"
+        class="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer"
+        [attr.aria-label]="themeService.isDark() ? 'Activer le mode clair' : 'Activer le mode sombre'">
+        <mat-icon [fontIcon]="themeService.isDark() ? 'light_mode' : 'dark_mode'" 
+          class="text-xl text-gray-700 dark:text-gray-200"></mat-icon>
+      </button>
+
       <!-- Desktop Dropdown Menu -->
       <div class="hidden lg:block">
         <app-dropdown [options]="dropdownMenuItems" [placement]="'bottom-right'">
           <ng-template #dropdownTrigger let-context>
-            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border p-1 items-center hover:bg-gray-50 transition-colors hover:cursor-pointer">
+            <button (click)="context.toggleDropdown()" class="flex space-x-1 rounded-md border border-gray-300 dark:border-gray-600 p-1 items-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer">
               <span class="flex items-center justify-center w-10 h-10 rounded-full border bg-[#009245] text-white font-bold">
                 {{getAvatar()}}
               </span>
-              <span class="capitalize font-medium">{{ getDisplayName()}}</span>
-              <mat-icon fontIcon="keyboard_arrow_down"></mat-icon>
+              <span class="capitalize font-medium text-gray-900 dark:text-white">{{ getDisplayName()}}</span>
+              <mat-icon fontIcon="keyboard_arrow_down" class="text-gray-700 dark:text-gray-200"></mat-icon>
             </button>
           </ng-template>
           <ng-template #dropdownOption let-option let-selected="selected" let-select="select" let-closeDropdown="closeDropdown">
-            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+            <div class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0"
               (click)="handleDropdownAction(option.value); closeDropdown()">
               <div class="flex-1 flex space-x-2">
-                <mat-icon class="text-base" [fontIcon]="option.icon"></mat-icon>
-                <div class="font-medium text-gray-900">{{ option.label }}</div>
+                <mat-icon class="text-base text-gray-600 dark:text-gray-300" [fontIcon]="option.icon"></mat-icon>
+                <div class="font-medium text-gray-900 dark:text-white">{{ option.label }}</div>
               </div>
             </div>
           </ng-template>
@@ -51,31 +60,39 @@
 
       <!-- Mobile Menu Button -->
       <button
-        class="lg:hidden p-2 rounded-md hover:bg-gray-200 transition-colors hover:cursor-pointer"
+        class="lg:hidden p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors hover:cursor-pointer"
         (click)="toggleMobileMenu()"
         [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
         [attr.aria-expanded]="mobileMenuOpen()">
-        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700"></mat-icon>
+        <mat-icon [fontIcon]="mobileMenuOpen() ? 'close' : 'menu'" class="text-2xl text-gray-700 dark:text-gray-200"></mat-icon>
       </button>
     </div>
   </div>
 
   <!-- Mobile Menu -->
   @if (mobileMenuOpen()) {
-    <nav class="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto">
+    <nav class="lg:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto transition-colors">
       <div class="flex flex-col p-4 space-y-2">
         <!-- Admin Badge Mobile -->
-        <div class="flex items-center space-x-2 bg-red-100 px-3 py-2 rounded-md border border-red-300 mb-2">
-          <mat-icon fontIcon="admin_panel_settings" class="text-red-600"></mat-icon>
-          <span class="text-xs font-bold text-red-600">ADMINISTRATEUR</span>
+        <div class="flex items-center space-x-2 bg-red-100 dark:bg-red-900/30 px-3 py-2 rounded-md border border-red-300 dark:border-red-700 mb-2">
+          <mat-icon fontIcon="admin_panel_settings" class="text-red-600 dark:text-red-400"></mat-icon>
+          <span class="text-xs font-bold text-red-600 dark:text-red-400">ADMINISTRATEUR</span>
         </div>
+
+        <!-- Theme Toggle Mobile -->
+        <button
+          (click)="toggleTheme()"
+          class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:cursor-pointer">
+          <mat-icon [fontIcon]="themeService.isDark() ? 'light_mode' : 'dark_mode'" class="text-xl"></mat-icon>
+          <span class="font-medium">{{ themeService.isDark() ? 'Mode clair' : 'Mode sombre' }}</span>
+        </button>
 
         @for (link of adminLinks; track link.id) {
           <a
             [routerLink]="link.url"
-            routerLinkActive="bg-[#F5F5F5] text-[#009245]"
+            routerLinkActive="bg-gray-100 dark:bg-gray-700 text-[#009245]"
             (click)="closeMobileMenu()"
-            class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] no-underline">
+            class="flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] no-underline">
             <mat-icon [fontIcon]="link.icon" class="text-xl"></mat-icon>
             <span class="font-medium">{{ link.title }}</span>
             @if (link.badge && link.badge > 0) {
@@ -86,11 +103,11 @@
           </a>
         }
 
-        <div class="border-t border-gray-200 my-2 pt-2">
+        <div class="border-t border-gray-200 dark:border-gray-700 my-2 pt-2">
           <!-- Mobile User Profile -->
           <button
             (click)="closeMobileMenu(); redirectTo(Pages.PROFILE)"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="person" class="text-xl"></mat-icon>
             <span class="font-medium">Profil</span>
           </button>
@@ -98,7 +115,7 @@
           <!-- Mobile Settings -->
           <button
             (click)="closeMobileMenu(); redirectTo(Pages.ADMIN_SETTINGS)"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-[#F5F5F5] transition-colors text-gray-700 hover:text-[#009245] hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 hover:text-[#009245] hover:cursor-pointer">
             <mat-icon fontIcon="settings" class="text-xl"></mat-icon>
             <span class="font-medium">Paramètres</span>
           </button>
@@ -106,7 +123,7 @@
           <!-- Mobile Logout -->
           <button
             (click)="closeMobileMenu(); onLogout()"
-            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 transition-colors text-red-600 hover:text-red-700 hover:cursor-pointer">
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors text-red-600 dark:text-red-400 hover:text-red-700 hover:cursor-pointer">
             <mat-icon fontIcon="logout" class="text-xl"></mat-icon>
             <span class="font-medium">Se Déconnecter</span>
           </button>

@@ -1,11 +1,11 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <!-- Hero Section -->
-  <section class="bg-white border-b border-gray-200 py-16">
+  <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-16 transition-colors duration-300">
     <div class="container mx-auto px-4 text-center max-w-4xl">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
         Nous Sommes là pour Vous <span class="text-[#009245]">Aider</span>
       </h1>
-      <p class="text-xl text-gray-600 mb-8">
+      <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
         Une question, un problème technique ou une suggestion ? Notre équipe vous répond sous 24h.
       </p>
     </div>
@@ -17,28 +17,28 @@
       <!-- Contact Info -->
       <div class="lg:col-span-1 space-y-6">
         @for (contact of contactMethods; track contact) {
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
                (click)="handleContactAction(contact)">
             <div class="flex items-start space-x-4">
-              <div class="p-3 rounded-lg bg-green-50 text-[#009245]">
+              <div class="p-3 rounded-lg bg-green-50 dark:bg-green-900/30 text-[#009245] dark:text-green-400">
                 <mat-icon>{{ contact.icon }}</mat-icon>
               </div>
               <div>
-                <h3 class="font-semibold text-gray-900">{{ contact.label }}</h3>
-                <p class="text-gray-600 font-medium mt-1">{{ contact.value }}</p>
-                <p class="text-sm text-gray-500 mt-1">{{ contact.description }}</p>
+                <h3 class="font-semibold text-gray-900 dark:text-white">{{ contact.label }}</h3>
+                <p class="text-gray-600 dark:text-gray-300 font-medium mt-1">{{ contact.value }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ contact.description }}</p>
               </div>
             </div>
           </div>
         }
 
         <!-- Socials -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <h3 class="font-semibold text-gray-900 mb-4">Suivez-nous</h3>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 transition-colors">
+          <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Suivez-nous</h3>
           <div class="flex gap-4">
             @for (social of socialLinks; track social) {
               <a [href]="social.url" target="_blank"
-                 class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-[#009245] hover:text-white transition-colors">
+                 class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-[#009245] hover:text-white transition-colors">
                  <mat-icon class="text-sm">{{ social.icon }}</mat-icon>
               </a>
             }
@@ -48,25 +48,25 @@
 
       <!-- Contact Form -->
       <div class="lg:col-span-2">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6">Envoyez-nous un message</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 transition-colors duration-300">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Envoyez-nous un message</h2>
           <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom complet</label>
                 <input type="text" formControlName="name" 
-                       class="w-full rounded-lg border-gray-300 focus:border-[#009245] focus:ring-[#009245]">
+                       class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-[#009245] focus:ring-[#009245]">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                 <input type="email" formControlName="email" 
-                       class="w-full rounded-lg border-gray-300 focus:border-[#009245] focus:ring-[#009245]">
+                       class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-[#009245] focus:ring-[#009245]">
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Sujet</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sujet</label>
               <select formControlName="subject" 
-                      class="w-full rounded-lg border-gray-300 focus:border-[#009245] focus:ring-[#009245]">
+                      class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-[#009245] focus:ring-[#009245]">
                 <option value="">Choisissez un sujet</option>
                 <option value="technical">Problème technique</option>
                 <option value="feature">Suggestion</option>
@@ -74,9 +74,9 @@
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
               <textarea formControlName="message" rows="4" 
-                        class="w-full rounded-lg border-gray-300 focus:border-[#009245] focus:ring-[#009245]"></textarea>
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-[#009245] focus:ring-[#009245]"></textarea>
             </div>
             <button type="submit" 
                     class="w-full bg-[#009245] text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">

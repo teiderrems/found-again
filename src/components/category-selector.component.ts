@@ -14,12 +14,12 @@ import { MatIconModule } from "@angular/material/icon";
       <div class="space-y-4">
         <!-- Sélecteur de catégorie -->
         <div class="flex flex-col space-y-2">
-          <label class="text-sm font-semibold text-gray-700">Catégorie <span class="text-red-500">*</span></label>
+          <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Catégorie <span class="text-red-500">*</span></label>
           <div class="flex gap-2">
             <select
               [value]="selectedCategoryId"
               (change)="onCategoryChange($event)"
-              class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 cursor-pointer font-medium text-gray-700"
+              class="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 cursor-pointer font-medium text-gray-700 dark:text-gray-200"
               >
               <option value="">Sélectionnez une catégorie</option>
               @for (category of categories; track category) {
@@ -44,20 +44,20 @@ import { MatIconModule } from "@angular/material/icon";
       
         <!-- Formulaire pour ajouter une nouvelle catégorie -->
         @if (showAddCategoryForm()) {
-          <div class="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-            <h4 class="font-semibold text-gray-900">Nouvelle catégorie</h4>
+          <div class="p-4 bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+            <h4 class="font-semibold text-gray-900 dark:text-white">Nouvelle catégorie</h4>
       
             <input
               [(ngModel)]="newCategoryName"
               type="text"
               placeholder="Nom de la catégorie"
-              class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#009245] outline-none transition-all"
+              class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-[#009245] outline-none transition-all"
               />
       
             <textarea
               [(ngModel)]="newCategoryDescription"
               placeholder="Description (optionnel)"
-              class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#009245] outline-none transition-all resize-none"
+              class="w-full px-4 py-2 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:border-[#009245] outline-none transition-all resize-none"
               rows="2"
             ></textarea>
       
@@ -71,7 +71,7 @@ import { MatIconModule } from "@angular/material/icon";
               </button>
               <button
                 (click)="toggleAddCategory()"
-                class="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all font-medium"
+                class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all font-medium"
                 >
                 Annuler
               </button>
@@ -81,12 +81,12 @@ import { MatIconModule } from "@angular/material/icon";
       
         <!-- Description de la catégorie sélectionnée -->
         @if (selectedCategory) {
-          <div class="mt-4 p-4 bg-linear-to-r from-[#009245]/5 to-green-50 border-l-4 border-[#009245] rounded-lg animate-in fade-in slide-in-from-left-2 duration-300">
+          <div class="mt-4 p-4 bg-linear-to-r from-[#009245]/5 to-green-50 dark:from-[#009245]/20 dark:to-green-900/20 border-l-4 border-[#009245] rounded-lg animate-in fade-in slide-in-from-left-2 duration-300">
             <div class="flex items-start space-x-3">
-              <mat-icon [fontIcon]="selectedCategory.icon" class="text-[#009245] text-2xl mt-1"></mat-icon>
+              <mat-icon [fontIcon]="selectedCategory.icon" class="text-[#009245] dark:text-green-400 text-2xl mt-1"></mat-icon>
               <div class="flex-1">
-                <h4 class="font-semibold text-gray-900">{{ selectedCategory.name }}</h4>
-                <p class="text-sm text-gray-600 mt-1">{{ selectedCategory.description }}</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white">{{ selectedCategory.name }}</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ selectedCategory.description }}</p>
               </div>
             </div>
           </div>

@@ -15,7 +15,7 @@ import { CategoryService } from '@/services/category.service';
 import { LocationService, LocationSuggestion } from '@/services/location.service';
 import { DefaultCategory } from '@/constants/categories.constants';
 import { CategorySelectorComponent } from '../category-selector.component';
-import { DeclarationCreate, DeclarationType } from '@/types/declaration';
+import { DeclarationCreate, DeclarationType, ObjectCondition } from '@/types/declaration';
 import { SettingsService } from '@/services/settings.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -85,6 +85,16 @@ export class DeclarationComponent implements OnInit {
 
    isDragOver = signal(false);
 
+   // Options pour l'état de l'objet
+   ObjectCondition = ObjectCondition;
+   conditionOptions = [
+      { value: ObjectCondition.EXCELLENT, label: 'Excellent', icon: '⭐', description: 'Comme neuf, aucun défaut visible' },
+      { value: ObjectCondition.GOOD, label: 'Bon', icon: '👍', description: 'Légères traces d\'usure' },
+      { value: ObjectCondition.FAIR, label: 'Correct', icon: '👌', description: 'Usure visible mais fonctionnel' },
+      { value: ObjectCondition.POOR, label: 'Mauvais', icon: '👎', description: 'Très usé ou endommagé' },
+      { value: ObjectCondition.UNKNOWN, label: 'Inconnu', icon: '❓', description: 'État non déterminé' },
+   ];
+
    constructor() {
       this.declarationForm = this.fb.group({
          title: ['', [Validators.required, Validators.minLength(3)]],
@@ -94,6 +104,7 @@ export class DeclarationComponent implements OnInit {
          date: ['', Validators.required],
          contactEmail: [this.authService.getCurrentUserEmail() || '', [Validators.required, Validators.email]],
          contactPhone: ['', [Validators.pattern('^[0-9]{10}$')]],
+         condition: [ObjectCondition.UNKNOWN],
       });
    }
 
@@ -251,7 +262,8 @@ export class DeclarationComponent implements OnInit {
             userId: this.authService.getCurrentUserId(),
             coordinates: this.selectedCoordinates,
             images: this.selectedFiles,
-            type:this.declarationType
+            type: this.declarationType,
+            condition: this.declarationForm.value.condition || ObjectCondition.UNKNOWN
          };
 
          
