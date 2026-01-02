@@ -1,21 +1,21 @@
-<div class="min-h-screen flex items-center justify-center overflow-hidden black/30 p-4">
-  <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full">
+<div class="min-h-screen flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900 p-4 transition-colors duration-300">
+  <div class="flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden max-w-4xl w-full border border-transparent dark:border-gray-700">
 
     <div class="md:w-1/2 bg-cover bg-center hidden md:block">
       <img src="/assets/loginImage.png" alt="Personne célébrant devant un ordinateur" class="w-full h-full object-cover">
     </div>
 
     <div class="md:w-1/2 p-8 sm:p-10 flex flex-col justify-center bg-opacity-90 backdrop-blur-md">
-      <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Confirmer votre adresse email</h2>
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Confirmer votre adresse email</h2>
 
       <form class="space-y-6" [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
           <input
             type="email"
             id="email"
             formControlName="email"
-            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-hidden"
+            class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-[#009245] focus:border-[#009245] outline-hidden"
             placeholder="votre@email.com"
             required
             />
@@ -32,7 +32,7 @@
         </div>
 
         @if (errorMessage) {
-          <p class="text-red-600 text-sm text-center">{{ errorMessage }}</p>
+          <p class="text-red-600 dark:text-red-400 text-sm text-center">{{ errorMessage }}</p>
         }
 
         <button type="submit" class="w-full bg-[#FC4E00] hover:bg-[#d94300] text-white font-semibold py-2.5 rounded-lg shadow-sm transition duration-200">
@@ -42,9 +42,9 @@
 
 
 
-      <div class="mt-6 text-center text-sm text-gray-600">
+      <div class="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
         Vous n'avez pas de compte ?
-        <a routerLink="/inscription" class="text-indigo-600 hover:underline font-medium">Créer un compte</a>
+        <a routerLink="/inscription" class="text-[#009245] hover:underline font-medium">Créer un compte</a>
       </div>
     </div>
   </div>

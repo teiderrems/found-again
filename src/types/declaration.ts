@@ -3,6 +3,14 @@ export enum DeclarationType {
    FOUND = 'found',
 }
 
+export enum ObjectCondition {
+   EXCELLENT = 'excellent',
+   GOOD = 'good',
+   FAIR = 'fair',
+   POOR = 'poor',
+   UNKNOWN = 'unknown',
+}
+
 export interface DeclarationCreate {
    title: string;
    category: string;
@@ -15,6 +23,7 @@ export interface DeclarationCreate {
    userId?: string;
    images: File[];
    type: DeclarationType;
+   condition?: ObjectCondition;
 }
 
 export interface ImageType {
@@ -37,6 +46,7 @@ export interface DeclarationData {
    images: ImageType[];
    type: DeclarationType;
    active?: boolean;
+   condition?: ObjectCondition;
 }
 
 export interface DeclarationMatch {

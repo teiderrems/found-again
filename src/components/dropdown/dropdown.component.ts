@@ -22,12 +22,14 @@ export class DropdownComponent {
   @Input() placement: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right' = 'bottom-left';
   @Input() closeOnSelect: boolean = true;
   @Input() showIcons: boolean = true;
+  @Input() customContent: boolean = false; // Permet d'afficher un contenu personnalisé sans options
   
   @Output() selectionChange = new EventEmitter<any>();
   @Output() isOpenChange = new EventEmitter<boolean>();
 
   @ContentChild('dropdownTrigger') triggerTemplate!: TemplateRef<any>;
   @ContentChild('dropdownOption') optionTemplate!: TemplateRef<any>;
+  @ContentChild('dropdownContent') contentTemplate!: TemplateRef<any>; // Nouveau template pour contenu personnalisé
 
   isOpen = false;
 

@@ -1,104 +1,106 @@
-<div class="p-4 md:p-6">
+<div class="p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
-    <p class="text-gray-600">Consultez et gérez les utilisateurs du système</p>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Gestion des Utilisateurs</h1>
+    <p class="text-gray-600 dark:text-gray-400">Consultez et gérez les utilisateurs du système</p>
   </div>
 
   <!-- Search and Filter -->
-  <div class="bg-white rounded-lg shadow p-4 mb-6">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 border border-gray-200 dark:border-gray-700 transition-colors">
     <div class="relative">
       <input (keyup)="applyFilter($event)" placeholder="Rechercher un utilisateur (Email, nom, prénom...)"
-        class="w-full px-4 py-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
-      <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</mat-icon>
+        class="w-full px-4 py-3 pl-10 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200">
+      <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none">search</mat-icon>
     </div>
   </div>
 
   <!-- Table -->
-  <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-gray-700 transition-colors">
     <div class="overflow-x-auto">
       <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
           <tr>
-            <th (click)="sortData('email')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('email')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Email
                 @if (sortColumn() === 'email') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('firstname')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('firstname')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Prénom
                 @if (sortColumn() === 'firstname') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('lastname')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('lastname')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Nom
                 @if (sortColumn() === 'lastname') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th (click)="sortData('role')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th (click)="sortData('role')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Rôle
                 @if (sortColumn() === 'role') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm">Statut</th>
-            <th (click)="sortData('createdAt')" class="text-left py-4 px-6 font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 transition-colors select-none">
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm">Statut</th>
+            <th (click)="sortData('createdAt')" class="text-left py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors select-none">
               <div class="flex items-center">
                 Inscrit le
                 @if (sortColumn() === 'createdAt') {
-                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+                  <mat-icon class="text-sm ml-1 h-4 w-4 text-gray-500 dark:text-gray-400">{{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
                 }
               </div>
             </th>
-            <th class="text-right py-4 px-6 font-semibold text-gray-700 text-sm">Actions</th>
+            <th class="text-right py-4 px-6 font-semibold text-gray-700 dark:text-gray-200 text-sm">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
           @for (user of pagedUsers(); track user.uid) {
-            <tr class="hover:bg-gray-50 transition-colors">
-              <td class="py-4 px-6 text-gray-900 font-medium text-sm">{{ user.email }}</td>
-              <td class="py-4 px-6 text-gray-600 text-sm">{{ user.firstname }}</td>
-              <td class="py-4 px-6 text-gray-600 text-sm">{{ user.lastname }}</td>
+            <tr class="group hover:bg-gray-50 dark:hover:bg-gray-200 transition-colors">
+              <td class="py-4 px-6 text-gray-900 dark:text-white dark:group-hover:text-gray-900 font-medium text-sm">{{ user.email }}</td>
+              <td class="py-4 px-6 text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-700 text-sm">{{ user.firstname }}</td>
+              <td class="py-4 px-6 text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-700 text-sm">{{ user.lastname }}</td>
               <td class="py-4 px-6">
                 <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                              (user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800')">
+                              (user.role === 'admin' ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300' : 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300')">
                   {{ user.role === 'admin' ? 'Administrateur' : 'Utilisateur' }}
                 </span>
               </td>
               <td class="py-4 px-6">
                 <span [class]="'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + 
-                              ((user.isActive ?? true) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">
+                              ((user.isActive ?? true) ? 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300')">
                   {{ (user.isActive ?? true) ? 'Actif' : 'Inactif' }}
                 </span>
               </td>
-              <td class="py-4 px-6 text-gray-600 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
+              <td class="py-4 px-6 text-gray-600 dark:text-gray-300 dark:group-hover:text-gray-700 text-sm">{{ user.createdAt | firebaseDate: 'dd/MM/yyyy' }}</td>
               <td class="py-4 px-6 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button mat-icon-button color="primary"
+                  <button 
                     (click)="toggleRole(user)" 
+                    class="p-1 text-blue-600 hover:cursor-pointer dark:text-blue-400 hover:text-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:group-hover:text-blue-700 dark:group-hover:bg-blue-100 rounded transition-colors"
                     [title]="user.role === 'admin' ? 'Rétrograder' : 'Promouvoir'">
-                    <mat-icon>{{ user.role === 'admin' ? 'remove_moderator' : 'add_moderator' }}</mat-icon>
+                    <mat-icon class="text-base">{{ user.role === 'admin' ? 'remove_moderator' : 'add_moderator' }}</mat-icon>
                   </button>
-                  <button mat-icon-button
+                  <button 
                     (click)="toggleUserStatus(user)"
-                    [color]="(user.isActive ?? true) ? 'warn' : 'primary'"
+                    [class]="'p-1 rounded transition-colors hover:cursor-pointer ' + ((user.isActive ?? true) ? 'text-orange-600 dark:text-orange-400 hover:text-orange-900 hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:group-hover:text-orange-700 dark:group-hover:bg-orange-100' : 'text-green-600 dark:text-green-400 hover:text-green-900 hover:bg-green-50 dark:hover:bg-green-900/30 dark:group-hover:text-green-700 dark:group-hover:bg-green-100')"
                     [title]="(user.isActive ?? true) ? 'Désactiver' : 'Activer'">
-                    <mat-icon>{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
+                    <mat-icon class="text-base">{{ (user.isActive ?? true) ? 'block' : 'check_circle' }}</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn"
+                  <button 
                     (click)="deleteUser(user)" 
+                    class="p-1 text-red-600 hover:cursor-pointer dark:text-red-400 hover:text-red-900 hover:bg-red-50 dark:hover:bg-red-900/30 dark:group-hover:text-red-700 dark:group-hover:bg-red-100 rounded transition-colors"
                     title="Supprimer">
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon class="text-base">delete</mat-icon>
                   </button>
                 </div>
               </td>
@@ -106,7 +108,7 @@
           }
           @if (pagedUsers().length === 0) {
             <tr>
-              <td colspan="6" class="py-8 text-center text-gray-500">Aucun utilisateur trouvé</td>
+              <td colspan="6" class="py-8 text-center text-gray-500 dark:text-gray-400">Aucun utilisateur trouvé</td>
             </tr>
           }
         </tbody>

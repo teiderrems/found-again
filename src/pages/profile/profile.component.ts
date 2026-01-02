@@ -9,7 +9,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -51,7 +50,6 @@ interface UserPreferences {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
     MatDividerModule,
     MatFormFieldModule,
     MatInputModule,
@@ -114,7 +112,7 @@ export class UserProfileComponent implements OnInit {
           showDeclarations: profile.preferences.showDeclarations ?? true
         });
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   ngOnInit() {
@@ -130,18 +128,66 @@ export class UserProfileComponent implements OnInit {
       const profileObservable = this.authService.currentUser$;
       if (profileObservable) {
         profileObservable.subscribe({
-          next: (profile) => {
-            if (profile) {
-              this.authService.getUserProfile(profile.uid).subscribe({
+          next: (authUser) => {
+            if (authUser) {
+              this.authService.getUserProfile(authUser.uid).subscribe({
                 next: (userProfile) => {
-                  this.userProfile.set(userProfile || null);
+                  if (userProfile) {
+                    // Profil existant dans Firestore
+                    this.userProfile.set(userProfile);
+                  } else {
+                    // Profil n'existe pas dans Firestore, créer un profil par défaut à partir de Firebase Auth
+                    console.log('Profil non trouvé dans Firestore, création d\'un profil par défaut');
+                    const defaultProfile: UserProfile = {
+                      uid: authUser.uid,
+                      email: authUser.email || '',
+                      firstname: authUser.displayName?.split(' ')[0] || '',
+                      lastname: authUser.displayName?.split(' ').slice(1).join(' ') || '',
+                      createdAt: new Date(),
+                      role: 'standard',
+                      preferences: {
+                        theme: 'light',
+                        notifications: true,
+                        emailNotifications: true,
+                        declarationUpdates: true,
+                        matchAlerts: true,
+                        publicProfile: false,
+                        showDeclarations: true
+                      },
+                      phone: authUser.phoneNumber || '',
+                      avatarUrl: authUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.email}`,
+                      location: '',
+                      bio: ''
+                    };
+                    this.userProfile.set(defaultProfile);
+                  }
                   this.loading.set(false);
                 },
                 error: (error) => {
                   console.error('Erreur lors du chargement du profil utilisateur:', error);
-                  this.snackBar.open('Erreur lors du chargement du profil utilisateur', 'Fermer', {
-                    duration: 3000
-                  });
+                  // En cas d'erreur, créer quand même un profil par défaut
+                  const defaultProfile: UserProfile = {
+                    uid: authUser.uid,
+                    email: authUser.email || '',
+                    firstname: '',
+                    lastname: '',
+                    createdAt: new Date(),
+                    role: 'standard',
+                    preferences: {
+                      theme: 'light',
+                      notifications: true,
+                      emailNotifications: true,
+                      declarationUpdates: true,
+                      matchAlerts: true,
+                      publicProfile: false,
+                      showDeclarations: true
+                    },
+                    phone: '',
+                    avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${authUser.email}`,
+                    location: '',
+                    bio: ''
+                  };
+                  this.userProfile.set(defaultProfile);
                   this.loading.set(false);
                 }
               });
@@ -170,10 +216,42 @@ export class UserProfileComponent implements OnInit {
   }
 
   openEditDialog() {
-    const profile = this.userProfile();
-    if (!profile) return;
+    let profile = this.userProfile();
     
-    console.log('Opening dialog with profile:', profile);
+    // Si le profil n'existe pas, créer un profil par défaut pour le formulaire
+    if (!profile) {
+      const currentUserId = this.authService.getCurrentUserId();
+      const currentUserEmail = this.authService.getCurrentUserEmail();
+      
+      if (!currentUserId) {
+        this.snackBar.open('Vous devez être connecté pour modifier votre profil', 'Fermer', {
+          duration: 3000
+        });
+        return;
+      }
+      
+      profile = {
+        uid: currentUserId,
+        email: currentUserEmail || '',
+        firstname: '',
+        lastname: '',
+        createdAt: new Date(),
+        role: 'standard',
+        preferences: {
+          theme: 'light',
+          notifications: true,
+          emailNotifications: true,
+          declarationUpdates: true,
+          matchAlerts: true,
+          publicProfile: false,
+          showDeclarations: true
+        },
+        phone: '',
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUserEmail}`,
+        location: '',
+        bio: ''
+      };
+    }
     
     const dialogRef = this.dialog.open(EditProfileDialogComponent, {
       width: '600px',
@@ -182,7 +260,6 @@ export class UserProfileComponent implements OnInit {
     });
     
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog closed with result:', result);
       if (result) {
         this.updateProfile(result);
       }
@@ -192,6 +269,9 @@ export class UserProfileComponent implements OnInit {
   async updateProfile(updates: Partial<UserProfile>) {
     const currentUserId = this.authService.getCurrentUserId();
     if (!currentUserId) return;
+
+    // Récupérer l'email de l'utilisateur courant pour le cas où le profil n'existe pas encore
+    const currentUserEmail = this.authService.getCurrentUserEmail();
 
     // Ouvrir le dialogue de confirmation pour la mise à jour
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -212,7 +292,13 @@ export class UserProfileComponent implements OnInit {
       }
 
       try {
-        const result = await this.userProfileService.updateProfile(currentUserId, updates);
+        // Inclure l'email si disponible (nécessaire pour créer un nouveau profil)
+        const profileUpdates: Partial<UserProfile> = {
+          ...updates,
+          ...(currentUserEmail && { email: currentUserEmail })
+        };
+
+        const result = await this.userProfileService.updateProfile(currentUserId, profileUpdates);
         
         if (result.success) {
           this.snackBar.open('Profil mis à jour avec succès', 'Fermer', {

@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import { CanActivate, Router, UrlTree, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 import { Observable, combineLatest, of } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
@@ -14,9 +14,10 @@ export class MaintenanceGuard implements CanActivate {
   private auth = inject(Auth);
   private firestore = inject(Firestore);
   private router = inject(Router);
+  private injector = inject(Injector);
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
-    const user$ = user(this.auth).pipe(take(1));
+    const user$ = runInInjectionContext(this.injector, () => user(this.auth)).pipe(take(1));
     const settings$ = this.settingsService.getSettings().pipe(take(1));
 
     return combineLatest([settings$, user$]).pipe(
@@ -45,7 +46,7 @@ export class MaintenanceGuard implements CanActivate {
 
         // Check if user is admin
         const userDoc = doc(this.firestore, `users/${currentUser.uid}`);
-        return docData(userDoc).pipe(
+        return runInInjectionContext(this.injector, () => docData(userDoc)).pipe(
            take(1),
            map((userData: any) => {
               if (userData?.role === 'admin') {

@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import { Messaging, getToken, onMessage } from '@angular/fire/messaging';
-import { Firestore, doc, updateDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, setDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 
@@ -18,6 +18,7 @@ export interface FCMNotification {
 export class FirebaseMessagingService {
   private messaging = inject(Messaging);
   private firestore = inject(Firestore);
+  private injector = inject(Injector);
   
   private messageSubject = new BehaviorSubject<any>(null);
   public message$ = this.messageSubject.asObservable();
@@ -42,7 +43,6 @@ export class FirebaseMessagingService {
       const permission = Notification.permission;
       
       if (permission === 'granted') {
-        console.log('Permission de notification accordée');
         const token = await this.getMessagingToken();
         if (token) {
           this.listenForMessages();
@@ -52,7 +52,6 @@ export class FirebaseMessagingService {
         // Demander la permission seulement si elle n'a pas déjà été refusée
         const result = await Notification.requestPermission();
         if (result === 'granted') {
-          console.log('Permission de notification accordée');
           const token = await this.getMessagingToken();
           if (token) {
             this.listenForMessages();
@@ -80,12 +79,12 @@ export class FirebaseMessagingService {
          return null;
       }
       
-      const token = await getToken(this.messaging, { 
-        vapidKey: vapidKey 
-      });
+      // Exécuter getToken dans le contexte d'injection Angular
+      const token = await runInInjectionContext(this.injector, () => 
+        getToken(this.messaging, { vapidKey: vapidKey })
+      );
       
       if (token) {
-        console.log('Token FCM récupéré:', token);
         this.tokenSubject.next(token);
         return token;
       } else {
@@ -108,12 +107,13 @@ export class FirebaseMessagingService {
    */
   private listenForMessages() {
     try {
-      onMessage(this.messaging, (payload:any) => {
-        console.log('Message reçu en foreground:', payload);
-        this.messageSubject.next(payload);
-        
-        // Afficher une notification personnalisée
-        this.showNotification(payload.notification);
+      runInInjectionContext(this.injector, () => {
+        onMessage(this.messaging, (payload:any) => {
+          this.messageSubject.next(payload);
+          
+          // Afficher une notification personnalisée
+          this.showNotification(payload.notification);
+        });
       });
     } catch (error) {
       console.error('Erreur lors de l\'écoute des messages:', error);
@@ -164,12 +164,12 @@ export class FirebaseMessagingService {
     try {
       const token = await this.getMessagingToken();
       if (token && userId) {
-        console.log('Token à sauvegarder pour l\'utilisateur', userId, ':', token);
         
         const userRef = doc(this.firestore, 'users', userId);
-        await updateDoc(userRef, {
+        // Utiliser setDoc avec merge:true pour créer le document s'il n'existe pas
+        await setDoc(userRef, {
           fcmTokens: arrayUnion(token)
-        });
+        }, { merge: true });
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde du token:', error);
@@ -186,9 +186,10 @@ export class FirebaseMessagingService {
         console.log('Token à supprimer pour l\'utilisateur', userId, ':', token);
         
         const userRef = doc(this.firestore, 'users', userId);
-        await updateDoc(userRef, {
+        // Utiliser setDoc avec merge:true pour éviter l'erreur si le document n'existe pas
+        await setDoc(userRef, {
           fcmTokens: arrayRemove(token)
-        });
+        }, { merge: true });
       }
     } catch (error) {
       console.error('Erreur lors de la suppression du token:', error);

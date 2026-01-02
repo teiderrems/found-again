@@ -1,11 +1,11 @@
-<div class="max-h-full bg-gray-50">
+<div class="max-h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <!-- Hero -->
-  <section class="bg-white border-b border-gray-200 py-16">
+  <section class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-16 transition-colors">
     <div class="container mx-auto px-4 text-center max-w-4xl">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
         Nos Services <span class="text-[#009245]">Complets</span>
       </h1>
-      <p class="text-xl text-gray-600 mb-8">
+      <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
         Découvrez toutes les fonctionnalités conçues pour vous aider à retrouver vos objets perdus.
       </p>
     </div>
@@ -15,16 +15,16 @@
   <section class="py-16 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       @for (feature of features; track feature) {
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex flex-col">
-          <div class="w-12 h-12 rounded-lg bg-green-50 text-[#009245] flex items-center justify-center mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow flex flex-col">
+          <div class="w-12 h-12 rounded-lg bg-green-50 dark:bg-green-900/30 text-[#009245] dark:text-green-400 flex items-center justify-center mb-4">
             <mat-icon>{{ feature.icon }}</mat-icon>
           </div>
-          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ feature.title }}</h3>
-          <p class="text-gray-600 mb-6 grow">{{ feature.description }}</p>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ feature.title }}</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-6 grow">{{ feature.description }}</p>
           
           <ul class="space-y-2 mb-6">
             @for (benefit of feature.benefits; track benefit) {
-              <li class="flex items-center text-sm text-gray-600">
+              <li class="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <mat-icon class="text-green-500 text-sm mr-2">check_circle</mat-icon>
                 {{ benefit }}
               </li>
@@ -33,7 +33,7 @@
 
           @if (feature.route) {
             <button [routerLink]="feature.route" 
-                    class="w-full py-2 px-4 rounded-lg border border-[#009245] text-[#009245] hover:bg-green-50 font-medium transition-colors">
+                    class="w-full py-2 px-4 rounded-lg border border-[#009245] text-[#009245] dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 font-medium transition-colors">
               Découvrir
             </button>
           }
@@ -43,19 +43,19 @@
   </section>
 
   <!-- FAQ -->
-  <section class="py-16 bg-white border-t border-gray-200">
+  <section class="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 transition-colors">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">
+      <h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
         Questions Fréquentes
       </h2>
       <div class="grid grid-cols-1 gap-6">
         @for (faq of faqs; track faq) {
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
-            <h3 class="flex items-start text-lg font-semibold text-gray-900 mb-2">
-              <mat-icon class="text-[#009245] mr-3 mt-1">help</mat-icon>
+          <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border border-gray-100 dark:border-gray-600 transition-colors">
+            <h3 class="flex items-start text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <mat-icon class="text-[#009245] dark:text-green-400 mr-3 mt-1">help</mat-icon>
               {{ faq.question }}
             </h3>
-            <p class="text-gray-600 ml-9">{{ faq.answer }}</p>
+            <p class="text-gray-600 dark:text-gray-400 ml-9">{{ faq.answer }}</p>
           </div>
         }
       </div>

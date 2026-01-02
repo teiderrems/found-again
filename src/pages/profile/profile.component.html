@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-linear-to-b from-white to-gray-50 pb-12">
+<div class="min-h-screen bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 pb-12 transition-colors duration-300">
     <!-- En-tête avec dégradé -->
     <div class="relative overflow-hidden">
         <!-- Fond dégradé animé -->
-        <div class="absolute inset-0 bg-linear-to-b from-white to-gray-50"></div>
+        <div class="absolute inset-0 bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"></div>
         <div class="absolute inset-0 opacity-0">
             <div class="absolute top-20 left-10 w-72 h-72 bg-white rounded-full mix-blend-screen blur-3xl"></div>
             <div class="absolute -bottom-8 right-10 w-72 h-72 bg-gray-300 rounded-full mix-blend-screen blur-3xl"></div>
@@ -13,7 +13,7 @@
             <!-- Navigation retour -->
             <div class="mb-8">
                 <a routerLink="/"
-                    class="inline-flex items-center text-white/80 hover:text-white transition-colors gap-2 font-medium">
+                    class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-[#009245] dark:hover:text-[#009245] transition-colors gap-2 font-medium">
                     <mat-icon>arrow_back</mat-icon>
                     <span>Retour</span>
                 </a>
@@ -22,7 +22,7 @@
             <!-- Carte de profil -->
             <div class="max-w-4xl mx-auto">
                 <div
-                    class="bg-linear-to-b from-white to-gray-50 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden">
+                    class="bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-transparent dark:border-gray-600">
                     <div class="grid md:grid-cols-4 gap-6 p-8">
                         <!-- Avatar -->
                         <div class="md:col-span-1 flex flex-col items-center">
@@ -57,10 +57,10 @@
                         <div class="md:col-span-3">
                             <!-- Nom et titre -->
                             <div class="mb-6">
-                                <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                                <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                                     {{ userProfile()?.firstname }} {{ userProfile()?.lastname }}
                                 </h1>
-                                <p class="text-gray-500 text-lg">
+                                <p class="text-gray-500 dark:text-gray-400 text-lg">
                                     {{ userProfile()?.email }}
                                 </p>
                             </div>
@@ -69,30 +69,30 @@
                             <div class="grid grid-cols-2 gap-4 mb-6">
                                 @if (userProfile()?.phone) {
                                 <div
-                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 rounded-lg">
-                                    <mat-icon class="text-gray-600 hover:text-[#009245]">phone</mat-icon>
+                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
+                                    <mat-icon class="text-gray-600 dark:text-gray-300 hover:text-[#009245]">phone</mat-icon>
                                     <div>
-                                        <p class="text-xs text-gray-500">Téléphone</p>
-                                        <p class="font-medium text-gray-900">{{ userProfile()?.phone }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Téléphone</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ userProfile()?.phone }}</p>
                                     </div>
                                 </div>
                                 }
                                 @if (userProfile()?.location) {
                                 <div
-                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 rounded-lg">
-                                    <mat-icon class="text-gray-600 hover:text-[#009245]">location_on</mat-icon>
+                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
+                                    <mat-icon class="text-gray-600 dark:text-gray-300 hover:text-[#009245]">location_on</mat-icon>
                                     <div>
-                                        <p class="text-xs text-gray-500">Localisation</p>
-                                        <p class="font-medium text-gray-900">{{ userProfile()?.location }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Localisation</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ userProfile()?.location }}</p>
                                     </div>
                                 </div>
                                 }
                                 <div
-                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 rounded-lg">
-                                    <mat-icon class="text-gray-600 hover:text-[#009245]">calendar_today</mat-icon>
+                                    class="flex items-center gap-3 p-3 bg-linear-to-b from-white to-gray-50 dark:from-gray-700 dark:to-gray-600 rounded-lg">
+                                    <mat-icon class="text-gray-600 dark:text-gray-300 hover:text-[#009245]">calendar_today</mat-icon>
                                     <div>
-                                        <p class="text-xs text-gray-500">Membre depuis</p>
-                                        <p class="font-medium text-gray-900">{{ userProfile()?.createdAt |
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Membre depuis</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ userProfile()?.createdAt |
                                             firebaseDate:'long' }}</p>
                                     </div>
                                 </div>
@@ -101,7 +101,7 @@
                             <!-- Bio -->
                             @if (userProfile()?.bio) {
                             <p
-                                class="text-gray-600 hover:text-[#009245] mb-6 p-4 bg-linear-to-b from-white to-gray-50 rounded-lg border-l-4 border-gray-400">
+                                class="text-gray-600 dark:text-gray-300 hover:text-[#009245] mb-6 p-4 bg-linear-to-b from-white to-gray-50 dark:from-gray-700 dark:to-gray-600 rounded-lg border-l-4 border-gray-400 dark:border-gray-500">
                                 {{ userProfile()?.bio }}
                             </p>
                             }
@@ -127,7 +127,7 @@
     </div>
 
     <!-- Contenu principal -->
-    <div class="container mx-auto px-4 py-12 max-w-4xl bg-linear-to-b from-white to-gray-50">
+    <div class="container mx-auto px-4 py-12 max-w-4xl bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
         <!-- Onglets -->
         <mat-tab-group class="mb-8">
             <!-- Correspondances -->
@@ -143,11 +143,11 @@
                     <!-- Correspondances pour déclarations LOSS (objets perdus) -->
                     @if ((getLossMatches() || []).length > 0) {
                     <div class="mb-8">
-                        <h3 class="text-2xl font-bold text-red-900 mb-4 flex items-center gap-2">
-                            <mat-icon class="text-red-600">search</mat-icon>
+                        <h3 class="text-2xl font-bold text-red-900 dark:text-red-400 mb-4 flex items-center gap-2">
+                            <mat-icon class="text-red-600 dark:text-red-400">search</mat-icon>
                             Objets Perdus - Correspondances Trouvées
                         </h3>
-                        <p class="text-gray-600 mb-4">Ces objets trouvés pourraient être les vôtres</p>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">Ces objets trouvés pourraient être les vôtres</p>
 
                         <div class="space-y-4">
                             @for (match of getLossMatches() || []; track match.declaration.id + match.matchingWith.id) {
@@ -299,14 +299,14 @@
 
                 <div class="py-8 space-y-6">
                     <!-- Préférences d'apparence -->
-                    <div class="bg-linear-to-b from-white to-gray-50 rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-6 transition-colors">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <mat-icon>palette</mat-icon>
                             Apparence
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Mode sombre</span>
+                                <span class="text-gray-700 dark:text-gray-300">Mode sombre</span>
                                 <mat-slide-toggle 
                                     [checked]="userProfile()?.preferences?.theme === 'dark'"
                                     (change)="toggleTheme($event)" 
@@ -317,16 +317,16 @@
                     </div>
 
                     <!-- Préférences de notification -->
-                    <div class="bg-linear-to-b from-white to-gray-50 rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-6 transition-colors">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <mat-icon>notifications</mat-icon>
                             Notifications
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="text-gray-700 block">Notifications Push</span>
-                                    <span class="text-gray-500 text-xs">Recevoir des notifications sur cet appareil</span>
+                                    <span class="text-gray-700 dark:text-gray-300 block">Notifications Push</span>
+                                    <span class="text-gray-500 dark:text-gray-400 text-xs">Recevoir des notifications sur cet appareil</span>
                                 </div>
                                 <mat-slide-toggle 
                                     [checked]="userProfile()?.preferences?.notifications"
@@ -335,19 +335,19 @@
                                 </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Notifications par email</span>
+                                <span class="text-gray-700 dark:text-gray-300">Notifications par email</span>
                                 <mat-slide-toggle [checked]="preferences().emailNotifications"
                                     (change)="toggleEmailNotifications($event)" [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Mises à jour de déclarations</span>
+                                <span class="text-gray-700 dark:text-gray-300">Mises à jour de déclarations</span>
                                 <mat-slide-toggle [checked]="preferences().declarationUpdates"
                                     (change)="toggleDeclarationUpdates($event)" [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Alertes de correspondance</span>
+                                <span class="text-gray-700 dark:text-gray-300">Alertes de correspondance</span>
                                 <mat-slide-toggle [checked]="preferences().matchAlerts"
                                     (change)="toggleMatchAlerts($event)" [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
@@ -356,20 +356,20 @@
                     </div>
 
                     <!-- Préférences de confidentialité -->
-                    <div class="bg-linear-to-b from-white to-gray-50 rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <div class="bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 p-6 transition-colors">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <mat-icon>privacy_tip</mat-icon>
                             Confidentialité
                         </h3>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Profil public</span>
+                                <span class="text-gray-700 dark:text-gray-300">Profil public</span>
                                 <mat-slide-toggle [checked]="preferences().publicProfile"
                                     (change)="togglePublicProfile($event)" [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Montrer mes déclarations</span>
+                                <span class="text-gray-700 dark:text-gray-300">Montrer mes déclarations</span>
                                 <mat-slide-toggle [checked]="preferences().showDeclarations"
                                     (change)="toggleShowDeclarations($event)" [disabled]="isSavingPreferences()">
                                 </mat-slide-toggle>
@@ -378,13 +378,13 @@
                     </div>
 
                     <!-- Zone de danger -->
-                    <div class="bg-linear-to-b from-white to-gray-50 rounded-xl border border-red-300 p-6">
-                        <h3 class="text-lg font-semibold text-red-900 mb-4 flex items-center gap-2">
+                    <div class="bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-red-300 dark:border-red-800 p-6 transition-colors">
+                        <h3 class="text-lg font-semibold text-red-900 dark:text-red-400 mb-4 flex items-center gap-2">
                             <mat-icon>warning</mat-icon>
                             Zone de Danger
                         </h3>
-                        <p class="text-red-700 text-sm mb-4">Attention : Ces actions sont irréversibles.</p>
-                        <button mat-stroked-button class="border-red-500! flex items-center text-red-600! hover:bg-gray-100!"
+                        <p class="text-red-700 dark:text-red-400 text-sm mb-4">Attention : Ces actions sont irréversibles.</p>
+                        <button mat-stroked-button class="border-red-500! flex items-center text-red-600! dark:text-red-400! hover:bg-red-50! dark:hover:bg-red-900/30!"
                             (click)="deleteAccount()" [disabled]="isDeleting()">
                             @if (isDeleting()) {
                             <mat-spinner diameter="20" class="mr-2"></mat-spinner>

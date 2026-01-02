@@ -14,6 +14,14 @@ import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.co
 import { VerificationDetailsDialogComponent } from '@/components/verification-details-dialog/verification-details-dialog.component';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
 import { SettingsService } from '@/services/settings.service';
+import { AdminService } from '@/services/admin.service';
+import { take } from 'rxjs';
+
+export interface VerificationWithDetails extends VerificationData {
+  userName?: string;
+  userEmail?: string;
+  declarationTitle?: string;
+}
 
 @Component({
   selector: 'app-admin-verifications',
@@ -34,20 +42,21 @@ import { SettingsService } from '@/services/settings.service';
 })
 export class AdminVerificationsComponent implements OnInit {
   private verificationService = inject(VerificationService);
+  private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private settingsService = inject(SettingsService);
 
-  verifications = signal<VerificationData[]>([]);
-  filteredVerifications = signal<VerificationData[]>([]);
+  verifications = signal<VerificationWithDetails[]>([]);
+  filteredVerifications = signal<VerificationWithDetails[]>([]);
   pageSize = signal(10);
   pageIndex = signal(0);
   
   constructor() {
     effect(() => {
       this.pageSize.set(this.settingsService.itemsPerPage());
-    }, { allowSignalWrites: true });
+    });
   }
   
   // Sorting
@@ -84,12 +93,31 @@ export class AdminVerificationsComponent implements OnInit {
   }
 
   loadVerifications() {
-    this.verificationService.getAllVerifications().subscribe({
-      next: (verifications) => {
-        this.verifications.set(verifications);
-        this.filteredVerifications.set(verifications);
+    // Use AdminService to get users and declarations along with verifications
+    this.adminService.getAdminStats().pipe(take(1)).subscribe({
+      next: (stats) => {
+        const users = stats.allUsers;
+        const declarations = stats.allDeclarations;
+        
+        this.verificationService.getAllVerifications().subscribe({
+          next: (verifications) => {
+            const enrichedVerifications: VerificationWithDetails[] = verifications.map(v => {
+              const user = users.find((u: any) => u.uid === v.userId);
+              const declaration = declarations.find((d: any) => d.id === v.declarationId);
+              return {
+                ...v,
+                userName: user ? `${user.firstname} ${user.lastname}` : 'Utilisateur inconnu',
+                userEmail: user?.email || '',
+                declarationTitle: declaration?.title || 'Déclaration inconnue'
+              };
+            });
+            this.verifications.set(enrichedVerifications);
+            this.filteredVerifications.set(enrichedVerifications);
+          },
+          error: (error) => console.error('Error loading verifications:', error)
+        });
       },
-      error: (error) => console.error('Error loading verifications:', error)
+      error: (error) => console.error('Error loading admin stats:', error)
     });
   }
 
@@ -98,7 +126,10 @@ export class AdminVerificationsComponent implements OnInit {
     this.filteredVerifications.set(
       this.verifications().filter(v => 
         v.userId.toLowerCase().includes(filterValue) || 
-        v.declarationId.toLowerCase().includes(filterValue)
+        v.declarationId.toLowerCase().includes(filterValue) ||
+        (v.userName?.toLowerCase().includes(filterValue) ?? false) ||
+        (v.userEmail?.toLowerCase().includes(filterValue) ?? false) ||
+        (v.declarationTitle?.toLowerCase().includes(filterValue) ?? false)
       )
     );
     this.pageIndex.set(0);

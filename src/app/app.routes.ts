@@ -235,6 +235,16 @@ export const routes: Routes = [
             pathMatch: 'full',
             title: 'Notifications',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'notifications/:id',
+            loadComponent: () =>
+               import('@/pages/notification-detail/notification-detail.component').then(
+                  (c) => c.NotificationDetailComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Détail de la notification',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
          }
       ],
    },
