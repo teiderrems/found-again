@@ -227,3 +227,63 @@
     @apply text-gray-700 dark:text-white text-sm;
   }
 }
+
+/* Mobile-specific styles for form fields */
+@media (max-width: 639px) {
+  :host ::ng-deep .custom-form-field-modern {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 6px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 36px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-input-element {
+      @apply text-xs;
+    }
+
+    .mat-mdc-select-arrow-wrapper {
+      height: 20px !important;
+    }
+
+    .mat-datepicker-toggle {
+      .mat-mdc-icon-button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 4px !important;
+      }
+    }
+  }
+
+  :host ::ng-deep .custom-form-field-compact {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 4px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 32px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-select-value {
+      @apply text-xs;
+    }
+  }
+}
