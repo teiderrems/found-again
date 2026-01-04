@@ -1,0 +1,221 @@
+<div class="premium-container min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 mb-4">
+        <mat-icon class="text-white text-3xl" style="font-size: 32px; width: 32px; height: 32px;">star</mat-icon>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
+        Passez à Premium
+      </h1>
+      <p class="text-gray-600 dark:text-gray-300 text-lg max-w-2xl mx-auto">
+        Profitez d'une expérience sans publicités et de fonctionnalités exclusives pour retrouver vos objets plus rapidement.
+      </p>
+    </div>
+
+    <!-- Statut actuel si premium -->
+    @if (isPremium()) {
+      <div class="bg-linear-to-r from-yellow-400 to-orange-500 rounded-xl p-6 mb-8 text-white">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <mat-icon class="text-4xl" style="font-size: 48px; width: 48px; height: 48px;">verified</mat-icon>
+            <div>
+              <h2 class="text-xl font-bold">Vous êtes Premium !</h2>
+              <p class="opacity-90">Merci de votre soutien. Profitez de tous les avantages.</p>
+            </div>
+          </div>
+          <button 
+            mat-stroked-button 
+            class="border-white text-white hover:bg-white/10"
+            (click)="cancelSubscription()"
+            [disabled]="isLoading()">
+            @if (isLoading()) {
+              <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+            }
+            Annuler l'abonnement
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Plans de tarification -->
+    <div class="grid md:grid-cols-2 gap-6 mb-12">
+      @for (plan of plans(); track plan.id) {
+        <div 
+          class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-105"
+          [class.ring-2]="plan.isPopular"
+          [class.ring-blue-500]="plan.isPopular">
+          
+          <!-- Badge populaire -->
+          @if (plan.isPopular) {
+            <div class="absolute top-0 right-0">
+              <div class="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                POPULAIRE
+              </div>
+            </div>
+          }
+
+          <div class="p-6">
+            <!-- Nom du plan -->
+            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
+              {{ plan.name }}
+            </h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">
+              {{ plan.description }}
+            </p>
+
+            <!-- Prix -->
+            <div class="mb-6">
+              <span class="text-4xl font-bold text-gray-800 dark:text-white">
+                {{ formatPrice(plan.price, plan.currency) }}
+              </span>
+              <span class="text-gray-500 dark:text-gray-400">
+                / {{ plan.id === 'premium_monthly' ? 'mois' : 'an' }}
+              </span>
+            </div>
+
+            <!-- Fonctionnalités -->
+            <ul class="space-y-3 mb-6">
+              @for (feature of plan.features; track feature) {
+                <li class="flex items-start gap-2">
+                  <mat-icon class="text-green-500 shrink-0" style="font-size: 20px; width: 20px; height: 20px;">check_circle</mat-icon>
+                  <span class="text-gray-600 dark:text-gray-300 text-sm">{{ feature }}</span>
+                </li>
+              }
+            </ul>
+
+            <!-- Bouton d'action -->
+            @if (currentPlan() === plan.id) {
+              <button 
+                mat-raised-button 
+                class="w-full"
+                disabled>
+                <mat-icon>check</mat-icon>
+                Plan actuel
+              </button>
+            } @else if (isPremium()) {
+              <button 
+                mat-stroked-button 
+                color="primary"
+                class="w-full"
+                (click)="subscribeToPlan(plan.id)"
+                [disabled]="isLoading()">
+                @if (isLoading() && selectedPlan() === plan.id) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                }
+                Changer de plan
+              </button>
+            } @else {
+              <button 
+                mat-raised-button 
+                [color]="plan.isPopular ? 'primary' : 'accent'"
+                class="w-full"
+                (click)="subscribeToPlan(plan.id)"
+                [disabled]="isLoading()">
+                @if (isLoading() && selectedPlan() === plan.id) {
+                  <mat-spinner diameter="20" class="mr-2"></mat-spinner>
+                }
+                S'abonner maintenant
+              </button>
+            }
+          </div>
+
+          <!-- Économies pour l'annuel -->
+          @if (plan.id === 'premium_yearly') {
+            <div class="bg-green-50 dark:bg-green-900/30 px-6 py-3 text-center">
+              <span class="text-green-600 dark:text-green-400 text-sm font-medium">
+                💰 Économisez 10€ par rapport au mensuel
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Avantages Premium -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        Pourquoi passer Premium ?
+      </h2>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+            <mat-icon class="text-red-500">block</mat-icon>
+          </div>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Sans publicités</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">
+            Naviguez sans interruption et profitez d'une interface épurée.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
+            <mat-icon class="text-blue-500">notifications_active</mat-icon>
+          </div>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Alertes prioritaires</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">
+            Soyez notifié en premier lors d'une correspondance avec votre objet.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 mb-4">
+            <mat-icon class="text-purple-500">support_agent</mat-icon>
+          </div>
+          <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Support prioritaire</h3>
+          <p class="text-gray-500 dark:text-gray-400 text-sm">
+            Obtenez une aide rapide de notre équipe dédiée.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        Questions fréquentes
+      </h2>
+
+      <div class="space-y-4 max-w-3xl mx-auto">
+        <details class="group">
+          <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="font-medium text-gray-800 dark:text-white">Puis-je annuler à tout moment ?</span>
+            <mat-icon class="text-gray-500 group-open:rotate-180 transition-transform">expand_more</mat-icon>
+          </summary>
+          <p class="p-4 text-gray-600 dark:text-gray-300">
+            Oui, vous pouvez annuler votre abonnement à tout moment. Vous continuerez à bénéficier des avantages Premium jusqu'à la fin de votre période de facturation.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="font-medium text-gray-800 dark:text-white">Quels moyens de paiement acceptez-vous ?</span>
+            <mat-icon class="text-gray-500 group-open:rotate-180 transition-transform">expand_more</mat-icon>
+          </summary>
+          <p class="p-4 text-gray-600 dark:text-gray-300">
+            Nous acceptons les cartes de crédit (Visa, Mastercard, American Express), PayPal et Apple Pay.
+          </p>
+        </details>
+
+        <details class="group">
+          <summary class="flex justify-between items-center cursor-pointer p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <span class="font-medium text-gray-800 dark:text-white">Y a-t-il une garantie de remboursement ?</span>
+            <mat-icon class="text-gray-500 group-open:rotate-180 transition-transform">expand_more</mat-icon>
+          </summary>
+          <p class="p-4 text-gray-600 dark:text-gray-300">
+            Oui, nous offrons une garantie de remboursement de 14 jours. Si vous n'êtes pas satisfait, contactez-nous pour un remboursement complet.
+          </p>
+        </details>
+      </div>
+    </div>
+
+    <!-- Retour -->
+    <div class="text-center mt-8">
+      <a routerLink="/" class="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-2">
+        <mat-icon>arrow_back</mat-icon>
+        Retour à l'accueil
+      </a>
+    </div>
+  </div>
+</div>

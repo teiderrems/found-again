@@ -23,6 +23,8 @@ export interface UserProfile {
   createdAt: Date;
   role: 'standard' | 'admin';
   isActive?: boolean;
+  isPremium?: boolean;
+  premiumExpiresAt?: Date;
   preferences: {
     theme: 'light' | 'dark';
     notifications: boolean;

@@ -72,6 +72,13 @@ export class AdminHeaderComponent implements OnInit {
       badge: 0
     },
     {
+      id: 'ads',
+      title: 'Publicités',
+      url: '/admin/ads',
+      icon: 'campaign',
+      badge: 0
+    },
+    {
       id: 'settings',
       title: 'Paramètres',
       url: '/admin/settings',

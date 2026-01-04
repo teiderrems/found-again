@@ -1,0 +1,230 @@
+<div class="admin-ads-container p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Gestion des Publicités</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-1">Créez et gérez les publicités affichées aux utilisateurs non-premium</p>
+    </div>
+    <button 
+      (click)="openAddForm()" 
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#FC4E00] hover:bg-[#d94300] text-white rounded-lg font-medium transition-colors shadow-sm">
+      <mat-icon style="font-size: 20px; width: 20px; height: 20px;">add</mat-icon>
+      Nouvelle Publicité
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="mb-4">
+    <div class="relative w-full md:w-96">
+      <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style="font-size: 20px; width: 20px; height: 20px;">search</mat-icon>
+      <input 
+        type="text"
+        (keyup)="applyFilter($event)" 
+        placeholder="Rechercher une publicité..."
+        class="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#FC4E00] focus:border-[#FC4E00] outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+      />
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-[#FC4E00]/10 rounded-lg">
+          <mat-icon class="text-[#FC4E00]">campaign</mat-icon>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Total</p>
+          <p class="text-xl font-bold text-gray-800 dark:text-white">{{ ads().length }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+          <mat-icon class="text-green-600 dark:text-green-400">check_circle</mat-icon>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Actives</p>
+          <p class="text-xl font-bold text-gray-800 dark:text-white">
+            {{ activeAdsCount() }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+          <mat-icon class="text-yellow-600 dark:text-yellow-400">visibility</mat-icon>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Impressions</p>
+          <p class="text-xl font-bold text-gray-800 dark:text-white">
+            {{ totalImpressions() }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+          <mat-icon class="text-purple-600 dark:text-purple-400">touch_app</mat-icon>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Clics</p>
+          <p class="text-xl font-bold text-gray-800 dark:text-white">
+            {{ totalClicks() }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ads Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                (click)="onSort('title')">
+              <div class="flex items-center gap-1">
+                Titre
+                @if (sortColumn() === 'title') {
+                  <mat-icon class="text-[#FC4E00]" style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                  </mat-icon>
+                }
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Aperçu</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                (click)="onSort('priority')">
+              <div class="flex items-center gap-1">
+                Priorité
+                @if (sortColumn() === 'priority') {
+                  <mat-icon class="text-[#FC4E00]" style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                  </mat-icon>
+                }
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Statut</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                (click)="onSort('impressions')">
+              <div class="flex items-center gap-1">
+                Impressions
+                @if (sortColumn() === 'impressions') {
+                  <mat-icon class="text-[#FC4E00]" style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                  </mat-icon>
+                }
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                (click)="onSort('clicks')">
+              <div class="flex items-center gap-1">
+                Clics
+                @if (sortColumn() === 'clicks') {
+                  <mat-icon class="text-[#FC4E00]" style="font-size: 16px; width: 16px; height: 16px;">
+                    {{ sortDirection() === 'asc' ? 'arrow_upward' : 'arrow_downward' }}
+                  </mat-icon>
+                }
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          @for (ad of pagedAds(); track ad.id) {
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <td class="px-4 py-3">
+                <div class="font-medium text-gray-800 dark:text-white">{{ ad.title }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ ad.description }}</div>
+              </td>
+              <td class="px-4 py-3">
+                <img [src]="ad.imageUrl" [alt]="ad.title" class="w-16 h-10 object-cover rounded-lg border border-gray-200 dark:border-gray-600">
+              </td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#FC4E00]/10 text-[#FC4E00]">
+                  {{ ad.priority }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                @if (ad.isActive) {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                    Active
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+                    Inactive
+                  </span>
+                }
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{{ ad.impressions }}</td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{{ ad.clicks }}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-1">
+                  <button 
+                    (click)="openEditForm(ad)" 
+                    class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                    title="Modifier">
+                    <mat-icon style="font-size: 20px; width: 20px; height: 20px;">edit</mat-icon>
+                  </button>
+                  <button 
+                    (click)="toggleAdStatus(ad)" 
+                    [class]="ad.isActive ? 'p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30 rounded-lg transition-colors' : 'p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors'"
+                    [title]="ad.isActive ? 'Désactiver' : 'Activer'">
+                    <mat-icon style="font-size: 20px; width: 20px; height: 20px;">{{ ad.isActive ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  <button 
+                    (click)="confirmDelete(ad)" 
+                    class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                    title="Supprimer">
+                    <mat-icon style="font-size: 20px; width: 20px; height: 20px;">delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="px-4 py-12 text-center">
+                <div class="flex flex-col items-center">
+                  <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
+                    <mat-icon class="text-gray-400 dark:text-gray-500" style="font-size: 48px; width: 48px; height: 48px;">campaign</mat-icon>
+                  </div>
+                  <p class="text-gray-500 dark:text-gray-400 font-medium">Aucune publicité trouvée</p>
+                  <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Créez votre première publicité pour commencer</p>
+                  <button 
+                    (click)="openAddForm()" 
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#FC4E00] hover:bg-[#d94300] text-white rounded-lg font-medium transition-colors">
+                    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">add</mat-icon>
+                    Nouvelle Publicité
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="border-t border-gray-200 dark:border-gray-700">
+      <mat-paginator
+        [length]="filteredAds().length"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="dark:bg-gray-800">
+      </mat-paginator>
+    </div>
+  </div>
+</div>

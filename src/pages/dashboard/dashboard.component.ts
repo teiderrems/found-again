@@ -12,13 +12,14 @@ import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
 import ApexCharts from 'apexcharts';
 import { SettingsService } from '@/services/settings.service';
+import { AdBannerComponent } from '@/components/ad-banner/ad-banner.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatDialogModule, MatPaginatorModule]
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatDialogModule, MatPaginatorModule, AdBannerComponent]
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   private declarationService = inject(DeclarationService);

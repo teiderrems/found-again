@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { AuthService } from '@/services/auth.service';
 import { ThemeService } from '@/services/theme.service';
+import { SubscriptionService } from '@/services/subscription.service';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -49,6 +50,7 @@ export class HeaderComponent implements OnInit {
    mobileMenuOpen = signal<boolean>(false);
    
    readonly themeService = inject(ThemeService);
+   readonly subscriptionService = inject(SubscriptionService);
 
    constructor(
       private readonly authService: AuthService,
@@ -158,6 +160,14 @@ export class HeaderComponent implements OnInit {
          icon: 'notifications',
          action: ($event: any) => {
             this.redirectTo('/notifications');
+         },
+      },
+      {
+         value: '3.5',
+         label: 'Premium',
+         icon: 'star',
+         action: ($event: any) => {
+            this.redirectTo('/premium');
          },
       },
       {

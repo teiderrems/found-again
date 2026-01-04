@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService, Notification } from '../../services/notification.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
 import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 
 @Component({
@@ -24,6 +26,7 @@ export class NotificationDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
+  private dialog = inject(MatDialog);
 
   notification = signal<Notification | null>(null);
   isLoading = signal(true);
@@ -77,16 +80,30 @@ export class NotificationDetailComponent implements OnInit {
 
   deleteNotification() {
     const notif = this.notification();
-    if (notif?.id && confirm('Êtes-vous sûr de vouloir supprimer cette notification ?')) {
-      this.notificationService.deleteNotification(notif.id).subscribe({
-        next: () => {
-          this.router.navigate(['/notifications']);
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression:', err);
-        }
-      });
-    }
+    const notifId = notif?.id;
+    if (!notifId) return;
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Supprimer la notification',
+        message: 'Êtes-vous sûr de vouloir supprimer cette notification ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        type: 'danger'
+      }
+    });
+    dialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        this.notificationService.deleteNotification(notifId).subscribe({
+          next: () => {
+            this.router.navigate(['/notifications']);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression:', err);
+          }
+        });
+      }
+    });
   }
 
   getIcon(type: string): string {
