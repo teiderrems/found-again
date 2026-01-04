@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AdminService, AdminStats } from '@/services/admin.service';
 import { VerificationService } from '@/services/verification.service';
 import { DeclarationService } from '@/services/declaration.service';
@@ -49,7 +50,7 @@ export type ChartOptions = {
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatDialogModule, FirebaseDatePipe, NgApexchartsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatDialogModule, FirebaseDatePipe, NgApexchartsModule],
 })
 export class AdminDashboardComponent implements OnInit {
   private adminService = inject(AdminService);

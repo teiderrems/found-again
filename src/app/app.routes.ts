@@ -197,6 +197,16 @@ export const routes: Routes = [
                   title: 'Paramètres de l\'Application',
                   runGuardsAndResolvers: (from, to) => from.url === to.url,
                },
+               {
+                  path: 'ads',
+                  loadComponent: () =>
+                     import('@/pages/admin/ads/admin-ads.component').then(
+                        (c) => c.AdminAdsComponent,
+                     ),
+                  pathMatch: 'full',
+                  title: 'Gestion des Publicités',
+                  runGuardsAndResolvers: (from, to) => from.url === to.url,
+               },
             ],
          },
          {
@@ -246,6 +256,16 @@ export const routes: Routes = [
                ),
             pathMatch: 'full',
             title: 'Détail de la notification',
+            runGuardsAndResolvers: (from, to) => from.url === to.url,
+         },
+         {
+            path: 'premium',
+            loadComponent: () =>
+               import('@/pages/premium/premium.component').then(
+                  (c) => c.PremiumComponent,
+               ),
+            pathMatch: 'full',
+            title: 'Abonnement Premium',
             runGuardsAndResolvers: (from, to) => from.url === to.url,
          }
       ],
