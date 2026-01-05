@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { AdBannerComponent } from '@/components/ad-banner/ad-banner.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -14,7 +15,9 @@ import { of } from 'rxjs';
   imports: [
     RouterModule,
     ReactiveFormsModule,
-    FormsModule, 
+    FormsModule,
+    // Global ad banner
+    AdBannerComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
