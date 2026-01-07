@@ -12,17 +12,12 @@ import {
    updateDoc,
    deleteDoc,
    getDoc,
-   getDocs,
    Query,
    query,
    where,
-   or,
-   orderBy,
-   limit,
-   startAfter,
+   and,
    QueryDocumentSnapshot,
    DocumentData,
-   and,
 } from '@angular/fire/firestore';
 
 import { FirebaseStorageService } from './firebase-storage.service';
@@ -37,6 +32,7 @@ export interface PaginatedResult<T> {
    items: T[];
    lastDoc: QueryDocumentSnapshot<DocumentData> | null;
    hasMore: boolean;
+   totalFiltered?: number;
 }
 
 @Injectable({
@@ -47,8 +43,7 @@ export class DeclarationService {
    private storageService: FirebaseStorageService = inject(FirebaseStorageService);
    private injector = inject(Injector);
 
-   private readonly LOSS_COLLECTION = 'loss';
-   private readonly FOUND_COLLECTION = 'found';
+   // collections kept inline; constants removed to avoid unused-field warnings
 
    /**
     * Retourne la référence de collection appropriée basée sur le type.
@@ -62,7 +57,7 @@ export class DeclarationService {
     */
    createDeclaration(
       declaration: DeclarationCreate,
-      type: DeclarationType,
+      _type?: DeclarationType,
    ): Observable<string> {
       const colRef = this.getCollectionRef();
 
@@ -107,7 +102,7 @@ export class DeclarationService {
     */
    getDeclarations(): Observable<DeclarationData[]> {
       const colRef = this.getCollectionRef();
-      return collectionData(colRef, { idField: 'id' }) as Observable<DeclarationData[]>;
+      return runInInjectionContext(this.injector, () => collectionData(colRef, { idField: 'id' }) as Observable<DeclarationData[]>);
    }
 
    /**
@@ -117,7 +112,7 @@ export class DeclarationService {
       const colRef = this.getCollectionRef();
       const activeFilter = where('active', '==', true);
       const declarationsQuery = query(colRef, activeFilter);
-      return collectionData(declarationsQuery, { idField: 'id' }) as Observable<DeclarationData[]>;
+      return runInInjectionContext(this.injector, () => collectionData(declarationsQuery, { idField: 'id' }) as Observable<DeclarationData[]>);
    }
 
    /**
@@ -140,7 +135,7 @@ export class DeclarationService {
          location?: string;
       },
       userId?: string
-   ): Observable<PaginatedResult<DeclarationData>> {
+    ): Observable<PaginatedResult<DeclarationData>> {
       // Exécuter dans le contexte d'injection Angular
       return runInInjectionContext(this.injector, () => {
          const colRef = this.getCollectionRef();
@@ -157,7 +152,7 @@ export class DeclarationService {
                }
 
                if (filters?.category) {
-                  items = items.filter(item => 
+                  items = items.filter(item =>
                      item.category.toLowerCase() === filters.category!.toLowerCase()
                   );
                }
@@ -189,7 +184,7 @@ export class DeclarationService {
 
                if (filters?.location) {
                   const lowerCaseLocation = filters.location.toLowerCase().trim();
-                  items = items.filter((declaration) => 
+                  items = items.filter((declaration) =>
                      declaration.location.toLowerCase().includes(lowerCaseLocation)
                   );
                }
@@ -198,7 +193,7 @@ export class DeclarationService {
                items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
                const totalFiltered = items.length;
-               
+
                // Pagination offset-based
                const paginatedItems = items.slice(skipCount, skipCount + pageSize);
 
@@ -246,7 +241,7 @@ export class DeclarationService {
                }
 
                if (filters?.category) {
-                  items = items.filter(item => 
+                  items = items.filter(item =>
                      item.category.toLowerCase() === filters.category!.toLowerCase()
                   );
                }
@@ -278,7 +273,7 @@ export class DeclarationService {
       id: string,
       declaration: DeclarationCreate,
       existingImageUrls: string[],
-      type: DeclarationType,
+      _type?: DeclarationType,
    ): Observable<void> {
       const colRef = this.getCollectionRef();
       const docRef = doc(colRef, id);
@@ -319,7 +314,7 @@ export class DeclarationService {
     * @returns Un Observable de la liste des déclarations filtrées.
     */
    getDeclarationsByCategory(
-      type: DeclarationType,
+      _type: DeclarationType,
       category: string,
    ): Observable<DeclarationData[]> {
       const colRef = this.getCollectionRef();
@@ -362,7 +357,7 @@ export class DeclarationService {
     * @returns Un Observable de la liste des déclarations filtrées par localisation.
     */
    getDeclarationsByLocation(
-      type: DeclarationType,
+      _type: DeclarationType,
       lat: number,
       lng: number,
    ): Observable<DeclarationData[]> {
@@ -388,7 +383,7 @@ export class DeclarationService {
     * @returns Un Observable de la liste des déclarations filtrées par date.
     */
    getDeclarationsByDate(
-      type: DeclarationType,
+      _type: DeclarationType,
       date: string,
    ): Observable<DeclarationData[]> {
       const colRef = this.getCollectionRef();
@@ -409,7 +404,7 @@ export class DeclarationService {
     *
     * @param type Le type de déclaration (LOSS ou FOUND).
     * @param searchTerm Le terme de recherche pour le filtrage (catégorie, titre ou description).
-    * @returns Un Observable de la liste des déclarations filtrées par terme de recherche.
+    * @returns Un Observable de la liste des déclarations filtrées.
     */
    getDeclarationsBySearchTerm(
       searchTerm: string,
@@ -446,7 +441,7 @@ export class DeclarationService {
       const activeFilter = where('active', '==', true);
       const declarationsQuery = query(colRef, activeFilter);
 
-      return (collectionData(declarationsQuery, { idField: 'id' }) as Observable<any[]>).pipe(
+      return runInInjectionContext(this.injector, () => (collectionData(declarationsQuery, { idField: 'id' }) as Observable<any[]>)).pipe(
          map((declarations: any[]) =>
             (declarations as DeclarationData[]).filter((declaration) => {
                const inCategory =
@@ -460,9 +455,6 @@ export class DeclarationService {
          ),
       );
    }
-
-   /**
-    */
 
    /**
     * Supprime une déclaration (document Firestore) et tous ses fichiers associés (Supabase Storage).
@@ -578,7 +570,7 @@ export class DeclarationService {
    toggleDeclarationActive(declarationId: string, active: boolean): Observable<void> {
       const colRef = this.getCollectionRef();
       const docRef = doc(colRef, declarationId);
-      
+
       return from(updateDoc(docRef, { active })).pipe(
          map(() => undefined),
          catchError((e) => {
@@ -601,4 +593,6 @@ export class DeclarationService {
    activateDeclaration(declarationId: string): Observable<void> {
       return this.toggleDeclarationActive(declarationId, true);
    }
+
+
 }

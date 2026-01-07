@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, from, map, mergeMap, switchMap, combineLatest, of } from 'rxjs';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
+import { Observable, from, map, switchMap, combineLatest } from 'rxjs';
 import {
   Firestore,
   collection,
@@ -7,9 +7,6 @@ import {
   where,
   collectionData,
   collectionGroup,
-  Query,
-  getDocs,
-  getDoc,
   doc,
   updateDoc,
   deleteDoc,
@@ -50,6 +47,7 @@ export interface DeclarationWithUser extends DeclarationData {
 })
 export class AdminService {
   private firestore: Firestore = inject(Firestore);
+  private injector = inject(Injector);
   private functions: Functions = inject(Functions);
 
   /**
@@ -60,9 +58,9 @@ export class AdminService {
     const declarationsRef = collection(this.firestore, 'declarations');
     const verificationsGroup = collectionGroup(this.firestore, 'verifications');
 
-    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
-    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
-    const verifications$ = collectionData(verificationsGroup, { idField: 'id' });
+    const users$ = runInInjectionContext(this.injector, () => collectionData(usersRef, { idField: 'uid' })) as Observable<UserProfile[]>;
+    const declarations$ = runInInjectionContext(this.injector, () => collectionData(declarationsRef, { idField: 'id' })) as Observable<DeclarationData[]>;
+    const verifications$ = runInInjectionContext(this.injector, () => collectionData(verificationsGroup, { idField: 'id' }));
 
     return combineLatest([users$, declarations$, verifications$]).pipe(
       map(([users, declarations, verifications]) => {
@@ -71,12 +69,12 @@ export class AdminService {
         const inactiveUsers = users.filter(u => u.isActive === false).length;
 
         const totalDeclarations = declarations.length;
-        
+
         const foundDeclarations = declarations.filter(d => d.type === DeclarationType.FOUND).length;
         const lostDeclarations = declarations.filter(d => d.type === DeclarationType.LOSS).length;
         const activeDeclarations = declarations.filter(d => d.active === true).length;
         const inactiveDeclarations = declarations.filter(d => d.active === false).length;
-        
+
         const pendingVerifications = verifications.filter(v => v['status'] === 'pending').length;
 
         // Recent items
@@ -107,8 +105,8 @@ export class AdminService {
                 const declaration = declarations.find(d => d.id === data.declarationId);
                 const declarationTitle = declaration ? declaration.title : 'Déclaration inconnue';
 
-                return { 
-                  ...data, 
+                return {
+                  ...data,
                   timestamp,
                   userName,
                   declarationTitle
@@ -144,8 +142,8 @@ export class AdminService {
     const declarationsRef = collection(this.firestore, 'declarations');
     const usersRef = collection(this.firestore, 'users');
 
-    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
-    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
+    const declarations$ = runInInjectionContext(this.injector, () => collectionData(declarationsRef, { idField: 'id' })) as Observable<DeclarationData[]>;
+    const users$ = runInInjectionContext(this.injector, () => collectionData(usersRef, { idField: 'uid' })) as Observable<UserProfile[]>;
 
     return combineLatest([declarations$, users$]).pipe(
       map(([declarations, users]) => {
@@ -170,15 +168,15 @@ export class AdminService {
     matchingDeclarationId?: string // ID de la déclaration de perte correspondante
   ): Observable<void> {
     const verificationRef = doc(this.firestore, 'declarations', declarationId, 'verifications', verificationId);
-    
+
     return from(updateDoc(verificationRef, { status, updatedAt: new Date().toISOString() })).pipe(
       switchMap(async () => {
         // Si la vérification est validée, on désactive les deux déclarations
         if (status === 'verified') {
           // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
           const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
-          await updateDoc(foundDeclarationRef, { 
-            active: false, 
+          await updateDoc(foundDeclarationRef, {
+            active: false,
             status: 'resolved',
             resolvedAt: new Date().toISOString()
           });
@@ -186,8 +184,8 @@ export class AdminService {
           // 2. Désactiver la déclaration d'objet perdu correspondante (si l'ID est fourni)
           if (matchingDeclarationId) {
             const lostDeclarationRef = doc(this.firestore, 'declarations', matchingDeclarationId);
-            await updateDoc(lostDeclarationRef, { 
-              active: false, 
+            await updateDoc(lostDeclarationRef, {
+              active: false,
               status: 'resolved',
               resolvedAt: new Date().toISOString()
             });
@@ -229,9 +227,9 @@ export class AdminService {
     const usersRef = collection(this.firestore, 'users');
     const verificationsGroup = collectionGroup(this.firestore, 'verifications');
 
-    const declarations$ = collectionData(declarationsRef, { idField: 'id' }) as Observable<DeclarationData[]>;
-    const users$ = collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
-    const verifications$ = collectionData(verificationsGroup, { idField: 'id' });
+    const declarations$ = runInInjectionContext(this.injector, () => collectionData(declarationsRef, { idField: 'id' })) as Observable<DeclarationData[]>;
+    const users$ = runInInjectionContext(this.injector, () => collectionData(usersRef, { idField: 'uid' })) as Observable<UserProfile[]>;
+    const verifications$ = runInInjectionContext(this.injector, () => collectionData(verificationsGroup, { idField: 'id' }));
 
     return combineLatest([declarations$, users$, verifications$]).pipe(
       map(([declarations, users, verifications]) => {
@@ -256,7 +254,7 @@ export class AdminService {
    */
   getAllUsers(): Observable<UserProfile[]> {
     const usersRef = collection(this.firestore, 'users');
-    return collectionData(usersRef, { idField: 'uid' }) as Observable<UserProfile[]>;
+    return runInInjectionContext(this.injector, () => collectionData(usersRef, { idField: 'uid' })) as Observable<UserProfile[]>;
   }
 
   /**

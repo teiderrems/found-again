@@ -1,11 +1,10 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, Injector, runInInjectionContext } from '@angular/core';
 import { Observable, from, map, switchMap, of } from 'rxjs';
 import {
   Firestore,
   collection,
   collectionData,
   doc,
-  docData,
   addDoc,
   updateDoc,
   query,
@@ -14,13 +13,13 @@ import {
   Timestamp,
   limit,
 } from '@angular/fire/firestore';
-import { 
-  Subscription, 
-  CreateSubscriptionData, 
+import {
+  Subscription,
+  CreateSubscriptionData,
   UpdateSubscriptionData,
   SubscriptionPlan,
   SUBSCRIPTION_PLANS,
-  SubscriptionPlanDetails 
+  SubscriptionPlanDetails
 } from '@/types/subscription';
 import { AuthService } from './auth.service';
 
@@ -30,6 +29,7 @@ import { AuthService } from './auth.service';
 export class SubscriptionService {
   private firestore: Firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private injector = inject(Injector);
   private readonly collectionName = 'subscriptions';
 
   // Signal pour le statut premium de l'utilisateur courant
@@ -74,7 +74,8 @@ export class SubscriptionService {
       orderBy('endDate', 'desc'),
       limit(1)
     );
-    return (collectionData(q, { idField: 'id' }) as Observable<Subscription[]>).pipe(
+    const data$ = runInInjectionContext(this.injector, () => collectionData(q, { idField: 'id' }) as Observable<Subscription[]>);
+    return data$.pipe(
       map(subs => subs.length > 0 ? subs[0] : null)
     );
   }
@@ -89,7 +90,7 @@ export class SubscriptionService {
       where('userId', '==', userId),
       orderBy('createdAt', 'desc')
     );
-    return collectionData(q, { idField: 'id' }) as Observable<Subscription[]>;
+    return runInInjectionContext(this.injector, () => collectionData(q, { idField: 'id' }) as Observable<Subscription[]>);
   }
 
   /**
@@ -98,7 +99,7 @@ export class SubscriptionService {
   getAllSubscriptions(): Observable<Subscription[]> {
     const subsRef = collection(this.firestore, this.collectionName);
     const q = query(subsRef, orderBy('createdAt', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<Subscription[]>;
+    return runInInjectionContext(this.injector, () => collectionData(q, { idField: 'id' }) as Observable<Subscription[]>);
   }
 
   /**
@@ -182,10 +183,10 @@ export class SubscriptionService {
     if (subscription.status !== 'active') return false;
     if (subscription.plan === 'free') return false;
 
-    const endDate = subscription.endDate instanceof Timestamp 
-      ? subscription.endDate.toDate() 
+    const endDate = subscription.endDate instanceof Timestamp
+      ? subscription.endDate.toDate()
       : subscription.endDate;
-    
+
     return new Date() < endDate;
   }
 

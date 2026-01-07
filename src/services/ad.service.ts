@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Observable, from, map } from 'rxjs';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
+import {Observable, from, map, tap} from 'rxjs';
 import {
   Firestore,
   collection,
@@ -13,15 +13,17 @@ import {
   where,
   orderBy,
   Timestamp,
-  increment,
+  increment, limit,
 } from '@angular/fire/firestore';
 import { Ad, CreateAdData, UpdateAdData } from '@/types/ad';
+import {log} from "firebase-functions/logger";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdService {
   private firestore: Firestore = inject(Firestore);
+  private injector = inject(Injector);
   private readonly collectionName = 'ads';
 
   /**
@@ -30,7 +32,7 @@ export class AdService {
   getAllAds(): Observable<Ad[]> {
     const adsRef = collection(this.firestore, this.collectionName);
     const q = query(adsRef, orderBy('priority', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<Ad[]>;
+    return runInInjectionContext(this.injector, () => collectionData(q, { idField: 'id' }) as Observable<Ad[]>);
   }
 
   /**
@@ -42,17 +44,18 @@ export class AdService {
     const q = query(
       adsRef,
       where('isActive', '==', true),
-      orderBy('priority', 'desc')
+      orderBy('priority', 'desc'),
+      limit(20)
     );
-    return (collectionData(q, { idField: 'id' }) as Observable<Ad[]>).pipe(
-      map(ads => ads.filter(ad => {
-        const startDate = ad.startDate ? this.toDate(ad.startDate) : null;
-        const endDate = ad.endDate ? this.toDate(ad.endDate) : null;
-        
-        if (startDate && now < startDate) return false;
-        if (endDate && now > endDate) return false;
-        return true;
-      }))
+    return runInInjectionContext(this.injector, () => (collectionData(q, { idField: 'id' }) as Observable<Ad[]>)).pipe(
+      map(ads => {
+        const filteredAds = ads.filter(ad => {
+          const startDate = this.toDate(ad?.startDate as Timestamp);
+          const endDate = this.toDate(ad?.endDate as Timestamp);
+          return startDate <= now && now <= endDate;
+        });
+        return filteredAds.length>0?filteredAds: ads;
+      })
     );
   }
 
