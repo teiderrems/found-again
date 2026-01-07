@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
 import { Observable, from, map, switchMap } from 'rxjs';
 import {
   Firestore,
@@ -14,8 +14,7 @@ import {
   DocumentReference,
   collectionGroup,
   collectionData,
-  docData,
-  orderBy
+  docData
 } from '@angular/fire/firestore';
 import {
   VerificationData,
@@ -29,6 +28,7 @@ import {
 })
 export class VerificationService {
   private firestore: Firestore = inject(Firestore);
+  private injector = inject(Injector);
 
   /**
    * Crée une nouvelle vérification d'identité
@@ -73,7 +73,7 @@ export class VerificationService {
       'verifications'
     );
 
-    return collectionData(verificationsRef, { idField: 'id' }).pipe(
+    return runInInjectionContext(this.injector, () => collectionData(verificationsRef, { idField: 'id' })).pipe(
       map(docs => docs.map(doc => ({
         ...doc,
         id: doc['id']
@@ -88,8 +88,8 @@ export class VerificationService {
     const verificationsGroup = collectionGroup(this.firestore, 'verifications');
     // Note: On ne trie pas côté serveur pour éviter de devoir créer un index composite complexe
     // On trie côté client
-    
-    return collectionData(verificationsGroup, { idField: 'id' }).pipe(
+
+    return runInInjectionContext(this.injector, () => collectionData(verificationsGroup, { idField: 'id' })).pipe(
       map(docs => {
         const verifications = docs.map(doc => {
           const data = doc as any;
@@ -109,7 +109,7 @@ export class VerificationService {
             timestamp
           } as VerificationData;
         });
-        
+
         // Tri côté client
         return verifications.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       })
@@ -340,8 +340,8 @@ export class VerificationService {
         if (update.status === VerificationStatus.VERIFIED) {
           // 1. Désactiver la déclaration d'objet trouvé (celle qui contient la vérification)
           const foundDeclarationRef = doc(this.firestore, 'declarations', declarationId);
-          await updateDoc(foundDeclarationRef, { 
-            active: false, 
+          await updateDoc(foundDeclarationRef, {
+            active: false,
             status: 'resolved',
             resolvedAt: new Date().toISOString()
           });
@@ -349,7 +349,7 @@ export class VerificationService {
           // 2. Désactiver la déclaration d'objet perdu correspondante
           // Si l'ID n'est pas fourni, on essaie de le récupérer depuis le document de vérification
           let targetMatchingId = matchingDeclarationId;
-          
+
           if (!targetMatchingId) {
             const verificationSnap = await getDoc(verificationRef);
             if (verificationSnap.exists()) {
@@ -360,8 +360,8 @@ export class VerificationService {
 
           if (targetMatchingId) {
             const lostDeclarationRef = doc(this.firestore, 'declarations', targetMatchingId);
-            await updateDoc(lostDeclarationRef, { 
-              active: false, 
+            await updateDoc(lostDeclarationRef, {
+              active: false,
               status: 'resolved',
               resolvedAt: new Date().toISOString()
             });

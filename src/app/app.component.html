@@ -2,5 +2,7 @@
   <router-outlet></router-outlet>
 
   <!-- Bannière publicitaire globale -->
-  <app-ad-banner position="bottom"></app-ad-banner>
+  @if (userRole() !== 'admin' && !isPremium()){
+    <app-ad-banner position="bottom"></app-ad-banner>
+  }
 </div>

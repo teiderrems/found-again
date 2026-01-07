@@ -39,9 +39,7 @@ git clone https://github.com/teiderrems/found-again
 ### Install Dependencies
 
 ```bash
-npm install
-# or
-yarn install
+pnpm install
 ```
 
 ---
@@ -49,7 +47,7 @@ yarn install
 ### Start Development Server
 
 ```bash
-npm start
+pnpm start
 ```
 
 Then open:
