@@ -1,47 +1,55 @@
 // theme.service.ts
 import { Injectable, signal, computed } from '@angular/core';
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark'| 'system';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ThemeService {
-  private themeSignal = signal<Theme>('light');
-  
+  private themeSignal = signal<Theme>( (localStorage.getItem('theme') as Theme) || 'system');
+
   // Expose a readonly signal for components
   readonly theme = this.themeSignal.asReadonly();
-  readonly isDark = computed(() => this.themeSignal() === 'dark');
+
+  // The actual visual state (calculated based on theme selection + system preference)
+  readonly isDark = computed(() => {
+    const current = this.themeSignal();
+    if (current === 'system') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return current === 'dark';
+  });
 
   constructor() {
-    // Vérifier le thème système ou localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    const initialTheme: Theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-    this.setTheme(initialTheme);
+    // Apply initial class to document
+    this.updateRender(this.isDark());
 
-    // Écouter les changements de préférence système
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      // Seulement si l'utilisateur n'a pas de préférence sauvegardée
-      if (!localStorage.getItem('theme')) {
-        this.setTheme(e.matches ? 'dark' : 'light');
+    // Listen for system changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      // Only re-render if we are in 'auto' mode
+      if (this.themeSignal() === 'system') {
+        this.updateRender(this.isDark());
       }
     });
   }
 
   setTheme(theme: Theme) {
     this.themeSignal.set(theme);
-    
+
     // Mettre à jour la classe sur le document
-    if (theme === 'dark') {
+    this.updateRender(this.isDark());
+
+    // Sauvegarder dans localStorage
+    localStorage.setItem('theme', theme);
+  }
+  // Extracted logic to keep code clean
+  private updateRender(isDark: boolean) {
+    if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-    
-    // Sauvegarder dans localStorage
-    localStorage.setItem('theme', theme);
   }
 
   toggleTheme() {
