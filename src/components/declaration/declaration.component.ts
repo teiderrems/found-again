@@ -15,7 +15,7 @@ import { CategoryService } from '@/services/category.service';
 import { LocationService, LocationSuggestion } from '@/services/location.service';
 import { DefaultCategory } from '@/constants/categories.constants';
 import { CategorySelectorComponent } from '../category-selector.component';
-import { DeclarationCreate, DeclarationType, ObjectCondition } from '@/types/declaration';
+import { DeclarationCreate, DeclarationType, ObjectCondition, DeclarationData } from '@/types/declaration';
 import { SettingsService } from '@/services/settings.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -29,6 +29,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class DeclarationComponent implements OnInit {
    
    @Input() declarationType: DeclarationType = DeclarationType.FOUND;
+   @Input() isEditMode: boolean = false;
+   @Input() existingDeclaration: DeclarationData | null = null;
    @Output() declarationSubmit = new EventEmitter<DeclarationCreate>();
 
    DeclarationType = DeclarationType;
@@ -46,31 +48,39 @@ export class DeclarationComponent implements OnInit {
    texts = {
       [DeclarationType.LOSS]: {
          title: 'Déclarer un objet perdu',
+         editTitle: 'Modifier la déclaration d\'objet perdu',
          mainTitle: 'Signaler une perte',
+         editMainTitle: 'Modifier votre déclaration',
          objectLabel: 'Objet perdu',
          locationLabel: 'Lieu de perte',
          dateLabel: 'Date de perte',
          descriptionPlaceholder:
             "Décrivez l'objet perdu en détail (couleur, marque, dimensions, contenu, etc.)",
          submitButton: 'Signaler la perte',
+         editSubmitButton: 'Mettre à jour la déclaration',
          illustrationTitle: 'Vous avez perdu un objet ?',
          illustrationText:
             'Ne perdez pas espoir ! Déclarez votre perte pour augmenter vos chances de le retrouver.',
          successMessage: 'Votre déclaration de perte a été enregistrée avec succès!',
+         editSuccessMessage: 'Votre déclaration de perte a été mise à jour avec succès!',
       },
       [DeclarationType.FOUND]: {
          title: 'Déclarer un objet retrouvé',
+         editTitle: 'Modifier la déclaration d\'objet retrouvé',
          mainTitle: 'Déclarer un objet retrouvé',
+         editMainTitle: 'Modifier votre déclaration',
          objectLabel: 'Objet retrouvé',
          locationLabel: 'Lieu de trouvaille',
          dateLabel: 'Date de trouvaille',
          descriptionPlaceholder:
             "Décrivez l'objet retrouvé en détail (couleur, marque, dimensions, contenu, etc.)",
          submitButton: "Déclarer l'objet retrouvé",
+         editSubmitButton: 'Mettre à jour la déclaration',
          illustrationTitle: 'Aidez à retrouver son propriétaire',
          illustrationText:
             "Votre déclaration peut faire la différence pour quelqu'un qui a perdu un objet précieux",
          successMessage: 'Votre déclaration a été enregistrée avec succès!',
+         editSuccessMessage: 'Votre déclaration a été mise à jour avec succès!',
       },
    };
    private categoryService = inject(CategoryService);
@@ -113,10 +123,48 @@ export class DeclarationComponent implements OnInit {
          this.categories.set(categories);
       });
 
+      // Gérer le mode édition
+      if (this.isEditMode && this.existingDeclaration) {
+         this.populateFormForEdit();
+      }
       
       this.declarationForm.get('location')?.valueChanges.subscribe((value) => {
          this.onLocationInputChange(value);
       });
+   }
+
+   private populateFormForEdit(): void {
+      if (!this.existingDeclaration) return;
+
+      const declaration = this.existingDeclaration;
+      
+      // Pré-remplir le formulaire avec les données existantes
+      this.declarationForm.patchValue({
+         title: declaration.title,
+         category: declaration.category,
+         description: declaration.description,
+         location: declaration.location,
+         date: declaration.date,
+         contactEmail: declaration.contactEmail || '',
+         contactPhone: declaration.contactPhone || '',
+         condition: declaration.condition || ObjectCondition.UNKNOWN,
+      });
+
+      // Définir la catégorie sélectionnée
+      this.selectedCategory = declaration.category;
+
+      // Charger les images existantes
+      if (declaration.images && declaration.images.length > 0) {
+         this.imagePreviews = declaration.images.map(img => img.downloadURL);
+         // Note: Les fichiers originaux ne sont pas disponibles en édition
+         // L'utilisateur devra uploader de nouvelles images s'il veut les changer
+      }
+
+      // Définir les coordonnées si disponibles
+      if (declaration.coordinates) {
+         this.selectedCoordinates = declaration.coordinates;
+         this.selectedCoordinatesString = `${declaration.coordinates.lat}, ${declaration.coordinates.lng}`;
+      }
    }
 
    onCategorySelected(categoryId: string): void {
@@ -125,7 +173,17 @@ export class DeclarationComponent implements OnInit {
    }
 
    get currentTexts() {
-      return this.texts[this.declarationType];
+      const baseTexts = this.texts[this.declarationType];
+      if (this.isEditMode) {
+         return {
+            ...baseTexts,
+            title: baseTexts.editTitle || baseTexts.title,
+            mainTitle: baseTexts.editMainTitle || baseTexts.mainTitle,
+            submitButton: baseTexts.editSubmitButton || baseTexts.submitButton,
+            successMessage: baseTexts.editSuccessMessage || baseTexts.successMessage,
+         };
+      }
+      return baseTexts;
    }
 
    get illustrationColor() {
