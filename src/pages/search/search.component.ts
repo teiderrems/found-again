@@ -159,7 +159,7 @@ export class SearchComponent implements OnInit, OnDestroy {
    }
 
    ngOnInit(): void {
-      this.loadInitialData();
+      this.loadMoreItems();
       this.loadTotalCount();
    }
 
