@@ -4,6 +4,9 @@ import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ImagePreviewDialogComponent } from '../image-preview-dialog/image-preview-dialog.component';
+import { AuthService } from '@/services/auth.service';
+import { DeclarationService } from '@/services/declaration.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
    selector: 'app-object-item',
@@ -19,6 +22,9 @@ export class ObjectItemComponent implements OnInit {
    
    private readonly router = inject(Router); 
    private readonly dialog = inject(MatDialog);
+   private readonly authService = inject(AuthService);
+   private readonly declarationService = inject(DeclarationService);
+   private readonly snackBar = inject(MatSnackBar);
    private cacheBusterTimestamp: number = Date.now();
    
    ngOnInit(): void {
@@ -38,6 +44,11 @@ export class ObjectItemComponent implements OnInit {
       return this.item().type === DeclarationType.FOUND;
    }
 
+   isOwner(): boolean {
+      const currentUserId = this.authService.getCurrentUserId();
+      return currentUserId !== null && this.item().userId === currentUserId;
+   }
+
    getLocationLabel(): string {
       return this.isLost() ? 'Perdu à :' : 'Trouvé à :';
    }
@@ -51,6 +62,32 @@ export class ObjectItemComponent implements OnInit {
 
    getButtonText(): string {
       return this.isLost() ? 'J\'ai peut-être des infos' : 'C\'est peut-être à moi';
+   }
+   
+   editDeclaration(): void {
+      // Naviguer vers la page d'édition appropriée selon le type
+      const editRoute = this.isLost() ? '/objets-perdus/declarer' : '/objets-retrouves/declarer';
+      this.router.navigate([editRoute], { queryParams: { edit: this.item().id } });
+   }
+
+   deleteDeclaration(): void {
+      if (confirm('Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.')) {
+         this.declarationService.deleteDeclaration(
+            this.item().id,
+            this.item().type,
+            this.item().images
+         ).subscribe({
+            next: () => {
+               this.snackBar.open('Déclaration supprimée avec succès', 'Fermer', { duration: 3000 });
+               // Recharger la page ou émettre un événement pour rafraîchir la liste
+               window.location.reload();
+            },
+            error: (error) => {
+               console.error('Erreur lors de la suppression:', error);
+               this.snackBar.open('Erreur lors de la suppression de la déclaration', 'Fermer', { duration: 3000 });
+            }
+         });
+      }
    }
    
    public get currentImageUrl(): string {

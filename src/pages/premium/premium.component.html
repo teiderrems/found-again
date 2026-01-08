@@ -26,13 +26,13 @@
           </div>
           <button 
             mat-stroked-button 
-            class="border-white text-white hover:bg-white/10"
+            class="border-white flex items-center text-white hover:bg-white/10"
             (click)="cancelSubscription()"
             [disabled]="isLoading()">
             @if (isLoading()) {
               <mat-spinner diameter="20" class="mr-2"></mat-spinner>
             }
-            Annuler l'abonnement
+            <span>Annuler l'abonnement</span>
           </button>
         </div>
       </div>
@@ -97,25 +97,25 @@
               <button 
                 mat-stroked-button 
                 color="primary"
-                class="w-full"
+                class="w-full flex items-center"
                 (click)="subscribeToPlan(plan.id)"
                 [disabled]="isLoading()">
                 @if (isLoading() && selectedPlan() === plan.id) {
                   <mat-spinner diameter="20" class="mr-2"></mat-spinner>
                 }
-                Changer de plan
+                <span>Changer de plan</span>
               </button>
             } @else {
               <button 
                 mat-raised-button 
                 [color]="plan.isPopular ? 'primary' : 'accent'"
-                class="w-full"
+                class="w-full flex items-center"
                 (click)="subscribeToPlan(plan.id)"
                 [disabled]="isLoading()">
                 @if (isLoading() && selectedPlan() === plan.id) {
                   <mat-spinner diameter="20" class="mr-2"></mat-spinner>
                 }
-                S'abonner maintenant
+                <span>S'abonner</span>
               </button>
             }
           </div>

@@ -1,7 +1,7 @@
 <div class="group flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl border border-gray-200/50 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:border-[#FC4E00]/30 hover:-translate-y-1">
     <!-- Image Container with Carousel -->
     <div class="relative h-32 sm:h-40 bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer" (click)="openPreview()">
-        <img [src]="currentImageUrl" [alt]="item().title"
+        <img [src]="currentImageUrl" [title]="item().title" [alt]="item().title"
             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
         <!-- Image Counter Badge -->
@@ -20,7 +20,7 @@
 
         <!-- Previous Button -->
         @if (item().images.length > 1) {
-            <button (click)="prevImage($event)"
+            <button title="preview previous image" (click)="prevImage($event)"
             class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -30,7 +30,7 @@
 
         <!-- Next Button -->
         @if (item().images.length > 1) {
-            <button (click)="nextImage($event)"
+            <button title="preview next image" (click)="nextImage($event)"
             class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -76,6 +76,35 @@
                 <span class="text-gray-600 dark:text-gray-400 text-xs leading-tight wrap-break-word">{{ item().location }}</span>
             </div>
         </div>
+
+        <!-- Owner Actions (Edit/Delete) -->
+        @if (isOwner()) {
+          <div class="flex items-center justify-between gap-2 mb-3 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Actions :</span>
+            <div class="flex items-center gap-2">
+              <button 
+                (click)="editDeclaration()"
+                class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md
+                  bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 
+                  hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Modifier
+              </button>
+              <button 
+                (click)="deleteDeclaration()"
+                class="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md
+                  bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 
+                  hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Supprimer
+              </button>
+            </div>
+          </div>
+        }
 
         <!-- CTA Button -->
         <button (click)="goToVerify()"
