@@ -18,7 +18,7 @@ export interface Ad {
   endDate?: Date | Timestamp;
   impressions: number;
   clicks: number;
-  targetAudience?: 'all' | 'lost' | 'found'; // Ciblage par type d'utilisateur
+  targetAudience?: ('all' | 'lost' | 'found')[]; // Ciblage par type d'utilisateur
 }
 
 /**

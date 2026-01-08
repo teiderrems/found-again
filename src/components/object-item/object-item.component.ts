@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '@/services/auth.service';
 import { DeclarationService } from '@/services/declaration.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ConfirmationDialogComponent, ConfirmationDialogData } from '../confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 
 @Component({
    selector: 'app-object-item',
@@ -27,6 +27,7 @@ export class ObjectItemComponent implements OnInit {
    private readonly authService = inject(AuthService);
    private readonly declarationService = inject(DeclarationService);
    private readonly snackBar = inject(MatSnackBar);
+   private readonly confirmationService = inject(ConfirmationService);
 
    isShowActionsBtn = signal(false);
    
@@ -80,23 +81,11 @@ export class ObjectItemComponent implements OnInit {
 
    deleteDeclaration(): void {
       this.isShowActionsBtn.set(false);
-      
-      const dialogData: ConfirmationDialogData = {
+
+      this.confirmationService.confirmDeleteAccount({
          title: 'Supprimer la déclaration',
-         message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible et toutes les données associées seront supprimées.',
-         confirmText: 'Supprimer',
-         cancelText: 'Annuler',
-         type: 'danger',
-         confirmAction: 'SUPPRIMER'
-      };
-
-      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-         data: dialogData,
-         width: '500px',
-         disableClose: true
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
+         message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible et toutes les données associées seront supprimées.'
+      }).subscribe(result => {
          if (result === true) {
             this.declarationService.deleteDeclaration(
                this.item().id,

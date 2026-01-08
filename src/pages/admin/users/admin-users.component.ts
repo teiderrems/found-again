@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { AdminService } from '@/services/admin.service';
 import { UserProfile } from '@/types/user';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
 import { SettingsService } from '@/services/settings.service';
 
@@ -36,6 +36,7 @@ export class AdminUsersComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private settingsService = inject(SettingsService);
+  private confirmationService = inject(ConfirmationService);
 
   users = signal<UserProfile[]>([]);
   filteredUsers = signal<UserProfile[]>([]);
@@ -120,19 +121,14 @@ export class AdminUsersComponent implements OnInit {
   toggleRole(user: UserProfile): void {
     const newRole = user.role === 'admin' ? 'standard' : 'admin';
     const action = newRole === 'admin' ? 'promouvoir' : 'rétrograder';
-    
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Modifier le rôle',
-        message: `Voulez-vous vraiment ${action} ${user.firstname} ${user.lastname} ?`,
-        confirmText: 'Confirmer',
-        cancelText: 'Annuler',
-        type: 'warning'
-      }
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmationService.confirm({
+      title: 'Modifier le rôle',
+      message: `Voulez-vous vraiment ${action} ${user.firstname} ${user.lastname} ?`,
+      confirmText: 'Confirmer',
+      cancelText: 'Annuler',
+      type: 'warning'
+    }).subscribe(result => {
       if (result) {
         this.adminService.updateUserRole(user.uid, newRole).subscribe({
           next: () => {
@@ -150,20 +146,14 @@ export class AdminUsersComponent implements OnInit {
   toggleUserStatus(user: UserProfile) {
     const newStatus = !(user.isActive ?? true);
     const action = newStatus ? 'activer' : 'désactiver';
+    const confirmMethod = newStatus ? 'confirmActivate' : 'confirmDeactivate';
 
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: `${newStatus ? 'Activer' : 'Désactiver'} l'utilisateur`,
-        message: `Êtes-vous sûr de vouloir ${action} l'utilisateur "${user.firstname} ${user.lastname}" ? ${!newStatus ? 'Il ne pourra plus se connecter.' : ''}`,
-        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-        cancelText: 'Annuler',
-        type: newStatus ? 'info' : 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
+    this.confirmationService[confirmMethod]({
+      title: `${newStatus ? 'Activer' : 'Désactiver'} l'utilisateur`,
+      message: `Êtes-vous sûr de vouloir ${action} l'utilisateur "${user.firstname} ${user.lastname}" ? ${!newStatus ? 'Il ne pourra plus se connecter.' : ''}`,
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1)
+    }).subscribe(result => {
+      if (!result) return;
 
       this.adminService.toggleUserStatus(user.uid, newStatus).subscribe({
         next: () => {
@@ -182,18 +172,10 @@ export class AdminUsersComponent implements OnInit {
   }
 
   deleteUser(user: UserProfile): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Supprimer l\'utilisateur',
-        message: `Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.email} ? Cette action est irréversible.`,
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer l\'utilisateur',
+      message: `Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.email} ? Cette action est irréversible.`
+    }).subscribe(result => {
       if (result) {
         this.adminService.deleteUser(user.uid).subscribe({
           next: () => {

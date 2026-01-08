@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UserProfileService } from '@/services/user-profile.service';
 import { AuthService } from '@/services/auth.service';
 import { ThemeService } from '@/services/theme.service';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { Router } from '@angular/router';
 import { UserProfile } from '@/types/user';
 
@@ -37,6 +37,7 @@ export class SettingsComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private router = inject(Router);
+  private confirmationService = inject(ConfirmationService);
 
   userProfile = signal<UserProfile | null>(null);
   loading = signal(true);
@@ -132,18 +133,11 @@ export class SettingsComponent implements OnInit {
   }
 
   deleteAccount() {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Supprimer mon compte',
-        message: 'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données seront perdues.',
-        confirmText: 'Supprimer définitivement',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(async (confirmed) => {
+    this.confirmationService.confirmDeleteAccount({
+      title: 'Supprimer mon compte',
+      message: 'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et toutes vos données seront perdues.',
+      confirmText: 'Supprimer définitivement'
+    }).subscribe(async (confirmed) => {
       if (confirmed) {
         this.isDeleting.set(true);
         try {

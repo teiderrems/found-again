@@ -6,6 +6,8 @@ import {
    inject,
    OnInit,
    signal,
+   input,
+   effect,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -29,8 +31,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class DeclarationComponent implements OnInit {
    
    @Input() declarationType: DeclarationType = DeclarationType.FOUND;
-   @Input() isEditMode: boolean = false;
-   @Input() existingDeclaration: DeclarationData | null = null;
+   isEditMode = input(false);
+   existingDeclaration = input<DeclarationData | null>(null);
    @Output() declarationSubmit = new EventEmitter<DeclarationCreate>();
 
    DeclarationType = DeclarationType;
@@ -107,14 +109,18 @@ export class DeclarationComponent implements OnInit {
 
    constructor() {
       this.declarationForm = this.fb.group({
-         title: ['', [Validators.required, Validators.minLength(3)]],
+         title: [ '', [Validators.required, Validators.minLength(3)]],
          category: ['', Validators.required],
          description: ['', [Validators.required, Validators.minLength(10)]],
          location: ['', Validators.required],
          date: ['', Validators.required],
-         contactEmail: [this.authService.getCurrentUserEmail() || '', [Validators.required, Validators.email]],
+         contactEmail: [ (this.authService.getCurrentUserEmail() || ''), [Validators.required, Validators.email]],
          contactPhone: ['', [Validators.pattern('^[0-9]{10}$')]],
-         condition: [ObjectCondition.UNKNOWN],
+         condition: [ ObjectCondition.UNKNOWN],
+      });
+      effect(() => {
+         // console.log('Existing Declaration changed:', this.existingDeclaration());
+         this.populateFormForEdit();
       });
    }
 
@@ -123,8 +129,9 @@ export class DeclarationComponent implements OnInit {
          this.categories.set(categories);
       });
 
+      console.log(this.existingDeclaration() || 'No existing declaration');
       // Gérer le mode édition
-      if (this.isEditMode && this.existingDeclaration) {
+      if (this.isEditMode() && this.existingDeclaration()) {
          this.populateFormForEdit();
       }
       
@@ -134,10 +141,10 @@ export class DeclarationComponent implements OnInit {
    }
 
    private populateFormForEdit(): void {
-      if (!this.existingDeclaration) return;
+      const declaration = this.existingDeclaration();
 
-      const declaration = this.existingDeclaration;
-      
+      if (!declaration) return;
+
       // Pré-remplir le formulaire avec les données existantes
       this.declarationForm.patchValue({
          title: declaration.title,
@@ -174,7 +181,7 @@ export class DeclarationComponent implements OnInit {
 
    get currentTexts() {
       const baseTexts = this.texts[this.declarationType];
-      if (this.isEditMode) {
+      if (this.isEditMode()) {
          return {
             ...baseTexts,
             title: baseTexts.editTitle || baseTexts.title,

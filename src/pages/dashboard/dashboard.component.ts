@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef, AfterViewInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -9,7 +9,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DeclarationService } from '@/services/declaration.service';
 import { AuthService } from '@/services/auth.service';
 import { DeclarationData, DeclarationType } from '@/types/declaration';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import ApexCharts from 'apexcharts';
 import { SettingsService } from '@/services/settings.service';
 
@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private settingsService = inject(SettingsService);
+  private confirmationService = inject(ConfirmationService);
+  private router = inject(Router);
   private userId = this.authService.getCurrentUserId();
 
   @ViewChild('typeChart') typeChart!: ElementRef;
@@ -303,19 +305,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   deleteDeclaration(id: string, type: DeclarationType, images: any[]) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Supprimer la déclaration',
-        message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer la déclaration',
+      message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.'
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.declarationService.deleteDeclaration(id, type, images).subscribe({
           next: () => {
@@ -341,20 +334,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   toggleDeclarationActive(id: string, currentActive: boolean) {
     const newStatus = !currentActive;
     const action = newStatus ? 'activer' : 'désactiver';
-    
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
-        message: `Êtes-vous sûr de vouloir ${action} cette déclaration ?`,
-        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-        cancelText: 'Annuler',
-        type: 'warning'
-      }
-    });
+    const confirmMethod = newStatus ? 'confirmActivate' : 'confirmDeactivate';
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService[confirmMethod]({
+      title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
+      message: `Êtes-vous sûr de vouloir ${action} cette déclaration ?`,
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1)
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.declarationService.toggleDeclarationActive(id, newStatus).subscribe({
           next: () => {
@@ -378,19 +364,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
    * Mark loss declaration as resolved
    */
   markLossAsResolved(id: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Objet retrouvé',
-        message: 'Vous avez retrouvé votre objet perdu ? Cette déclaration sera désactivée.',
-        confirmText: 'Confirmer',
-        cancelText: 'Annuler',
-        type: 'info'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService.confirmResolve({
+      title: 'Objet retrouvé',
+      message: 'Vous avez retrouvé votre objet perdu ? Cette déclaration sera désactivée.'
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.declarationService.deactivateLossDeclaration(id).subscribe({
           next: () => {
@@ -408,5 +385,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         });
       }
     });
+  }
+
+  editDeclaration(id: string, type: DeclarationType) {
+    const route = type === DeclarationType.FOUND ? '/déclarer-objet-trouvé' : '/déclarer-perte';
+    this.router.navigate([route], { queryParams: { edit: id } });
   }
 }

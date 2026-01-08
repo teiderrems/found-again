@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-empty-function */
-import { Component, OnInit, OnDestroy, inject, signal, computed, Input, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, Input, ElementRef, ViewChild, effect } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +21,17 @@ import { take } from 'rxjs';
     RouterModule
   ],
   template: `
-    <div *ngIf="shouldShow()" #banner class="ad-banner" role="region" aria-label="Bannière publicitaire" [attr.data-position]="position" [class.visible]="!isHidden()" aria-live="polite"
+    <div *ngIf="shouldShow()" #banner
+      class=" max-w-190 mx-auto mb-4 rounded-2xl overflow-visible transition-all duration-700 ease-out origin-center outline-none
+             focus-within:shadow-lg focus-within:rounded-2xl
+             {{ position === 'bottom' ? 'fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-3 z-60 w-[calc(100%-2rem)] pointer-events-none opacity-0' : '' }}
+             {{ position === 'top' ? 'fixed top-4 left-1/2 -translate-x-1/2 -translate-y-3 z-60 w-[calc(100%-2rem)] pointer-events-none opacity-0' : '' }}
+             {{ (!isHidden() && position !== 'sidebar') ? 'translate-x-[-50%] translate-y-0 opacity-100 pointer-events-auto shadow-xl' : '' }}"
+      role="region"
+      aria-label="Bannière publicitaire"
+      [attr.data-position]="position"
+      [class.visible]="!isHidden()"
+      aria-live="polite"
       tabindex="0"
       (mouseenter)="pauseRotation(true)"
       (mouseleave)="pauseRotation(false)"
@@ -31,160 +39,76 @@ import { take } from 'rxjs';
       (focusout)="pauseRotation(false)"
       (keydown.escape)="hideAd()">
 
-      <div class="ad-inner flex items-center gap-4 px-4 py-3">
+      <div class="ad-inner flex items-center gap-4 px-4 py-3 sm:px-2 sm:py-2 sm:gap-2.5 bg-slate-50 border border-slate-200/6 rounded-xl shadow-lg transition-all duration-300 ease-out hover:shadow-2xl hover:-translate-y-1">
 
-        <div class="ad-badge" aria-hidden="true">
-          <span class="badge">Publicité</span>
+        <div class="ad-badge hidden sm:block">
+          <span class="badge inline-block bg-slate-800/85 text-white px-2 py-1 rounded-lg text-xs font-semibold tracking-wide">Publicité</span>
         </div>
 
         <div class="ad-content flex-1 min-w-0">
           <ng-container *ngIf="currentAd() as ad; else emptyState">
-            <a class="ad-body flex items-center gap-4" [href]="ad?.linkUrl || null" target="_blank" rel="noopener noreferrer" (click)="onAdClick($event)">
+            <a class="ad-body flex items-center gap-4 text-slate-900 hover:text-slate-700 transition-colors"
+               [href]="ad?.linkUrl || null"
+               target="_blank"
+               rel="noopener noreferrer"
+               (click)="onAdClick($event)">
                  <div class="media shrink-0">
-                   <img *ngIf="ad?.imageUrl; else maybeVideo" [src]="ad?.imageUrl" [alt]="ad?.title" class="ad-image" loading="lazy" />
+                   <img *ngIf="ad?.imageUrl; else maybeVideo"
+                        [src]="ad?.imageUrl"
+                        [alt]="ad?.title"
+                        class="ad-image w-21 h-14 sm:w-16 sm:h-11 object-cover rounded-lg"
+                        loading="lazy" />
                    <ng-template #maybeVideo>
-                     <iframe *ngIf="ad?.videoUrl; else placeholder" [src]="getSafeVideoUrl(ad?.videoUrl)" class="ad-iframe" title="Vidéo publicitaire" loading="lazy"></iframe>
+                     <iframe *ngIf="ad?.videoUrl; else placeholder"
+                             [src]="getSafeVideoUrl(ad?.videoUrl)"
+                             class="ad-iframe w-30 h-17.5 sm:w-22.5 sm:h-13.5 rounded-lg border-0"
+                             title="Vidéo publicitaire"
+                             loading="lazy"></iframe>
                    </ng-template>
                    <ng-template #placeholder>
-                     <div class="ad-placeholder-icon" aria-hidden="true">📣</div>
+                     <div class="ad-placeholder-icon w-16 h-12 flex items-center justify-center rounded-lg bg-black/4 text-2xl">📣</div>
                    </ng-template>
                  </div>
 
                  <div class="text min-w-0">
-                   <div class="title truncate font-medium">{{ ad?.title || 'Contenu sponsorisé' }}</div>
-                   <div class="desc truncate text-sm text-gray-600 dark:text-gray-300">{{ ad?.description }}</div>
+                   <div class="title truncate font-medium text-slate-900">{{ ad?.title || 'Contenu sponsorisé' }}</div>
+                   <div class="desc truncate text-sm text-slate-600 dark:text-slate-300">{{ ad?.description }}</div>
                  </div>
             </a>
            </ng-container>
 
           <ng-template #emptyState>
-            <div class="ad-empty text-sm text-gray-700 dark:text-gray-300 truncate">Aucune publicité configurée. Contactez un administrateur pour en ajouter.</div>
+            <div class="ad-empty text-sm text-slate-700 dark:text-slate-300 text-center truncate">Chargement des publicités...</div>
           </ng-template>
         </div>
 
-        <div class="ad-actions flex items-center gap-3 ml-auto">
-          <a routerLink="/premium" class="cta-upgrade inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-semibold" title="Supprimer les pubs">
-            <mat-icon class="star" aria-hidden="true">star</mat-icon>
-            <span>Supprimer les pubs</span>
+        <div class="ad-actions ml-auto flex items-center gap-3">
+          <a routerLink="/premium"
+             class="cta-upgrade inline-flex items-center gap-2 px-2.5 py-1.5 sm:px-2.5 sm:py-1.5 rounded-md text-sm sm:text-xs font-semibold bg-linear-to-r from-green-500 to-emerald-600 text-white shadow-md hover:shadow-lg transition-all duration-200 pointer-events-auto"
+             title="Supprimer les pubs">
+            <mat-icon class="star text-base sm:text-sm">star</mat-icon>
+            <span class="sm:hidden">Supprimer les pubs</span>
+            <span class="hidden sm:inline">Premium</span>
           </a>
 
-          <button class="btn-hide text-sm text-blue-600 hover:underline" (click)="hidePermanently()" title="Ne plus afficher">Ne plus afficher</button>
+          <button class="btn-hide text-sm text-blue-600 hover:text-blue-800 underline decoration-blue-600 hover:decoration-blue-800 transition-colors pointer-events-auto border-none bg-transparent cursor-pointer font-semibold"
+                  (click)="hidePermanently()"
+                  title="Ne plus afficher">
+            Ne plus afficher
+          </button>
 
-          <button mat-icon-button aria-label="Fermer la publicité" (click)="hideAd()" class="close-btn">
-            <mat-icon aria-hidden="true">close</mat-icon>
+          <button mat-icon-button
+                  aria-label="Fermer la publicité"
+                  (click)="hideAd()"
+                  class="close-btn pointer-events-auto">
+            <mat-icon>close</mat-icon>
           </button>
         </div>
 
       </div>
     </div>
   `,
-  styles: [`
-    .ad-banner {
-      max-width: 760px;
-      margin: 0 auto 1rem;
-      border-radius: 14px;
-      overflow: visible;
-      transition: transform 280ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease, box-shadow 200ms ease;
-      transform-origin: center;
-      outline: none;
-    }
-
-    /* Hover / focus visual lift */
-    .ad-banner:focus-visible .ad-inner,
-    .ad-banner:hover .ad-inner {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(2,6,23,0.12);
-    }
-
-    .ad-banner:focus-visible { box-shadow: 0 6px 20px rgba(16,24,40,0.06); border-radius: 14px; }
-
-    /* position déclenchée depuis l'attribut data-position (top/bottom) */
-    .ad-banner[data-position="bottom"] {
-      position: fixed;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(12px);
-      z-index: 60;
-      width: calc(100% - 2rem);
-      pointer-events: none;
-      opacity: 0;
-    }
-    .ad-banner[data-position="top"] {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(-12px);
-      z-index: 60;
-      width: calc(100% - 2rem);
-      pointer-events: none;
-      opacity: 0;
-    }
-
-    /* Lorsque visible : rendre interactif */
-    .ad-banner.visible[data-position="bottom"], .ad-banner.visible[data-position="top"] {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-      pointer-events: auto;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.08);
-    }
-
-    .ad-inner {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: #f8fafc; /* subtle near-white gray */
-      border: 1px solid rgba(15,23,42,0.06);
-      border-radius: 12px;
-      padding: 0.6rem 0.8rem;
-      box-shadow: 0 6px 18px rgba(28,36,50,0.06);
-      transition: transform 220ms ease, box-shadow 220ms ease;
-    }
-
-    .badge {
-      display: inline-block;
-      background: rgba(15,23,42,0.85);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
-
-    .ad-image { width: 84px; height: 56px; object-fit: cover; border-radius: 8px; }
-    .ad-iframe { width: 120px; height: 70px; border-radius: 8px; border: 0; }
-    .ad-placeholder-icon { width: 64px; height: 48px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; background:rgba(0,0,0,0.04); }
-
-    .ad-content .title { color: #0f172a; }
-    .ad-content .desc { color: #475569; }
-
-    .cta-upgrade {
-      background: linear-gradient(90deg,#16a34a,#10b981);
-      color: white;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.12);
-      pointer-events: auto;
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-    .cta-upgrade .star { font-size: 16px; color: white; }
-
-    .ad-actions { margin-left: auto; display:flex; align-items:center; gap:0.5rem; }
-
-    .btn-hide { background: transparent; border: none; cursor: pointer; pointer-events: auto; color: #1d4ed8; font-weight: 600; }
-
-    .close-btn { pointer-events: auto; }
-
-    .ad-empty { text-align: center; }
-
-    /* Responsive */
-    @media (max-width: 640px) {
-      .ad-inner { padding: 0.5rem; gap: 0.6rem; }
-      .ad-image { width: 64px; height: 44px; }
-      .ad-iframe { width: 90px; height: 54px; }
-      .cta-upgrade { padding: 6px 10px; font-size: 13px; }
-    }
-
-  `]
+  styles: []
 })
 export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() position: 'top' | 'bottom' | 'sidebar' = 'top';
@@ -211,11 +135,21 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
 
-  currentAd = signal<Ad | null>(null);
+  currentAd = signal<Ad>({
+            id: 'default-ad',
+            title: 'Bienvenue sur FoundAgain !',
+            description: 'La plateforme pour retrouver vos objets perdus et aider les autres.',
+            imageUrl: 'https://via.placeholder.com/300x100/3B82F6/FFFFFF?text=FoundAgain',
+            linkUrl: 'https://found-again-4a0e0.firebaseapp.com',
+            isActive: true,
+            priority: 0,
+            createdAt: new Date(),
+            impressions: 0,
+            clicks: 0
+          });
   currentIndex = signal(0);
   totalAds = signal(0);
   isPremium = this.subscriptionService.isPremium;
-  isAllowedToShow = signal(false);
   isHidden = signal(false);
   // Paused when user hovers / focuses the banner
   isPaused = signal(false);
@@ -226,36 +160,26 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   private _permanentHidden = signal<boolean>(localStorage.getItem('found:adBanner:hide') === '1');
 
   // computed to decide whether to show banner (uses new signals)
-  shouldShow = computed(() => this.isAllowedToShow() && !this._permanentHidden() && !this.isPremium());
+  shouldShow = computed(() => !this.isHidden() && !this._permanentHidden() && !this.isPremium());
 
   private ads = signal<Ad[]>([]);
   private rotationSubscription?: Subscription;
   private adsSubscription?: Subscription;
 
-  ngOnInit(): void {
-    // Debug
-    console.debug('AdBanner: init, position=', this.position);
 
+  constructor() {
+    effect(() => {
+      this.isHidden.set(this._permanentHidden());
+    });
+  }
+
+  ngOnInit(): void {
     this.loadPersistentHide();
 
     // Charger uniquement si l'utilisateur est standard (non-admin) et non premium
     this.authService.getCurrentUserProfile().pipe(take(1)).subscribe(profile => {
-      const role = profile?.role || 'standard';
-      if (role === 'admin') {
-        console.debug('AdBanner: user is admin — not showing banner');
-        this.isAllowedToShow.set(false);
-        return;
-      }
-
-      if (!this.isPremium() && !this.isPermanentlyHidden()) {
-        this.loadAds();
-        this.isAllowedToShow.set(true);
-      } else {
-        this.isAllowedToShow.set(false);
-      }
+      this.loadAds();
     });
-    // Slight delay to log view state (ViewChild may not be ready immediately)
-    setTimeout(() => console.debug('AdBanner: view init, isPremium=', this.isPremium(), 'permanentlyHidden=', this.isPermanentlyHidden(), 'isHidden=', this.isHidden()), 150);
   }
 
   ngOnDestroy(): void {
@@ -266,10 +190,16 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   private loadAds(): void {
     this.adsSubscription = this.adService.getActiveAds().subscribe({
       next: (ads) => {
-        this.ads.set(ads);
+        if (ads.length === 0) {
+          this.totalAds.set(1);
+        } else {
+          this.ads.set(ads);
+          this.totalAds.set(ads.length);
+        }
+
         this.currentIndex.set(0);
-        this.totalAds.set(ads.length);
-        if (ads.length > 0 && !this.isPermanentlyHidden()) {
+
+        if (this.totalAds() > 0 && !this.isPermanentlyHidden()) {
           this.showRandomAd();
           this.startRotation();
         }
@@ -307,17 +237,9 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     this.isPaused.set(paused);
   }
 
-  // override hideAd to also set a short-lived collapse animation
   hideAd(): void {
     console.debug('AdBanner: hideAd invoked');
     this.isHidden.set(true);
-    this._permanentHidden.set(true);
-    localStorage.removeItem(this.permanentHideKey);
-
-    // Réafficher après 5 minutes
-    setTimeout(() => {
-      this.isHidden.set(false);
-    }, 5 * 60 * 1000);
   }
 
   hidePermanently(): void {

@@ -32,6 +32,7 @@ export class FoundObjectComponent implements OnInit {
     // Vérifier si on est en mode édition
     this.route.queryParams.subscribe(params => {
       const editId = params['edit'];
+      console.log(params);
       if (editId) {
         this.isEditMode.set(true);
         this.editDeclarationId.set(editId);
@@ -94,13 +95,13 @@ export class FoundObjectComponent implements OnInit {
   private updateDeclaration(declarationData: DeclarationCreate) {
     if (!this.editDeclarationId() || !this.existingDeclaration()) return;
 
-    // Récupérer les URLs des images existantes
-    const existingImageUrls = this.existingDeclaration()!.images.map(img => img.downloadURL);
+    // Récupérer les images existantes complètes
+    const existingImages = this.existingDeclaration()!.images;
 
     this.declarationService.updateDeclaration(
       this.editDeclarationId()!,
       declarationData,
-      existingImageUrls,
+      existingImages,
       DeclarationType.FOUND
     ).subscribe({
       next: () => {
