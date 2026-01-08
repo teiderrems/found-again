@@ -139,7 +139,7 @@ export class DeclarationService {
       // Exécuter dans le contexte d'injection Angular
       return runInInjectionContext(this.injector, () => {
          const colRef = this.getCollectionRef();
-         const simpleQuery = query(colRef, and(where('active', '==', true),where('userId', '!=', userId ?? '')));
+         const simpleQuery = query(colRef, where('active', '==', true));
 
          return collectionData(simpleQuery, { idField: 'id' }).pipe(
             take(1),
