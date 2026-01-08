@@ -59,6 +59,12 @@ service cloud.firestore {
     match /ads/{adId} {
       allow read: if true; // Lecture publique
       allow create, update, delete: if isAdmin();
+      
+      // Permettre aux utilisateurs authentifiés d'incrémenter impressions et clics
+      allow update: if isAuthenticated() && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['impressions', 'clicks']) &&
+        request.resource.data.impressions >= resource.data.impressions &&
+        request.resource.data.clicks >= resource.data.clicks;
     }
 
     // Collection des abonnements

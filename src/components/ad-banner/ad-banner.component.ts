@@ -12,7 +12,6 @@ import { AuthService } from '@/services/auth.service';
 import { Ad } from '@/types/ad';
 import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs';
-import {log} from "firebase-functions/logger";
 
 @Component({
   selector: 'app-ad-banner',
@@ -255,7 +254,6 @@ export class AdBannerComponent implements OnInit, OnDestroy {
         this.isAllowedToShow.set(false);
       }
     });
-    console.log(this.currentAd());
     // Slight delay to log view state (ViewChild may not be ready immediately)
     setTimeout(() => console.debug('AdBanner: view init, isPremium=', this.isPremium(), 'permanentlyHidden=', this.isPermanentlyHidden(), 'isHidden=', this.isHidden()), 150);
   }
@@ -268,11 +266,10 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   private loadAds(): void {
     this.adsSubscription = this.adService.getActiveAds().subscribe({
       next: (ads) => {
-        console.debug('AdBanner: loaded ads count=', ads.length, 'isPremium=', this.isPremium(), 'permanentlyHidden=', this._permanentHidden(), 'isHidden=', this.isHidden());
         this.ads.set(ads);
         this.currentIndex.set(0);
         this.totalAds.set(ads.length);
-        if (ads.length > 0) {
+        if (ads.length > 0 && !this.isPermanentlyHidden()) {
           this.showRandomAd();
           this.startRotation();
         }
@@ -284,30 +281,17 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   @ViewChild('banner', { static: false }) bannerEl?: ElementRef<HTMLElement>;
 
   // Utility: logs current banner element state
-  // private debugBannerEl(): void { /* debug helper suppressed to avoid linter warnings */ }
 
   private showRandomAd(): void {
     if (this.ads().length === 0) return;
 
     // Sélection pondérée par priorité
     const totalWeight = this.ads().reduce((sum, ad) => sum + ad.priority, 0);
-    let random = Math.random() * totalWeight;
     this.currentAd.set(this.ads()[0]);
     setTimeout(() => {
       this.currentAd.set(this.ads()[this.currentIndex()]);
       this.currentIndex.update(prev=>(prev++)%this.ads().length);
     }, 1000);
-    /*console.log(random);
-    for (let i = 0; i < this.ads().length; i++) {
-      random -= this.ads()[i].priority;
-      if (random <= 0) {
-        this.currentAd.set(this.ads()[i]);
-        this.currentIndex.set(i);
-        console.debug('AdBanner: showRandomAd -> index=', i, 'id=', this.ads()[i]?.id);
-        this.recordImpression();
-        return;
-      }
-    }*/
     this.recordImpression();
   }
 
@@ -327,6 +311,8 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   hideAd(): void {
     console.debug('AdBanner: hideAd invoked');
     this.isHidden.set(true);
+    this._permanentHidden.set(true);
+    localStorage.removeItem(this.permanentHideKey);
 
     // Réafficher après 5 minutes
     setTimeout(() => {
@@ -353,7 +339,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
 
   private recordImpression(): void {
     const ad = this.currentAd();
-    if (ad?.id) {
+    if (ad?.id && !this.isPermanentlyHidden()) {
       // protection: non bloquant
       this.adService.recordImpression(ad.id).subscribe({ error: (e) => console.debug('Impression record failed', e) });
     }
