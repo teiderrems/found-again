@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="text-center mb-12">
       <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 mb-4">
-        <mat-icon class="text-white text-3xl" style="font-size: 32px; width: 32px; height: 32px;">star</mat-icon>
+        <mat-icon class="text-white text-3xl icon-fixed-size">star</mat-icon>
       </div>
       <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">
         Passez à Premium
@@ -18,7 +18,7 @@
       <div class="bg-linear-to-r from-yellow-400 to-orange-500 rounded-xl p-6 mb-8 text-white">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <mat-icon class="text-4xl" style="font-size: 48px; width: 48px; height: 48px;">verified</mat-icon>
+            <mat-icon class="text-4xl large-icon">verified</mat-icon>
             <div>
               <h2 class="text-xl font-bold">Vous êtes Premium !</h2>
               <p class="opacity-90">Merci de votre soutien. Profitez de tous les avantages.</p>
@@ -26,13 +26,13 @@
           </div>
           <button 
             mat-stroked-button 
-            class="border-white text-white hover:bg-white/10"
+            class="border-white flex items-center text-white hover:bg-white/10"
             (click)="cancelSubscription()"
             [disabled]="isLoading()">
             @if (isLoading()) {
               <mat-spinner diameter="20" class="mr-2"></mat-spinner>
             }
-            Annuler l'abonnement
+            <span>Annuler l'abonnement</span>
           </button>
         </div>
       </div>
@@ -76,12 +76,14 @@
 
             <!-- Fonctionnalités -->
             <ul class="space-y-3 mb-6">
-              @for (feature of plan.features; track feature) {
-                <li class="flex items-start gap-2">
-                  <mat-icon class="text-green-500 shrink-0" style="font-size: 20px; width: 20px; height: 20px;">check_circle</mat-icon>
-                  <span class="text-gray-600 dark:text-gray-300 text-sm">{{ feature }}</span>
-                </li>
-              }
+              <template>
+                @for (feature of plan.features; track feature) {
+                  <li class="flex items-start gap-2">
+                    <mat-icon class="text-green-500 shrink-0 feature-icon">check_circle</mat-icon>
+                    <span class="text-gray-600 dark:text-gray-300 text-sm">{{ feature }}</span>
+                  </li>
+                }
+              </template>
             </ul>
 
             <!-- Bouton d'action -->
@@ -97,25 +99,25 @@
               <button 
                 mat-stroked-button 
                 color="primary"
-                class="w-full"
+                class="w-full flex items-center"
                 (click)="subscribeToPlan(plan.id)"
                 [disabled]="isLoading()">
                 @if (isLoading() && selectedPlan() === plan.id) {
                   <mat-spinner diameter="20" class="mr-2"></mat-spinner>
                 }
-                Changer de plan
+                <span>Changer de plan</span>
               </button>
             } @else {
               <button 
                 mat-raised-button 
                 [color]="plan.isPopular ? 'primary' : 'accent'"
-                class="w-full"
+                class="w-full flex items-center"
                 (click)="subscribeToPlan(plan.id)"
                 [disabled]="isLoading()">
                 @if (isLoading() && selectedPlan() === plan.id) {
                   <mat-spinner diameter="20" class="mr-2"></mat-spinner>
                 }
-                S'abonner maintenant
+                <span>S'abonner</span>
               </button>
             }
           </div>

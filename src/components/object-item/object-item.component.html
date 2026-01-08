@@ -1,89 +1,225 @@
-<div class="group flex flex-col h-full bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl border border-gray-200/50 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:border-[#FC4E00]/30 hover:-translate-y-1">
-    <!-- Image Container with Carousel -->
-    <div class="relative h-32 sm:h-40 bg-gray-100 dark:bg-gray-700 overflow-hidden cursor-pointer" (click)="openPreview()">
-        <img [src]="currentImageUrl" [alt]="item().title"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+<div class="group relative flex flex-col h-full min-h-75 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200/60 dark:border-gray-700/60 overflow-hidden transition-all duration-500 hover:border-[#FC4E00]/40 hover:-translate-y-2 hover:shadow-[#FC4E00]/10">
 
-        <!-- Image Counter Badge -->
+    <!-- Status Badges -->
+    <div class="absolute top-3 left-3 z-10 flex gap-2">
+        <!-- Type Badge -->
+        <div class="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-md shadow-lg"
+             [ngClass]="isLost()
+               ? 'bg-red-500/90 text-white'
+               : 'bg-green-500/90 text-white'">
+            <mat-icon class="text-xs" [class]="isLost() ? 'text-white' : 'text-white'">
+                {{ isLost() ? 'search_off' : 'check_circle' }}
+            </mat-icon>
+            <span class="hidden sm:inline">{{ isLost() ? 'Perdu' : 'Trouvé' }}</span>
+        </div>
+
+        <!-- Owner Badge -->
+        @if (isOwner()) {
+            <div class="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-blue-500/90 text-white backdrop-blur-md shadow-lg">
+                <mat-icon class="text-xs">person</mat-icon>
+                <span class="hidden sm:inline">Propriétaire</span>
+            </div>
+        }
+    </div>
+
+    <!-- Image Container with Enhanced Carousel -->
+    <div class="relative h-36 sm:h-44 bg-linear-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden cursor-pointer group/image"
+         (click)="openPreview()">
+
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0 bg-pattern"></div>
+        </div>
+
+        <img [src]="currentImageUrl"
+             title="{{ item().title }}"
+             alt="{{ item().title }}"
+             class="relative w-full h-full object-cover">
+
+        <!-- Enhanced Image Counter Badge -->
         @if (item().images.length > 1) {
-            <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg border border-white/20">
+                <mat-icon class="text-xs mr-1 align-middle">photo_library</mat-icon>
                 {{ currentIndex + 1 }}/{{ item().images.length }}
             </div>
         }
 
-        <!-- Fullscreen Icon on hover -->
-        <div class="absolute top-3 left-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-gray-800 dark:text-gray-200" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-            </svg>
+        <!-- Enhanced Fullscreen Icon -->
+        <div class="absolute top-3 left-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg transform scale-90 group-hover:scale-100">
+            <mat-icon class="text-sm text-gray-700 dark:text-gray-300">fullscreen</mat-icon>
         </div>
 
-        <!-- Previous Button -->
+        <!-- Enhanced Navigation Buttons -->
         @if (item().images.length > 1) {
-            <button (click)="prevImage($event)"
-            class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+            <button title="Image précédente" (click)="prevImage($event)"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-300 shadow-lg opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0">
+                <mat-icon class="text-lg">chevron_left</mat-icon>
+            </button>
+
+            <button title="Image suivante" (click)="nextImage($event)"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-300 shadow-lg opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0">
+                <mat-icon class="text-lg">chevron_right</mat-icon>
             </button>
         }
 
-        <!-- Next Button -->
-        @if (item().images.length > 1) {
-            <button (click)="nextImage($event)"
-            class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full p-2 sm:p-2.5 backdrop-blur-md cursor-pointer hover:scale-110 transition-all duration-200 shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-            </button>
-        }
     </div>
 
-    <!-- Fullscreen Preview Modal (Removed, now using MatDialog) -->
+    <!-- Enhanced Content Section -->
+    <div class="flex flex-col flex-1 p-4 space-y-3 min-h-0">
 
-    <!-- Content -->
-    <div class="p-3 sm:p-4 flex flex-col grow space-y-3">
-        <!-- Date Info -->
-        <div class="flex items-center justify-between text-xs sm:text-sm">
-            <span class="font-medium text-gray-700 dark:text-gray-300">{{ item().date | date: 'short' }}</span>
-            <span class="text-gray-500 dark:text-gray-400">{{ item().date | date: 'EEEE' }}</span>
-        </div>
-
-        <!-- Title -->
-        <div>
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-[#009245] transition-colors duration-200">
-                {{ item().title }}
-            </h3>
-        </div>
-
-        <!-- Description -->
-        <div class="space-y-1">
-            <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-snug line-clamp-1">
-                {{ item().description }}
-            </p>
-            <p class="text-xs text-gray-600 dark:text-gray-400 leading-tight italic">
-                {{ getHelpText() }}
-            </p>
-        </div>
-
-        <!-- Location -->
-        <div class="flex items-start space-x-2 pt-1 border-t border-gray-100 dark:border-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mt-0.5 text-[#009245] shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-            </svg>
-            <div class="flex flex-col min-w-0">
-                <span class="font-semibold text-gray-900 dark:text-white text-xs">{{ getLocationLabel() }}</span>
-                <span class="text-gray-600 dark:text-gray-400 text-xs leading-tight wrap-break-word">{{ item().location }}</span>
+        <!-- Header with Date and Priority -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <mat-icon class="text-sm text-[#FC4E00]" [class]="isLost() ? 'text-red-500' : 'text-green-500'">
+                    {{ isLost() ? 'error_outline' : 'check_circle_outline' }}
+                </mat-icon>
+                <span class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+                    {{ isLost() ? 'Objet perdu' : 'Objet trouvé' }}
+                </span>
+            </div>
+            <div class="text-right">
+                <div class="text-xs font-semibold text-gray-900 dark:text-white">
+                    {{ item().date | date: 'dd/MM' }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ item().date | date: 'EEE' }}
+                </div>
             </div>
         </div>
 
-        <!-- CTA Button -->
-        <button (click)="goToVerify()"
-            class="w-full mt-auto bg-linear-to-r from-[#FC4E00] to-orange-500 hover:from-[#e04600] hover:to-orange-600 text-white font-semibold py-2.5 rounded-xl text-xs sm:text-sm transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 flex items-center justify-center space-x-1 hover:cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ getButtonText() }}</span>
-        </button>
+        <!-- Enhanced Title -->
+        <div class="space-y-1">
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white line-clamp-2 group-hover:text-[#FC4E00] transition-colors duration-300 leading-tight">
+                {{ item().title }}
+            </h3>
+            @if (item().category) {
+                <div class="flex items-center gap-1">
+                    <mat-icon class="text-xs text-[#FC4E00]">category</mat-icon>
+                    <span class="text-xs font-medium text-[#FC4E00] uppercase tracking-wide">
+                        {{ item().category }}
+                    </span>
+                </div>
+            }
+        </div>
+
+        <!-- Enhanced Description -->
+        <div class="flex-1 space-y-2 min-h-0">
+            <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
+                {{ item().description }}
+            </p>
+            <div class="flex items-start gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-l-4 border-[#FC4E00]">
+                <mat-icon class="text-sm text-[#FC4E00] mt-0.5 shrink-0">lightbulb</mat-icon>
+                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                    {{ getHelpText() }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Enhanced Location Section -->
+        <div class="shrink-0 flex items-start gap-3 p-3 bg-linear-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200/50 dark:border-green-800/50">
+            <div class="shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+                <mat-icon class="text-sm text-white">location_on</mat-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wide mb-1">
+                    {{ getLocationLabel() }}
+                </div>
+                <div class="text-sm text-gray-700 dark:text-gray-300 leading-tight wrap-break-word">
+                    {{ item().location }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Action Buttons -->
+        @if (isOwner()) {
+            <!-- Owner Actions Toggle -->
+            <div class="shrink-0">
+                <button (click)="isShowActionsBtn.set(!isShowActionsBtn())"
+                        class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                    <mat-icon class="text-base">settings</mat-icon>
+                    <span>Gérer ma déclaration</span>
+                    <mat-icon class="text-sm transition-transform duration-300" [class.rotate-180]="isShowActionsBtn()">
+                        expand_more
+                    </mat-icon>
+                </button>
+
+                <!-- Expanded Actions -->
+                @if (isShowActionsBtn()) {
+                    <div class="space-y-2 animate-fadeIn mt-2">
+                        <div class="grid grid-cols-2 gap-2">
+                                                    <button (click)="editDeclaration()"
+                                                            class="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/50 dark:hover:to-indigo-900/50 text-blue-700 dark:text-blue-300 rounded-xl transition-all duration-300 border border-blue-200 dark:border-blue-800 hover:shadow-md">
+                                                                <mat-icon class="text-lg">edit</mat-icon>
+                                                                <span class="text-sm font-medium">Modifier</span>
+                                                            </button>
+                                                            <button (click)="deleteDeclaration()"
+                                                                    class="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 hover:from-red-100 hover:to-rose-100 dark:hover:from-red-900/50 dark:hover:to-rose-900/50 text-red-700 dark:text-red-300 rounded-xl transition-all duration-300 border border-red-200 dark:border-red-800 hover:shadow-md">
+                                                                <mat-icon class="text-lg">delete</mat-icon>
+                                                                <span class="text-sm font-medium">Supprimer</span>
+                                                            </button>
+                                                        </div>
+                    </div>
+                }
+            </div>
+        } @else {
+            <!-- CTA Button for Non-Owners -->
+            <div class="shrink-0">
+                <button (click)="goToVerify()"
+                        class="w-full bg-linear-to-r from-[#FC4E00] to-orange-500 hover:from-[#e04600] hover:to-orange-600 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group/btn">
+                    <mat-icon class="text-base transition-transform duration-300 group-hover/btn:scale-110">
+                        {{ isLost() ? 'search' : 'check_circle' }}
+                    </mat-icon>
+                    <span>{{ getButtonText() }}</span>
+                    <mat-icon class="text-sm transition-transform duration-300 group-hover/btn:translate-x-1">arrow_forward</mat-icon>
+                </button>
+            </div>
+        }
     </div>
 </div>
+
+<!-- Image Preview Modal -->
+@if (showPreviewModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" (click)="closePreview()">
+    <!-- Close button -->
+    <button type="button" title="Fermer" aria-label="Fermer" (click)="closePreview()"
+        class="absolute top-4 right-4 z-60 text-white bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full p-2 transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+
+    <!-- Previous button -->
+    @if (item().images.length > 1) {
+    <button type="button" title="Image précédente" aria-label="Image précédente" (click)="$event.stopPropagation(); prevPreviewImage()"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-60 text-white bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full p-3 transition-all duration-200 hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+    </button>
+    }
+
+    <!-- Image container -->
+    <div class="relative max-w-[90vw] max-h-[85vh] flex items-center justify-center" (click)="$event.stopPropagation()">
+        <img [src]="currentPreviewImage" title="Preview {{ previewIndex() + 1 }}" alt="Preview {{ previewIndex() + 1 }}"
+            class="max-w-full max-h-full object-contain select-none rounded-lg shadow-2xl">
+    </div>
+
+    <!-- Next button -->
+    @if (item().images.length > 1) {
+    <button type="button" title="Image suivante" aria-label="Image suivante" (click)="$event.stopPropagation(); nextPreviewImage()"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-60 text-white bg-black/20 hover:bg-black/40 backdrop-blur-sm rounded-full p-3 transition-all duration-200 hover:scale-110">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+    </button>
+    }
+
+    <!-- Counter -->
+    @if (item().images.length > 1) {
+    <div
+        class="absolute bottom-8 left-1/2 -translate-x-1/2 text-white bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/10">
+        {{ previewIndex() + 1 }} / {{ item().images.length }}
+    </div>
+    }
+</div>
+}

@@ -49,7 +49,6 @@ export class AppComponent implements OnInit {
     ).subscribe(profile => {
       if (profile) {
         this.userRole.set(profile.role || 'standard');
-        console.log('userRole:', this.userRole(), 'isPremium:', this.isPremium());
         // Appliquer le thème enregistré
         if (profile.preferences) {
           if (profile.preferences.theme) {

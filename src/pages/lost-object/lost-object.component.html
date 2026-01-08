@@ -1,1 +1,5 @@
-<app-declaration [declarationType]="DeclarationType.LOSS" (declarationSubmit)="handleSubmit($event)"/>
+<app-declaration
+  [declarationType]="DeclarationType.LOSS"
+  [isEditMode]="isEditMode()"
+  [existingDeclaration]="existingDeclaration()"
+  (declarationSubmit)="handleSubmit($event)"/>
