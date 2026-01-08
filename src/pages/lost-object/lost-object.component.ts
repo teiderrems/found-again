@@ -91,13 +91,13 @@ export class LostObjectComponent implements OnInit {
    private updateDeclaration(declarationData: DeclarationCreate) {
       if (!this.editDeclarationId() || !this.existingDeclaration()) return;
 
-      // Récupérer les URLs des images existantes
-      const existingImageUrls = this.existingDeclaration()!.images.map(img => img.downloadURL);
+      // Récupérer les images existantes complètes
+      const existingImages = this.existingDeclaration()!.images;
 
       this.declarationService.updateDeclaration(
          this.editDeclarationId()!,
          declarationData,
-         existingImageUrls,
+         existingImages,
          DeclarationType.LOSS
       ).subscribe({
          next: () => {

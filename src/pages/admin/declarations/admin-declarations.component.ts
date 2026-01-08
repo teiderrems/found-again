@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { DeclarationService } from '@/services/declaration.service';
 import { DeclarationData } from '@/types/declaration';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
 import { SettingsService } from '@/services/settings.service';
 
@@ -37,6 +37,7 @@ export class AdminDeclarationsComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private settingsService = inject(SettingsService);
+  private confirmationService = inject(ConfirmationService);
 
   declarations = signal<DeclarationData[]>([]);
   filteredDeclarations = signal<DeclarationData[]>([]);
@@ -123,19 +124,10 @@ export class AdminDeclarationsComponent implements OnInit {
   }
 
   deleteDeclaration(id: string): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Supprimer la déclaration',
-        message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer la déclaration',
+      message: 'Êtes-vous sûr de vouloir supprimer cette déclaration ? Cette action est irréversible.'
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.declarationService.deleteDeclarationAsAdmin(id).subscribe({
           next: () => {
@@ -157,20 +149,13 @@ export class AdminDeclarationsComponent implements OnInit {
   toggleDeclarationActive(declaration: DeclarationData) {
     const newStatus = !(declaration.active ?? true);
     const action = newStatus ? 'activer' : 'désactiver';
-    
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
-        message: `Êtes-vous sûr de vouloir ${action} la déclaration "${declaration.title}" ?`,
-        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-        cancelText: 'Annuler',
-        type: 'warning'
-      }
-    });
+    const confirmMethod = newStatus ? 'confirmActivate' : 'confirmDeactivate';
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService[confirmMethod]({
+      title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
+      message: `Êtes-vous sûr de vouloir ${action} la déclaration "${declaration.title}" ?`,
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1)
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.declarationService.toggleDeclarationActive(declaration.id, newStatus).subscribe({
           next: () => {

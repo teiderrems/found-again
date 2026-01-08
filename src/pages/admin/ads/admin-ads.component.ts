@@ -10,7 +10,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AdService } from '@/services/ad.service';
 import { Ad, CreateAdData } from '@/types/ad';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { AdFormDialogComponent, AdFormDialogData, AdFormDialogResult } from '@/components/ad-form-dialog/ad-form-dialog.component';
 import { SettingsService } from '@/services/settings.service';
 
@@ -35,6 +35,7 @@ export class AdminAdsComponent implements OnInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private settingsService = inject(SettingsService);
+  private confirmationService = inject(ConfirmationService);
 
   ads = signal<Ad[]>([]);
   filteredAds = signal<Ad[]>([]);
@@ -208,17 +209,10 @@ export class AdminAdsComponent implements OnInit {
   }
 
   confirmDelete(ad: Ad) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Confirmer la suppression',
-        message: `Êtes-vous sûr de vouloir supprimer la publicité "${ad.title}" ?`,
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmationService.confirmDelete({
+      title: 'Confirmer la suppression',
+      message: `Êtes-vous sûr de vouloir supprimer la publicité "${ad.title}" ?`
+    }).subscribe(result => {
       if (result && ad.id) {
         this.deleteAd(ad.id);
       }

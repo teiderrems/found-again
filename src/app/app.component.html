@@ -1,8 +1,3 @@
 <div class="min-h-screen">
   <router-outlet></router-outlet>
-
-  <!-- Bannière publicitaire globale -->
-  @if (userRole() !== 'admin' && !isPremium()){
-    <app-ad-banner position="bottom"></app-ad-banner>
-  }
 </div>

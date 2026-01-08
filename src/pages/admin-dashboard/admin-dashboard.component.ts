@@ -13,7 +13,7 @@ import { AuthService } from '@/services/auth.service';
 import { UserProfile } from '@/types/user';
 import { DeclarationWithUser } from '@/services/admin.service';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { VerificationDetailsDialogComponent } from '@/components/verification-details-dialog/verification-details-dialog.component';
 import { VerificationData } from '@/types/verification';
 import { RoleChangeDialogComponent } from '@/components/role-change-dialog/role-change-dialog.component';
@@ -60,6 +60,7 @@ export class AdminDashboardComponent implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
+  private confirmationService = inject(ConfirmationService);
 
   stats = signal<AdminStats>({
     totalUsers: 0,
@@ -415,20 +416,14 @@ export class AdminDashboardComponent implements OnInit {
   toggleUserStatus(user: UserProfile) {
     const newStatus = !(user.isActive ?? true); // Default to true if undefined
     const action = newStatus ? 'activer' : 'désactiver';
+    const confirmMethod = newStatus ? 'confirmActivate' : 'confirmDeactivate';
 
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: `${newStatus ? 'Activer' : 'Désactiver'} l'utilisateur`,
-        message: `Êtes-vous sûr de vouloir ${action} l'utilisateur "${user.firstname} ${user.lastname}" ? ${!newStatus ? 'Il ne pourra plus se connecter.' : ''}`,
-        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-        cancelText: 'Annuler',
-        type: newStatus ? 'info' : 'warning'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
-      if (!confirmed) return;
+    this.confirmationService[confirmMethod]({
+      title: `${newStatus ? 'Activer' : 'Désactiver'} l'utilisateur`,
+      message: `Êtes-vous sûr de vouloir ${action} l'utilisateur "${user.firstname} ${user.lastname}" ? ${!newStatus ? 'Il ne pourra plus se connecter.' : ''}`,
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1)
+    }).subscribe(result => {
+      if (!result) return;
 
       this.isLoading.set(true);
       this.adminService.toggleUserStatus(user.uid, newStatus).subscribe({
@@ -456,19 +451,10 @@ export class AdminDashboardComponent implements OnInit {
    * Supprime une déclaration après confirmation
    */
   deleteDeclaration(declarationId: string, declarationTitle: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Supprimer la déclaration',
-        message: `Êtes-vous sûr de vouloir supprimer la déclaration "${declarationTitle}" ? Cette action est irréversible.`,
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer la déclaration',
+      message: `Êtes-vous sûr de vouloir supprimer la déclaration "${declarationTitle}" ? Cette action est irréversible.`
+    }).subscribe((confirmed) => {
       if (!confirmed) {
         return;
       }
@@ -498,20 +484,13 @@ export class AdminDashboardComponent implements OnInit {
   toggleDeclarationActive(declarationId: string, currentActive: boolean, declarationTitle: string) {
     const newStatus = !currentActive;
     const action = newStatus ? 'activer' : 'désactiver';
-    
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
-        message: `Êtes-vous sûr de vouloir ${action} la déclaration "${declarationTitle}" ?`,
-        confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-        cancelText: 'Annuler',
-        type: 'warning'
-      }
-    });
+    const confirmMethod = newStatus ? 'confirmActivate' : 'confirmDeactivate';
 
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService[confirmMethod]({
+      title: `${newStatus ? 'Activer' : 'Désactiver'} la déclaration`,
+      message: `Êtes-vous sûr de vouloir ${action} la déclaration "${declarationTitle}" ?`,
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1)
+    }).subscribe((confirmed) => {
       if (!confirmed) {
         return;
       }
@@ -539,19 +518,11 @@ export class AdminDashboardComponent implements OnInit {
    * Deactivate loss declarations (when owner found their item)
    */
   markLossAsResolved(declarationId: string, declarationTitle: string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Marquer comme résolu',
-        message: `La déclaration de perte "${declarationTitle}" a-t-elle retrouvé son propriétaire ? Cette déclaration sera désactivée.`,
-        confirmText: 'Marquer comme résolu',
-        cancelText: 'Annuler',
-        type: 'info'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed) => {
+    this.confirmationService.confirmResolve({
+      title: 'Marquer comme résolu',
+      message: `La déclaration de perte "${declarationTitle}" a-t-elle retrouvé son propriétaire ? Cette déclaration sera désactivée.`,
+      confirmText: 'Marquer comme résolu'
+    }).subscribe((confirmed) => {
       if (!confirmed) {
         return;
       }

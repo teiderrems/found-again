@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { VerificationService } from '@/services/verification.service';
 import { VerificationData, VerificationStatus } from '@/types/verification';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { VerificationDetailsDialogComponent } from '@/components/verification-details-dialog/verification-details-dialog.component';
 import { FirebaseDatePipe } from '@/pipes/firebase-date.pipe';
 import { SettingsService } from '@/services/settings.service';
@@ -47,6 +47,7 @@ export class AdminVerificationsComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private settingsService = inject(SettingsService);
+  private confirmationService = inject(ConfirmationService);
 
   verifications = signal<VerificationWithDetails[]>([]);
   filteredVerifications = signal<VerificationWithDetails[]>([]);
@@ -178,18 +179,13 @@ export class AdminVerificationsComponent implements OnInit {
   }
 
   approveVerification(verification: VerificationData): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Approuver la vérification',
-        message: 'Êtes-vous sûr de vouloir approuver cette vérification ?',
-        confirmText: 'Approuver',
-        cancelText: 'Annuler',
-        type: 'success'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmationService.confirm({
+      title: 'Approuver la vérification',
+      message: 'Êtes-vous sûr de vouloir approuver cette vérification ?',
+      confirmText: 'Approuver',
+      cancelText: 'Annuler',
+      type: 'info'
+    }).subscribe(result => {
       if (result) {
         // Récupérer l'ID de la déclaration correspondante si disponible dans les données de vérification
         // Supposons que verification.matchingDeclarationId existe ou est passé dans les données
@@ -237,18 +233,10 @@ export class AdminVerificationsComponent implements OnInit {
   }
 
   deleteVerification(verification: VerificationData): void {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Supprimer la vérification',
-        message: 'Êtes-vous sûr de vouloir supprimer cette vérification ?',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer la vérification',
+      message: 'Êtes-vous sûr de vouloir supprimer cette vérification ?'
+    }).subscribe(result => {
       if (result) {
         this.verificationService.deleteVerification(
           verification.declarationId,

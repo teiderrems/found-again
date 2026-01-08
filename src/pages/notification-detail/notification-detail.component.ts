@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from '@/components/confirmation-dialog.component';
+import { ConfirmationService } from '@/services/confirmation.service';
 import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 
 @Component({
@@ -27,6 +27,7 @@ export class NotificationDetailComponent implements OnInit {
   private router = inject(Router);
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private confirmationService = inject(ConfirmationService);
 
   notification = signal<Notification | null>(null);
   isLoading = signal(true);
@@ -82,17 +83,11 @@ export class NotificationDetailComponent implements OnInit {
     const notif = this.notification();
     const notifId = notif?.id;
     if (!notifId) return;
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Supprimer la notification',
-        message: 'Êtes-vous sûr de vouloir supprimer cette notification ? Cette action est irréversible.',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger'
-      }
-    });
-    dialogRef.afterClosed().subscribe((confirmed) => {
+
+    this.confirmationService.confirmDelete({
+      title: 'Supprimer la notification',
+      message: 'Êtes-vous sûr de vouloir supprimer cette notification ? Cette action est irréversible.'
+    }).subscribe((confirmed) => {
       if (confirmed) {
         this.notificationService.deleteNotification(notifId).subscribe({
           next: () => {

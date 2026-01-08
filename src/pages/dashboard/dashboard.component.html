@@ -222,7 +222,7 @@
                     <div class="flex items-center space-x-3">
                       @if (declaration.images && declaration.images.length > 0) {
                         <div class="h-10 w-10 rounded-lg overflow-hidden">
-                          <img [src]="declaration.images[0].downloadURL" [alt]="declaration.title" class="h-full w-full object-cover">
+                          <img [src]="declaration.images[0].downloadURL" [alt]="declaration.title || 'Image de l\'objet'" [title]="declaration.title || 'Image de l\'objet'" class="h-full w-full object-cover">
                         </div>
                       }
                       @if (!declaration.images || declaration.images.length === 0) {
@@ -248,6 +248,11 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ declaration.date | date: 'dd/MM/yyyy' }}</p>
                   </td>
                   <td class="px-6 py-4 text-right space-x-2 flex items-center justify-end">
+                    <button (click)="editDeclaration(declaration.id, declaration.type)"
+                      class="p-1 text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors"
+                      title="Modifier">
+                      <mat-icon class="text-base">edit</mat-icon>
+                    </button>
                     <button (click)="deleteDeclaration(declaration.id, declaration.type, declaration.images)"
                       class="p-1 text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
                       title="Supprimer">

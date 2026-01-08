@@ -21,7 +21,7 @@ import { UserProfile } from '../../types/user';
 import { UserProfileService } from '../../services/user-profile.service';
 import { ThemeService } from '../../services/theme.service';
 import { EditProfileDialogComponent } from '../../components/edit-profile.component';
-import { ConfirmationDialogComponent } from '../../components/confirmation-dialog.component';
+import { ConfirmationService } from '../../services/confirmation.service';
 import { AuthService } from '@/services/auth.service';
 import { FirebaseDatePipe } from '../../pipes/firebase-date.pipe';
 import { FirebaseMessagingService } from '../../services/firebase-messaging.service';
@@ -74,6 +74,7 @@ export class UserProfileComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly firebaseMessaging = inject(FirebaseMessagingService);
   private readonly matchingService = inject(MatchingService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   // Signals
   readonly userProfile = signal<UserProfile | null>(null);
@@ -274,19 +275,10 @@ export class UserProfileComponent implements OnInit {
     const currentUserEmail = this.authService.getCurrentUserEmail();
 
     // Ouvrir le dialogue de confirmation pour la mise à jour
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Mettre à jour le profil',
-        message: 'Êtes-vous sûr de vouloir enregistrer ces modifications ?',
-        confirmText: 'Enregistrer',
-        cancelText: 'Annuler',
-        type: 'info'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(async (confirmed) => {
+    this.confirmationService.confirmUpdate({
+      title: 'Mettre à jour le profil',
+      message: 'Êtes-vous sûr de vouloir enregistrer ces modifications ?'
+    }).subscribe(async (confirmed) => {
       if (!confirmed) {
         return;
       }
@@ -605,20 +597,7 @@ export class UserProfileComponent implements OnInit {
     if (!profile) return;
 
     // Ouvrir le dialogue de confirmation
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '400px',
-      disableClose: false,
-      data: {
-        title: 'Supprimer le compte',
-        message: 'Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible et toutes vos données seront supprimées.',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler',
-        type: 'danger',
-        confirmAction: 'SUPPRIMER'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(async (confirmed) => {
+    this.confirmationService.confirmDeleteAccount().subscribe(async (confirmed) => {
       if (!confirmed) {
         this.snackBar.open('Suppression annulée', 'Fermer', {
           duration: 3000

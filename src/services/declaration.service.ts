@@ -272,7 +272,7 @@ export class DeclarationService {
    updateDeclaration(
       id: string,
       declaration: DeclarationCreate,
-      existingImageUrls: string[],
+      existingImages: ImageType[],
       _type?: DeclarationType,
    ): Observable<void> {
       const colRef = this.getCollectionRef();
@@ -280,23 +280,32 @@ export class DeclarationService {
 
       const newFilesToUpload = declaration.images;
 
-      const uploadTask$ = from(this.storageService.uploadFiles(newFilesToUpload));
+      // Si de nouvelles images sont fournies, supprimer les anciennes
+      const deleteTask$ = newFilesToUpload.length > 0 && existingImages.length > 0
+         ? from(this.storageService.deleteFiles(existingImages))
+         : from(Promise.resolve());
 
-      const uploadResult$ =
-         newFilesToUpload.length > 0 ? uploadTask$ : from([[] as ImageType[]]);
+      return deleteTask$.pipe(
+         switchMap(() => {
+            const uploadTask$ = from(this.storageService.uploadFiles(newFilesToUpload));
 
-      return uploadResult$.pipe(
-         switchMap((newImageUrls: ImageType[]) => {
-            const finalImageUrls = [...existingImageUrls, ...newImageUrls];
+            const uploadResult$ =
+               newFilesToUpload.length > 0 ? uploadTask$ : from([[] as ImageType[]]);
 
-            const dataToUpdate = {
-               ...declaration,
-               images: finalImageUrls,
-               updatedAt: new Date().toISOString(),
-            };
+            return uploadResult$.pipe(
+               switchMap((newImageUrls: ImageType[]) => {
+                  const finalImageUrls = newFilesToUpload.length > 0 ? newImageUrls : existingImages;
 
-            return from(setDoc(docRef, dataToUpdate, { merge: true })).pipe(
-               map(() => undefined),
+                  const dataToUpdate = {
+                     ...declaration,
+                     images: finalImageUrls,
+                     updatedAt: new Date().toISOString(),
+                  };
+
+                  return from(setDoc(docRef, dataToUpdate, { merge: true })).pipe(
+                     map(() => undefined),
+                  );
+               }),
             );
          }),
          catchError((e) => {
