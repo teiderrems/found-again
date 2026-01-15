@@ -32,258 +32,56 @@
   animation: fadeInUp 0.4s ease-out both;
 }
 
-/* Custom Material Form Fields */
-:host ::ng-deep .custom-form-field {
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
+/* Correction pour les erreurs mat-form-field */
+mat-form-field {
+  display: block;
+}
 
-  .mat-mdc-text-field-wrapper {
-    @apply bg-gray-50 dark:bg-gray-700 rounded-lg;
-    padding: 0 12px !important;
-  }
+/* Assurez-vous que les champs de date ont un style correct */
+.mat-datepicker-toggle {
+  color: inherit;
+}
 
-  .mat-mdc-form-field-flex {
-    @apply h-11;
-    align-items: center;
-  }
+/* Correction pour l'icône de suffixe */
+.mat-form-field-suffix {
+  display: flex;
+  align-items: center;
+}
 
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    @apply border-gray-300 dark:border-gray-600;
-  }
 
-  &.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      @apply border-orange-500;
-    }
-  }
+/* Styles pour les labels de filtre */
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6B7280;
+  margin-bottom: 0.25rem;
+}
 
-  .mat-mdc-select-value,
-  .mat-mdc-input-element {
-    @apply text-gray-900 dark:text-white text-sm;
-  }
-
-  .mat-mdc-select-placeholder,
-  .mat-mdc-input-element::placeholder {
-    @apply text-gray-400 dark:text-gray-500;
-  }
-
-  .mat-mdc-select-arrow {
-    @apply text-gray-400 dark:text-gray-500;
-  }
-
-  .mat-datepicker-toggle {
-    @apply text-gray-400 dark:text-gray-500;
+@media (min-width: 640px) {
+  .filter-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 }
 
-:host ::ng-deep .custom-form-field-sm {
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
-
-  .mat-mdc-text-field-wrapper {
-    @apply bg-gray-50 dark:bg-gray-700 rounded-lg;
-    padding: 0 8px !important;
-  }
-
-  .mat-mdc-form-field-flex {
-    @apply h-9;
-    align-items: center;
-  }
-
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    @apply border-gray-300 dark:border-gray-600;
-  }
-
-  &.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      @apply border-orange-500;
-    }
-  }
-
-  .mat-mdc-select-value {
-    @apply text-gray-900 dark:text-white text-sm;
-  }
+.dark .filter-label {
+  color: #9CA3AF;
 }
 
-/* Rotate animation for expand icon */
-.rotate-180 {
-  transform: rotate(180deg);
-}
-
-/* Modern Form Field Style */
-:host ::ng-deep .custom-form-field-modern {
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
-
-  .mat-mdc-text-field-wrapper {
-    @apply bg-gray-50 dark:bg-gray-700/50 rounded-xl;
-    padding: 0 14px !important;
-    transition: all 0.2s ease;
-  }
-
-  .mat-mdc-text-field-wrapper:hover {
-    @apply bg-gray-100 dark:bg-gray-700;
-  }
-
-  .mat-mdc-form-field-flex {
-    @apply h-11;
-    align-items: center;
-  }
-
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    @apply border-gray-200 dark:border-gray-600;
-    transition: border-color 0.2s ease;
-  }
-
-  &:hover {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      @apply border-gray-300 dark:border-gray-500;
-    }
-  }
-
-  &.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      @apply border-orange-500;
-      border-width: 2px;
-    }
-
-    .mat-mdc-text-field-wrapper {
-      @apply bg-orange-50/50 dark:bg-orange-900/10;
-    }
-  }
-
-  .mat-mdc-select-value,
-  .mat-mdc-input-element {
-    @apply text-gray-900 dark:text-white text-sm font-medium;
-  }
-
-  .mat-mdc-select-placeholder,
-  .mat-mdc-input-element::placeholder {
-    @apply text-gray-400 dark:text-gray-500 font-normal;
-  }
-
-  .mat-mdc-select-arrow {
-    @apply text-gray-400 dark:text-gray-500;
-  }
-
-  .mat-datepicker-toggle {
-    @apply text-gray-400 dark:text-gray-500;
-  }
-
-  .mat-datepicker-toggle:hover {
-    @apply text-orange-500;
-  }
-}
-
-/* Compact Form Field for Sort */
-:host ::ng-deep .custom-form-field-compact {
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
-
-  .mat-mdc-text-field-wrapper {
-    @apply bg-white dark:bg-gray-700 rounded-lg;
-    padding: 0 10px !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
-
-  .mat-mdc-form-field-flex {
-    @apply h-9;
-    align-items: center;
-  }
-
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    @apply border-gray-200 dark:border-gray-600;
-  }
-
-  &.mat-focused {
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      @apply border-orange-500;
-    }
-  }
-
-  .mat-mdc-select-value {
-    @apply text-gray-700 dark:text-white text-sm;
-  }
-}
-
-/* Mobile-specific styles for form fields */
+/* Mobile-specific styles */
 @media (max-width: 639px) {
-  :host ::ng-deep .custom-form-field-modern {
-    .mat-mdc-text-field-wrapper {
-      padding: 0 6px !important;
-      min-height: 36px !important;
-    }
-
-    .mat-mdc-form-field-flex {
-      height: 36px !important;
-      min-height: 36px !important;
-    }
-
-    .mat-mdc-form-field-infix {
-      padding-top: 6px !important;
-      padding-bottom: 6px !important;
-      min-height: 36px !important;
-    }
-
-    .mat-mdc-select-value,
-    .mat-mdc-input-element {
-      @apply text-xs;
-    }
-
-    .mat-mdc-select-arrow-wrapper {
-      height: 20px !important;
-    }
-
-    .mat-datepicker-toggle {
-      .mat-mdc-icon-button {
-        width: 32px !important;
-        height: 32px !important;
-        padding: 4px !important;
-      }
-    }
+  .filter-label {
+    font-size: 0.625rem;
   }
-
-  :host ::ng-deep .custom-form-field-compact {
-    .mat-mdc-text-field-wrapper {
-      padding: 0 4px !important;
-      min-height: 32px !important;
-    }
-
-    .mat-mdc-form-field-flex {
-      height: 32px !important;
-      min-height: 32px !important;
-    }
-
-    .mat-mdc-form-field-infix {
-      padding-top: 4px !important;
-      padding-bottom: 4px !important;
-      min-height: 32px !important;
-    }
-
-    .mat-mdc-select-value {
-      @apply text-xs;
-    }
+  
+  /* Adjust select dropdown arrow */
+  select {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
   }
 }

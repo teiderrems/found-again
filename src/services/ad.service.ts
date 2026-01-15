@@ -71,6 +71,7 @@ export class AdService {
    * Crée une nouvelle publicité
    */
   createAd(adData: CreateAdData): Observable<string> {
+    console.log('📢 Creating new ad:', adData.title);
     const adsRef = collection(this.firestore, this.collectionName);
     const newAd = {
       ...adData,
@@ -78,46 +79,53 @@ export class AdService {
       impressions: 0,
       clicks: 0,
     };
-    return from(addDoc(adsRef, newAd).then(docRef => docRef.id));
+    return from(addDoc(adsRef, newAd).then(docRef => {
+      console.log('✅ Ad created with ID:', docRef.id);
+      return docRef.id;
+    }));
   }
 
   /**
    * Met à jour une publicité
    */
   updateAd(id: string, data: UpdateAdData): Observable<void> {
+    console.log('📢 Updating ad:', id);
     const adRef = doc(this.firestore, `${this.collectionName}/${id}`);
     return from(updateDoc(adRef, {
       ...data,
       updatedAt: Timestamp.now(),
-    }));
+    }).then(() => console.log('✅ Ad updated:', id)));
   }
 
   /**
    * Supprime une publicité
    */
   deleteAd(id: string): Observable<void> {
+    console.log('📢 Deleting ad:', id);
     const adRef = doc(this.firestore, `${this.collectionName}/${id}`);
-    return from(deleteDoc(adRef));
+    return from(deleteDoc(adRef).then(() => console.log('✅ Ad deleted:', id)));
   }
 
   /**
    * Incrémente le compteur d'impressions
    */
   recordImpression(id: string): Observable<void> {
+    console.log('📊 Recording impression for ad ID:', id);
     const adRef = doc(this.firestore, `${this.collectionName}/${id}`);
     return from(updateDoc(adRef, {
       impressions: increment(1),
-    }));
+    }).then(() => console.log('✅ Impression recorded for ad:', id)));
   }
 
   /**
    * Incrémente le compteur de clics
    */
   recordClick(id: string): Observable<void> {
+    console.log('👆 Recording click for ad ID:', id);
     const adRef = doc(this.firestore, `${this.collectionName}/${id}`);
     return from(updateDoc(adRef, {
       clicks: increment(1),
-    }));
+    }).then(() => console.log('✅ Click recorded for ad:', id)));
   }
 
   /**

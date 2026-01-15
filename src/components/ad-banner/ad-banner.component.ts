@@ -38,7 +38,7 @@ import { take } from 'rxjs';
       (mouseleave)="pauseRotation(false)"
       (focusin)="pauseRotation(true)"
       (focusout)="pauseRotation(false)"
-      (keydown.escape)="hideAd()">
+      (keydown.escape)="onEscape($event)">
 
       <!-- Indicateurs de rotation -->
       <div *ngIf="totalAds() > 1" class="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-1.5 z-10">
@@ -369,7 +369,10 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     this.currentAd.set(this.ads()[0]);
     setTimeout(() => {
       this.currentAd.set(this.ads()[this.currentIndex()]);
-      this.currentIndex.update(prev=>(prev++)%this.ads().length);
+      // Safely increment index (avoid prev++ bug and modulo by zero)
+      if (this.ads().length > 0) {
+        this.currentIndex.update(prev => (prev + 1) % this.ads().length);
+      }
     }, 1000);
     this.recordImpression();
   }
@@ -386,16 +389,25 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     this.isPaused.set(paused);
   }
 
-  hideAd(): void {
-    console.debug('AdBanner: hideAd invoked - hiding banner');
+  hideAd(event?: Event | string): void {
+    const reason = typeof event === 'string' ? event : (event ? event.type : 'programmatic');
+    console.debug(`AdBanner: hideAd invoked - hiding banner (reason: ${reason})`, { time: new Date().toISOString(), stack: new Error().stack });
     this.isHidden.set(true);
   }
 
-  hidePermanently(): void {
-    console.debug('AdBanner: hidePermanently invoked - hiding permanently');
+  hidePermanently(event?: Event | string): void {
+    const reason = typeof event === 'string' ? event : (event ? event.type : 'programmatic');
+    console.debug(`AdBanner: hidePermanently invoked - hiding permanently (reason: ${reason})`, { time: new Date().toISOString(), stack: new Error().stack });
     localStorage.setItem(this.permanentHideKey, '1');
     this._permanentHidden.set(true);
     this.isHidden.set(true);
+  }
+
+  onEscape(event: Event) {
+    // Only respond to Escape when the banner itself has focus (prevents global Esc from closing banner)
+    if (this.bannerEl && document.activeElement === this.bannerEl.nativeElement) {
+      this.hideAd(event);
+    }
   }
 
   isPermanentlyHidden(): boolean {
@@ -409,14 +421,21 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   }
 
   private recordImpression(): void {
-    const ad = this.currentAd();
-    if (ad?.id && !this.isPermanentlyHidden() && this.authService.getCurrentUserId()) {
-      // protection: non bloquant
-      this.adService.recordImpression(ad.id).subscribe({ error: (e) => console.debug('Impression record failed', e) });
-    }
+    // Temporairement désactivé pour déboguer les écritures infinies
+    // const ad = this.currentAd();
+    // if (ad?.id && !this.isPermanentlyHidden() && this.authService.getCurrentUserId()) {
+    //   console.log('👁️ Recording impression for ad:', ad.id);
+    //   // protection: non bloquant
+    //   this.adService.recordImpression(ad.id).subscribe({ error: (e) => console.debug('Impression record failed', e) });
+    // }
   }
 
   private startRotation(): void {
+    // Éviter les subscriptions multiples
+    if (this.rotationSubscription) {
+      return;
+    }
+    
     if (this.ads().length <= 1) return;
 
     this.rotationSubscription = interval(this.rotationInterval).subscribe(() => {
