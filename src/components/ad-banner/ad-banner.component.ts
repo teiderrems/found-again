@@ -22,15 +22,16 @@ import { take } from 'rxjs';
   ],
   template: `
     <div *ngIf="shouldShow()" #banner
-      class=" max-w-190 mx-auto mb-4 rounded-2xl overflow-visible transition-all duration-700 ease-out origin-center outline-none
-             focus-within:shadow-lg focus-within:rounded-2xl
-             {{ position === 'bottom' ? 'fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-3 z-60 w-[calc(100%-2rem)] pointer-events-none opacity-0' : '' }}
-             {{ position === 'top' ? 'fixed top-4 left-1/2 -translate-x-1/2 -translate-y-3 z-60 w-[calc(100%-2rem)] pointer-events-none opacity-0' : '' }}
-             {{ (!isHidden() && position !== 'sidebar') ? 'translate-x-[-50%] translate-y-0 opacity-100 pointer-events-auto shadow-xl' : '' }}"
+      class="max-w-7xl mx-auto mb-4 sm:mb-6 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 ease-out origin-center outline-none
+             focus-within:shadow-2xl focus-within:rounded-3xl focus-within:ring-2 focus-within:ring-blue-500/20
+             pointer-events-auto
+             bg-gradient-to-br from-white via-slate-50 to-blue-50/30 border border-slate-200/50 backdrop-blur-sm"
+      [class.fixed-bottom]="position === 'bottom' && !isHidden()"
+      [class.fixed-top]="position === 'top' && !isHidden()"
+      [class.visible]="!isHidden() && position !== 'sidebar'"
       role="region"
       aria-label="Bannière publicitaire"
       [attr.data-position]="position"
-      [class.visible]="!isHidden()"
       aria-live="polite"
       tabindex="0"
       (mouseenter)="pauseRotation(true)"
@@ -39,76 +40,224 @@ import { take } from 'rxjs';
       (focusout)="pauseRotation(false)"
       (keydown.escape)="hideAd()">
 
-      <div class="ad-inner flex items-center gap-4 px-4 py-3 sm:px-2 sm:py-2 sm:gap-2.5 bg-slate-50 border border-slate-200/6 rounded-xl shadow-lg transition-all duration-300 ease-out hover:shadow-2xl hover:-translate-y-1">
+      <!-- Indicateurs de rotation -->
+      <div *ngIf="totalAds() > 1" class="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-1.5 z-10">
+        <div *ngFor="let indicator of getAdIndicators(); let i = index"
+             class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all duration-300"
+             [class]="i === currentIndex() ? 'bg-blue-500 scale-125' : 'bg-slate-300 hover:bg-slate-400'">
+        </div>
+      </div>
 
-        <div class="ad-badge hidden sm:block">
-          <span class="badge inline-block bg-slate-800/85 text-white px-2 py-1 rounded-lg text-xs font-semibold tracking-wide">Publicité</span>
+      <div class="ad-inner relative flex flex-col sm:flex-row sm:items-center min-h-32 sm:min-h-35 gap-3 sm:gap-4 lg:gap-6 px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-5 bg-linear-to-r from-transparent via-white/80 to-blue-50/50">
+
+        <!-- Badge Publicité - Masqué sur mobile -->
+        <div class="ad-badge shrink-0 hidden sm:block">
+          <div class="inline-flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold shadow-lg">
+            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+            </svg>
+            <span class="hidden lg:inline">Publicité</span>
+            <span class="lg:hidden">Pub</span>
+          </div>
         </div>
 
-        <div class="ad-content flex-1 min-w-0">
+        <!-- Contenu principal -->
+        <div class="ad-content flex-1 min-w-0 pointer-events-auto order-2 sm:order-1">
           <ng-container *ngIf="currentAd() as ad; else emptyState">
-            <a class="ad-body flex items-center gap-4 text-slate-900 hover:text-slate-700 transition-colors"
+            <a class="ad-body group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 lg:gap-5 p-3 sm:p-4 -m-3 sm:-m-4 rounded-xl sm:rounded-2xl transition-all duration-300 hover:bg-white/60 hover:shadow-lg hover:scale-[1.01] sm:hover:scale-[1.02]"
                [href]="ad?.linkUrl || null"
                target="_blank"
                rel="noopener noreferrer"
                (click)="onAdClick($event)">
-                 <div class="media shrink-0">
-                   <img *ngIf="ad?.imageUrl; else maybeVideo"
-                        [src]="ad?.imageUrl"
-                        [alt]="ad?.title"
-                        class="ad-image w-21 h-14 sm:w-16 sm:h-11 object-cover rounded-lg"
-                        loading="lazy" />
-                   <ng-template #maybeVideo>
-                     <iframe *ngIf="ad?.videoUrl; else placeholder"
-                             [src]="getSafeVideoUrl(ad?.videoUrl)"
-                             class="ad-iframe w-30 h-17.5 sm:w-22.5 sm:h-13.5 rounded-lg border-0"
-                             title="Vidéo publicitaire"
-                             loading="lazy"></iframe>
-                   </ng-template>
-                   <ng-template #placeholder>
-                     <div class="ad-placeholder-icon w-16 h-12 flex items-center justify-center rounded-lg bg-black/4 text-2xl">📣</div>
-                   </ng-template>
-                 </div>
 
-                 <div class="text min-w-0">
-                   <div class="title truncate font-medium text-slate-900">{{ ad?.title || 'Contenu sponsorisé' }}</div>
-                   <div class="desc truncate text-sm text-slate-600 dark:text-slate-300">{{ ad?.description }}</div>
-                 </div>
+              <!-- Média (image/vidéo) -->
+              <div class="media flex-shrink-0 relative self-start sm:self-center">
+                <div class="relative overflow-hidden rounded-lg sm:rounded-xl shadow-md group-hover:shadow-xl transition-shadow duration-300">
+                  <img *ngIf="ad?.imageUrl; else maybeVideo"
+                       [src]="ad?.imageUrl"
+                       [alt]="ad?.title"
+                       class="ad-image w-16 h-12 sm:w-20 sm:h-14 lg:w-24 lg:h-16 object-cover transition-transform duration-300 group-hover:scale-105"
+                       loading="lazy" />
+                  <ng-template #maybeVideo>
+                    <iframe *ngIf="ad?.videoUrl; else placeholder"
+                            [src]="getSafeVideoUrl(ad?.videoUrl)"
+                            class="ad-iframe w-16 h-12 sm:w-20 sm:h-14 lg:w-24 lg:h-16 rounded-lg sm:rounded-xl border-0"
+                            title="Vidéo publicitaire"
+                            loading="lazy"></iframe>
+                  </ng-template>
+                  <ng-template #placeholder>
+                    <div class="ad-placeholder w-16 h-12 sm:w-20 sm:h-14 lg:w-24 lg:h-16 flex items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-2xl sm:text-3xl shadow-inner">
+                      📢
+                    </div>
+                  </ng-template>
+
+                  <!-- Overlay de clic -->
+                  <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg sm:rounded-xl"></div>
+                </div>
+              </div>
+
+              <!-- Texte -->
+              <div class="text flex-1 min-w-0">
+                <div class="title text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-900 transition-colors duration-300 leading-tight mb-1">
+                  {{ ad?.title || 'Contenu sponsorisé' }}
+                </div>
+                <div class="desc text-xs sm:text-sm text-slate-600 group-hover:text-slate-700 transition-colors duration-300 leading-relaxed line-clamp-2 sm:line-clamp-1">
+                  {{ ad?.description }}
+                </div>
+
+                <!-- Indicateur de lien - Masqué sur mobile pour économiser l'espace -->
+                <div class="flex items-center gap-1 mt-1.5 sm:mt-2 text-xs text-blue-600 font-medium hidden sm:flex">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                  <span>En savoir plus</span>
+                </div>
+              </div>
             </a>
-           </ng-container>
+          </ng-container>
 
           <ng-template #emptyState>
-            <div class="ad-empty text-sm text-slate-700 dark:text-slate-300 text-center truncate">Chargement des publicités...</div>
+            <div class="ad-empty flex items-center justify-center py-6 sm:py-8">
+              <div class="flex items-center gap-2 sm:gap-3 text-slate-500">
+                <div class="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-slate-300 border-t-slate-500"></div>
+                <span class="text-xs sm:text-sm font-medium">Chargement...</span>
+              </div>
+            </div>
           </ng-template>
         </div>
 
-        <div class="ad-actions ml-auto flex items-center gap-3">
-          <a routerLink="/premium"
-             class="cta-upgrade inline-flex items-center gap-2 px-2.5 py-1.5 sm:px-2.5 sm:py-1.5 rounded-md text-sm sm:text-xs font-semibold bg-linear-to-r from-green-500 to-emerald-600 text-white shadow-md hover:shadow-lg transition-all duration-200 pointer-events-auto"
+        <!-- Actions - Réorganisées pour mobile -->
+        <div class="ad-actions flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0 order-1 sm:order-2">
+          <!-- Badge mobile compact -->
+          <div class="sm:hidden">
+            <div class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+              </svg>
+              <span>Pub</span>
+            </div>
+          </div>
+
+          <a href="/premium"
+             class="cta-upgrade group inline-flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 no-underline"
              title="Supprimer les pubs">
-            <mat-icon class="star text-base sm:text-sm">star</mat-icon>
-            <span class="sm:hidden">Supprimer les pubs</span>
+            <svg class="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover:rotate-12" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
             <span class="hidden sm:inline">Premium</span>
+            <span class="sm:hidden">⭐</span>
           </a>
 
-          <button class="btn-hide text-sm text-blue-600 hover:text-blue-800 underline decoration-blue-600 hover:decoration-blue-800 transition-colors pointer-events-auto border-none bg-transparent cursor-pointer font-semibold"
-                  (click)="hidePermanently()"
-                  title="Ne plus afficher">
-            Ne plus afficher
-          </button>
-
-          <button mat-icon-button
+          <button type="button"
                   aria-label="Fermer la publicité"
                   (click)="hideAd()"
-                  class="close-btn pointer-events-auto">
-            <mat-icon>close</mat-icon>
+                  class="close-btn w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-800 transition-all duration-200 hover:scale-110 shadow-sm hover:shadow-md border-none bg-transparent cursor-pointer flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
           </button>
         </div>
-
       </div>
+
+      <!-- Effet de brillance animé -->
+      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shimmer pointer-events-none"></div>
     </div>
   `,
-  styles: []
+  styles: [`
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .animate-shimmer {
+      animation: shimmer 3s infinite;
+    }
+
+    /* Styles pour les indicateurs */
+    .ad-indicators {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .indicator.active {
+      background-color: #3b82f6;
+      transform: scale(1.25);
+    }
+
+    .indicator.inactive {
+      background-color: #cbd5e1;
+    }
+
+    .indicator.inactive:hover {
+      background-color: #94a3b8;
+    }
+
+    /* Utilitaires de troncature de ligne */
+    .line-clamp-1 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
+
+    .line-clamp-2 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+
+    /* Positionnement fixe */
+    .fixed-bottom {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(1rem);
+      z-index: 50;
+      width: calc(100% - 3rem);
+      opacity: 0;
+    }
+
+    .fixed-top {
+      position: fixed;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-1rem);
+      z-index: 50;
+      width: calc(100% - 3rem);
+      opacity: 0;
+    }
+
+    .visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Styles responsive pour mobile */
+    @media (max-width: 640px) {
+      .ad-inner {
+        padding: 12px !important;
+      }
+
+      .ad-body {
+        padding: 12px !important;
+        margin: -12px !important;
+      }
+    }
+  `]
 })
 export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() position: 'top' | 'bottom' | 'sidebar' = 'top';
@@ -238,12 +387,12 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   }
 
   hideAd(): void {
-    console.debug('AdBanner: hideAd invoked');
+    console.debug('AdBanner: hideAd invoked - hiding banner');
     this.isHidden.set(true);
   }
 
   hidePermanently(): void {
-    console.debug('AdBanner: hidePermanently invoked');
+    console.debug('AdBanner: hidePermanently invoked - hiding permanently');
     localStorage.setItem(this.permanentHideKey, '1');
     this._permanentHidden.set(true);
     this.isHidden.set(true);
@@ -261,7 +410,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
 
   private recordImpression(): void {
     const ad = this.currentAd();
-    if (ad?.id && !this.isPermanentlyHidden()) {
+    if (ad?.id && !this.isPermanentlyHidden() && this.authService.getCurrentUserId()) {
       // protection: non bloquant
       this.adService.recordImpression(ad.id).subscribe({ error: (e) => console.debug('Impression record failed', e) });
     }

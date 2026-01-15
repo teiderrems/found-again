@@ -1,6 +1,6 @@
 import { DeclarationData, DeclarationType } from '@/types/declaration';
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, OnInit, signal, HostListener } from '@angular/core';
+import { Component, inject, input, OnInit, signal, HostListener, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +21,9 @@ export class ObjectItemComponent implements OnInit {
    item = input.required<DeclarationData>();
    currentIndex = 0;
    images: string[] = [];
+   
+   // Événement pour ouvrir la modale de détail
+   openDetailModal = output<DeclarationData>();
    
    private readonly router = inject(Router); 
    private readonly dialog = inject(MatDialog);
@@ -70,6 +73,11 @@ export class ObjectItemComponent implements OnInit {
 
    getButtonText(): string {
       return this.isLost() ? 'J\'ai peut-être des infos' : 'C\'est peut-être à moi';
+   }
+
+   // Méthode pour ouvrir la modale de détail
+   onItemClick(): void {
+      this.openDetailModal.emit(this.item());
    }
    
    editDeclaration(): void {

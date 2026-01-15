@@ -108,11 +108,11 @@ export class FirebaseMessagingService {
   private listenForMessages() {
     try {
       runInInjectionContext(this.injector, () => {
-        onMessage(this.messaging, (payload:any) => {
+        onMessage(this.messaging, async (payload:any) => {
           this.messageSubject.next(payload);
           
           // Afficher une notification personnalisée
-          this.showNotification(payload.notification);
+          await this.showNotification(payload.notification);
         });
       });
     } catch (error) {
@@ -123,7 +123,7 @@ export class FirebaseMessagingService {
   /**
    * Affiche une notification dans le navigateur
    */
-  private showNotification(notification?: FCMNotification) {
+  private async showNotification(notification?: FCMNotification) {
     if (!notification) return;
 
     const title = notification.title || 'Nouvelle notification';
@@ -148,9 +148,8 @@ export class FirebaseMessagingService {
     };
 
     if ('serviceWorker' in navigator && 'showNotification' in ServiceWorkerRegistration.prototype) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification(title, options);
-      });
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification(title, options);
     } else {
       // Fallback pour les navigateurs qui ne supportent pas les service workers
       new Notification(title, options);
