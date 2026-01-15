@@ -12,9 +12,6 @@ const eslintCommand = (filenames) => `eslint ${getRelativePaths(filenames)} --fi
 const addProcessedFilesByPrettierCommand = (filenames) =>
    `git add ${getRelativePaths(filenames)}`;
 
-// Remove this console.log - it's causing the unwanted output
-// console.log(prettierCommand);
-
 module.exports = {
    '*.{js,ts}': [eslintCommand, prettierCommand, addProcessedFilesByPrettierCommand],
 };
