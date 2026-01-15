@@ -9,7 +9,8 @@
     "test": "ng test",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "lint": "npx lint-staged",
+    "lint": "eslint --ext .ts,.html .",
+    "watch": "chokidar \"src/**/*.{ts,html}\" -c \"eslint src --ext .ts,.html\"",
     "config": "tailwind-config-viewer -o"
   },
   "private": true,
@@ -56,14 +57,18 @@
   "devDependencies": {
     "@angular-devkit/architect": "^0.2100.2",
     "@angular-devkit/core": "^21.0.2",
+    "@angular-eslint/builder": "21.0.1",
     "@angular/build": "^21.0.4",
     "@angular/cli": "^20.0.5",
     "@angular/compiler-cli": "^21.0.6",
+    "@eslint/js": "^9.39.1",
     "@tailwindcss/forms": "^0.5.10",
     "@types/google.maps": "^3.55.11",
     "@types/jasmine": "~5.1.0",
     "@types/leaflet": "^1.9.8",
-    "eslint": "^9.21.0",
+    "angular-eslint": "21.0.1",
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "jasmine-core": "~5.6.0",
     "jsonc-parser": "^3.3.1",
@@ -77,6 +82,7 @@
     "prettier": "3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.9.3",
+    "typescript-eslint": "8.46.4",
     "vite": "^7.2.6"
   },
   "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501"
