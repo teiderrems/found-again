@@ -60,11 +60,14 @@ service cloud.firestore {
       allow read: if true; // Lecture publique
       allow create, update, delete: if isAdmin();
       
-      // Permettre aux utilisateurs authentifiés d'incrémenter impressions et clics
-      allow update: if isAuthenticated() && 
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['impressions', 'clicks']) &&
-        request.resource.data.impressions >= resource.data.impressions &&
+      // Permettre à tous d'incrémenter les clics (même non authentifiés)
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['clicks']) &&
         request.resource.data.clicks >= resource.data.clicks;
+      
+      // Permettre aux utilisateurs authentifiés d'incrémenter impressions
+      allow update: if isAuthenticated() && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['impressions']) &&
+        request.resource.data.impressions >= resource.data.impressions;
     }
 
     // Collection des abonnements

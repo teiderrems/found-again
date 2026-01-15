@@ -1,4 +1,5 @@
-<div class="group relative flex flex-col h-full min-h-75 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200/60 dark:border-gray-700/60 overflow-hidden transition-all duration-500 hover:border-[#FC4E00]/40 hover:-translate-y-2 hover:shadow-[#FC4E00]/10">
+<div class="group relative flex flex-col h-full min-h-75 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl border border-gray-200/60 dark:border-gray-700/60 overflow-hidden transition-all duration-500 hover:border-[#FC4E00]/40 hover:-translate-y-2 hover:shadow-[#FC4E00]/10 cursor-pointer"
+     (click)="onItemClick()">
 
     <!-- Status Badges -->
     <div class="absolute top-3 left-3 z-10 flex gap-2">
@@ -134,7 +135,7 @@
         @if (isOwner()) {
             <!-- Owner Actions Toggle -->
             <div class="shrink-0">
-                <button (click)="isShowActionsBtn.set(!isShowActionsBtn())"
+                <button (click)="$event.stopPropagation(); isShowActionsBtn.set(!isShowActionsBtn())"
                         class="w-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                     <mat-icon class="text-base">settings</mat-icon>
                     <span>Gérer ma déclaration</span>
@@ -147,12 +148,12 @@
                 @if (isShowActionsBtn()) {
                     <div class="space-y-2 animate-fadeIn mt-2">
                         <div class="grid grid-cols-2 gap-2">
-                                                    <button (click)="editDeclaration()"
+                                                    <button (click)="$event.stopPropagation(); editDeclaration()"
                                                             class="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/50 dark:hover:to-indigo-900/50 text-blue-700 dark:text-blue-300 rounded-xl transition-all duration-300 border border-blue-200 dark:border-blue-800 hover:shadow-md">
                                                                 <mat-icon class="text-lg">edit</mat-icon>
                                                                 <span class="text-sm font-medium">Modifier</span>
                                                             </button>
-                                                            <button (click)="deleteDeclaration()"
+                                                            <button (click)="$event.stopPropagation(); deleteDeclaration()"
                                                                     class="flex items-center justify-center gap-2 p-3 bg-linear-to-r from-red-50 to-rose-50 dark:from-red-900/30 dark:to-rose-900/30 hover:from-red-100 hover:to-rose-100 dark:hover:from-red-900/50 dark:hover:to-rose-900/50 text-red-700 dark:text-red-300 rounded-xl transition-all duration-300 border border-red-200 dark:border-red-800 hover:shadow-md">
                                                                 <mat-icon class="text-lg">delete</mat-icon>
                                                                 <span class="text-sm font-medium">Supprimer</span>
@@ -164,7 +165,7 @@
         } @else {
             <!-- CTA Button for Non-Owners -->
             <div class="shrink-0">
-                <button (click)="goToVerify()"
+                <button (click)="$event.stopPropagation(); goToVerify()"
                         class="w-full bg-linear-to-r from-[#FC4E00] to-orange-500 hover:from-[#e04600] hover:to-orange-600 text-white font-semibold py-3 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 group/btn">
                     <mat-icon class="text-base transition-transform duration-300 group-hover/btn:scale-110">
                         {{ isLost() ? 'search' : 'check_circle' }}

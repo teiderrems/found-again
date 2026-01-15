@@ -1,9 +1,10 @@
 import { Component, inject, signal, computed, HostListener, OnInit, OnDestroy } from '@angular/core';
-import { DeclarationData, DeclarationType, ObjectCondition } from '../../types/declaration';
-import { DeclarationService, PaginatedResult } from '../../services/declaration.service';
+import { DeclarationData, ObjectCondition } from '../../types/declaration';
+import { DeclarationService } from '../../services/declaration.service';
 import { Router } from '@angular/router';
 import { ObjectItemComponent } from "../../components/object-item/object-item.component";
 import { SearchFieldComponent } from "../../components/search-field/search-field.component";
+import { DeclarationDetailsModalComponent } from "../../components/declaration-details-modal/declaration-details-modal.component";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DEFAULT_CATEGORIES } from '../../constants/categories.constants';
 import { AuthService } from '@/services/auth.service';
 
@@ -50,13 +52,15 @@ export interface AdvancedSearchFilters {
       MatInputModule,
       MatChipsModule,
       MatSlideToggleModule,
-      MatProgressSpinnerModule
+      MatProgressSpinnerModule,
+      MatDialogModule
    ],
 })
 export class SearchComponent implements OnInit, OnDestroy {
    router = inject(Router);
    private declarationService = inject(DeclarationService);
    private authService = inject(AuthService);
+   private dialog = inject(MatDialog);
    private userId = this.authService.getCurrentUserId();
 
    // Données chargées depuis Firestore
@@ -328,5 +332,16 @@ export class SearchComponent implements OnInit, OnDestroy {
             this.updateFilter('location', '');
             break;
       }
+   }
+
+   openDeclarationModal(declaration: DeclarationData) {
+      this.dialog.open(DeclarationDetailsModalComponent, {
+         data: declaration,
+         width: '90vw',
+         maxWidth: '800px',
+         height: '90vh',
+         maxHeight: '800px',
+         panelClass: 'declaration-details-modal'
+      });
    }
 }
