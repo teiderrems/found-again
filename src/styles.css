@@ -167,6 +167,35 @@ layer(base);
   --z-index-999999: 999999;
 }
 
+
+/* Correction pour Angular Material */
+.mat-mdc-form-field {
+  display: block !important;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Correction pour les selects */
+.mat-mdc-select {
+  font-family: inherit !important;
+}
+
+/* Correction pour les inputs */
+.mat-mdc-input-element {
+  box-sizing: border-box !important;
+}
+
+/* Assurez-vous que les champs de formulaire ont la bonne hauteur */
+.mdc-text-field {
+  padding: 0 !important;
+}
+
+.mdc-text-field--outlined {
+  --mdc-outlined-text-field-container-shape: 12px !important;
+}
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -1169,6 +1198,207 @@ contact.component.css
 /* Responsive */
 @media (max-width: 768px) {
   .contact-method {
+
+/* Moved from search.component.css: Custom form-field styles (global scope) */
+.custom-form-field-sm {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    @apply bg-gray-50 dark:bg-gray-700 rounded-lg;
+    padding: 0 8px !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    @apply h-9;
+    align-items: center;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    @apply border-gray-300 dark:border-gray-600;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      @apply border-orange-500;
+    }
+  }
+
+  .mat-mdc-select-value {
+    @apply text-gray-900 dark:text-white text-sm;
+  }
+}
+
+.custom-form-field-modern {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    @apply bg-gray-50 dark:bg-gray-700/50 rounded-xl;
+    padding: 0 14px !important;
+    transition: all 0.2s ease;
+  }
+
+  .mat-mdc-text-field-wrapper:hover {
+    @apply bg-gray-100 dark:bg-gray-700;
+  }
+
+  .mat-mdc-form-field-flex {
+    @apply h-11;
+    align-items: center;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    @apply border-gray-200 dark:border-gray-600;
+    transition: border-color 0.2s ease;
+  }
+
+  &:hover {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      @apply border-gray-300 dark:border-gray-500;
+    }
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      @apply border-orange-500;
+      border-width: 2px;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      @apply bg-orange-50/50 dark:bg-orange-900/10;
+    }
+  }
+
+  .mat-mdc-select-value,
+  .mat-mdc-input-element {
+    @apply text-gray-900 dark:text-white text-sm font-medium;
+  }
+
+  .mat-mdc-select-placeholder,
+  .mat-mdc-input-element::placeholder {
+    @apply text-gray-400 dark:text-gray-500 font-normal;
+  }
+
+  .mat-mdc-select-arrow {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+
+  .mat-datepicker-toggle {
+    @apply text-gray-400 dark:text-gray-500;
+  }
+
+  .mat-datepicker-toggle:hover {
+    @apply text-orange-500;
+  }
+}
+
+.custom-form-field-compact {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  .mat-mdc-text-field-wrapper {
+    @apply bg-white dark:bg-gray-700 rounded-lg;
+    padding: 0 10px !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .mat-mdc-form-field-flex {
+    @apply h-9;
+    align-items: center;
+  }
+
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    @apply border-gray-200 dark:border-gray-600;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      @apply border-orange-500;
+    }
+  }
+
+  .mat-mdc-select-value {
+    @apply text-gray-700 dark:text-white text-sm;
+  }
+}
+
+@media (max-width: 639px) {
+  .custom-form-field-modern {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 6px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 36px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      min-height: 36px !important;
+    }
+
+    .mat-mdc-select-value,
+    .mat-mdc-input-element {
+      @apply text-xs;
+    }
+
+    .mat-mdc-select-arrow-wrapper {
+      height: 20px !important;
+    }
+
+    .mat-datepicker-toggle {
+      .mat-mdc-icon-button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 4px !important;
+      }
+    }
+  }
+
+  .custom-form-field-compact {
+    .mat-mdc-text-field-wrapper {
+      padding: 0 4px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 32px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      min-height: 32px !important;
+    }
+
+    .mat-mdc-select-value {
+      @apply text-xs;
+    }
+  }
+}
+
     @apply p-4;
   }
 }

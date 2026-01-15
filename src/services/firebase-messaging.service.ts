@@ -160,6 +160,7 @@ export class FirebaseMessagingService {
    * Enregistre le token FCM pour l'utilisateur courant dans Firestore
    */
   async saveTokenToFirestore(userId: string): Promise<void> {
+    console.log('🔥 saveTokenToFirestore called for user:', userId);
     try {
       const token = await this.getMessagingToken();
       if (token && userId) {
@@ -169,9 +170,12 @@ export class FirebaseMessagingService {
         await setDoc(userRef, {
           fcmTokens: arrayUnion(token)
         }, { merge: true });
+        console.log('✅ Token saved to Firestore for user:', userId);
+      } else {
+        console.log('⚠️ No token or userId for saveTokenToFirestore');
       }
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du token:', error);
+      console.error('❌ Erreur lors de la sauvegarde du token:', error);
     }
   }
 

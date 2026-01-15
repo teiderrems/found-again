@@ -184,6 +184,7 @@ export class AuthService {
                return true;
             }
             else {
+               console.log('👤 Creating user profile for:', data.email);
                await setDoc(userDocRef, {
                   email: data.email,
                   firstname: data.firstname,
@@ -201,6 +202,7 @@ export class AuthService {
                   },
                   deleted: false,
                } as any);
+               console.log('✅ User profile created for:', data.email);
             }
             return true;
          } else {

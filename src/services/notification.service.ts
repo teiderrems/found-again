@@ -63,13 +63,23 @@ export class NotificationService {
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
+  private lastProcessedUserId: string | null = null;
+
   constructor() {
     // S'abonner aux changements d'authentification
     this.authService.currentUser$.subscribe((user: User | null) => {
+      console.log('👤 Auth state changed:', user?.uid || 'null');
       if (user) {
-        this.loadUserNotifications(user.uid);
-        this.fcmService.saveTokenToFirestore(user.uid);
+        // Éviter les appels répétés pour le même utilisateur
+        if (this.lastProcessedUserId !== user.uid) {
+          console.log('👤 Processing new user:', user.uid);
+          this.lastProcessedUserId = user.uid;
+          this.loadUserNotifications(user.uid);
+          // Temporairement désactivé pour déboguer
+          // this.fcmService.saveTokenToFirestore(user.uid);
+        }
       } else {
+        this.lastProcessedUserId = null;
         this.notificationsSubject.next([]);
         this.unreadCountSubject.next(0);
       }
@@ -140,6 +150,7 @@ export class NotificationService {
    * Crée une nouvelle notification
    */
   createNotification(notification: NotificationCreate): Observable<string> {
+    console.log('🔔 Creating notification:', notification.title);
     const notificationsRef = collection(this.firestore, 'notifications');
     
     const notificationData = {
@@ -149,7 +160,10 @@ export class NotificationService {
     };
 
     return from(addDoc(notificationsRef, notificationData)).pipe(
-      map(docRef => docRef.id),
+      map(docRef => {
+        console.log('✅ Notification created with ID:', docRef.id);
+        return docRef.id;
+      }),
       switchMap(async (notificationId) => {
         // Envoyer la notification push si l'utilisateur a activé les notifications
         await this.sendPushNotification(notification);
@@ -162,14 +176,16 @@ export class NotificationService {
    * Marque une notification comme lue
    */
   markAsRead(notificationId: string): Observable<void> {
+    console.log('📖 Marking notification as read:', notificationId);
     const notificationRef = doc(this.firestore, 'notifications', notificationId);
-    return from(updateDoc(notificationRef, { read: true }));
+    return from(updateDoc(notificationRef, { read: true }).then(() => console.log('✅ Notification marked as read:', notificationId)));
   }
 
   /**
    * Marque toutes les notifications comme lues
    */
   markAllAsRead(userId: string): Observable<void> {
+    console.log('📖 Marking all notifications as read for user:', userId);
     const notifications = this.notificationsSubject.value;
     const unreadNotifications = notifications.filter(n => !n.read);
     
@@ -182,7 +198,10 @@ export class NotificationService {
     });
 
     return from(Promise.all(promises)).pipe(
-      map(() => void 0)
+      map(() => {
+        console.log('✅ All notifications marked as read for user:', userId);
+        return void 0;
+      })
     );
   }
 
