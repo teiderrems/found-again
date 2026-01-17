@@ -309,15 +309,8 @@ export const onDeclarationCreated = functions.firestore
       const creatorDoc = await admin.firestore().collection('users').doc(userId).get();
       const creatorData = creatorDoc.data();
 
-      const userIds = await admin.firestore().collection('declarations').select('userId')
-      .where('active', '==', true)
-      .where('category', '==', declaration.category)
-      .where('type', '!=', declaration.type)
-      .where('userId', '!=', userId).get();
-
       // Récupérer tous les utilisateurs
-      const usersSnapshot = await admin.firestore().collection('users').where('id','in', userIds.docs.map(d=>d.data().userId))
-      .where('role', '!=', 'admin').get();
+      const usersSnapshot = await admin.firestore().collection('users').get();
       const users = usersSnapshot.docs;
 
       const transporter = getEmailTransporter();
@@ -330,7 +323,7 @@ export const onDeclarationCreated = functions.firestore
         const userId = userDoc.id;
 
         // Vérifier les préférences
-        if (userData.emailNotifications === false) {
+        if (userData.emailNotifications === false || userId === declaration.userId || userData.role === 'admin') {
           console.log(`Notifications email désactivées pour ${userId}`);
           continue;
         }
@@ -415,6 +408,132 @@ export const onDeclarationCreated = functions.firestore
         status: 'sent',
         sentAt: admin.firestore.Timestamp.now(),
         declarationId: snap.id,
+        declarationType: declaration.type,
+        sentToAllUsers: true
+      });
+
+    } catch (error) {
+      console.error('Erreur envoi email déclaration:', error);
+    }
+  });
+  
+  /**
+ * Trigger Firestore - Envoyer un email quand une nouvelle déclaration est modifiée
+ */
+export const onDeclarationUpdated = functions.firestore
+  .document('declarations/{declarationId}')
+  .onUpdate(async (change) => {
+    try {
+
+      const declaration = change.after.data();
+      if (!declaration || !declaration.userId || !declaration.category || !declaration.type || declaration.type === 'loss') {
+        return;
+      }
+      const userId = declaration.userId;
+
+      // Récupérer l'utilisateur créateur
+      const creatorDoc = await admin.firestore().collection('users').doc(userId).get();
+      const creatorData = creatorDoc.data();
+
+      // Récupérer tous les utilisateurs
+      const usersSnapshot = await admin.firestore().collection('users').get();
+      const users = usersSnapshot.docs;
+
+      const transporter = getEmailTransporter();
+      const declarationType = declaration.type === 'found' ? 'Objet trouvé' : 'Objet perdu';
+      const emoji = '';
+
+      // Envoyer à chaque utilisateur (sauf admins et créateur)
+      for (const userDoc of users) {
+        const userData = userDoc.data();
+        const userId = userDoc.id;
+
+        // Vérifier les préférences
+        if (userData.emailNotifications === false || userId === declaration.userId || userData.role === 'admin') {
+          console.log(`Notifications email désactivées pour ${userId}`);
+          continue;
+        }
+
+        if (!userData.email) {
+          console.warn(`Pas d'email pour l'utilisateur ${userId}`);
+          continue;
+        }
+
+        // Envoyer email
+        if (transporter) {
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html lang="fr">
+            <head>
+              <meta charset="UTF-8">
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+                .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+                .header { text-align: center; margin-bottom: 24px; }
+                .logo { font-size: 28px; font-weight: bold; color: #16a34a; }
+                .declaration-badge { display: inline-block; background: #dcfce7; color: #166534; padding: 8px 16px; border-radius: 20px; margin: 16px 0; font-weight: bold; }
+                .title { font-size: 20px; font-weight: 600; color: #166534; margin: 16px 0; }
+                .object-info { background: #f0fdf4; padding: 16px; border-radius: 6px; margin: 16px 0; }
+                .button { display: inline-block; padding: 12px 24px; background: #16a34a; color: white; text-decoration: none; border-radius: 6px; margin-top: 16px; }
+                .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #999; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="card">
+                  <div class="header">
+                    <div class="logo">Found Again</div>
+                  </div>
+                  <div class="declaration-badge">${emoji} NOUVELLE DÉCLARATION</div>
+                  <h1 class="title">Nouvelle ${declaration.type === 'found' ? 'trouvaille' : 'perte'} signalée!</h1>
+                  
+                  <div class="object-info">
+                    <strong>Type:</strong><br/>
+                    ${declarationType}<br/><br/>
+                    <strong>Objet:</strong><br/>
+                    ${declaration.objectName || 'Objet'}<br/><br/>
+                    <strong>Description:</strong><br/>
+                    ${declaration.description || 'Aucune description'}<br/><br/>
+                    <strong>Localisation:</strong><br/>
+                    ${declaration.location || 'Non spécifiée'}
+                  </div>
+
+                  <p>Vérifiez si cela correspond à votre recherche ou à ce que vous avez trouvé!</p>
+                  <a href="https://found-again.web.app/declarations/${change.after.id}" class="button">Voir la déclaration</a>
+                </div>
+                <div class="footer">
+                  <p>© 2025 Found Again. Tous droits réservés.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          try {
+            await transporter.sendMail({
+              from: process.env.GMAIL_USER,
+              to: userData.email,
+              subject: `${emoji} Nouvelle déclaration: ${declaration.objectName}`,
+              html: htmlContent
+            });
+
+            console.log(`Email de déclaration envoyé à ${userData.email}`);
+          } catch (emailError) {
+            console.error(`Erreur envoi email à ${userData.email}:`, emailError);
+          }
+        }
+      }
+
+      // Logger dans Firestore
+      await admin.firestore().collection('emailLogs').add({
+        userId: userId,
+        recipient: 'all_users',
+        subject: `Déclaration mise à jour: ${declaration.objectName}`,
+        type: 'notification',
+        status: 'sent',
+        sentAt: admin.firestore.Timestamp.now(),
+        declarationId: change.after.id,
         declarationType: declaration.type,
         sentToAllUsers: true
       });
