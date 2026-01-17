@@ -21,7 +21,7 @@ import { MatIconModule } from "@angular/material/icon";
               (change)="onCategoryChange($event)"
               class="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl focus:border-[#009245] focus:ring-2 focus:ring-[#009245]/10 outline-none transition-all duration-200 cursor-pointer font-medium text-gray-700 dark:text-gray-200"
               >
-              <option value="">Sélectionnez une catégorie</option>
+              <option value="" selected>Sélectionnez une catégorie</option>
               @for (category of categories; track category) {
                 <option
                   [value]="category.name"
@@ -32,7 +32,7 @@ import { MatIconModule } from "@angular/material/icon";
               }
             </select>
             <button
-              (click)="toggleAddCategory()"
+              (click)="toggleAddCategory($event)"
               class="px-4 py-3 border-2 border-[#009245] text-[#009245] rounded-xl hover:bg-[#009245] hover:text-white transition-all duration-200 font-medium flex items-center gap-2"
               title="Ajouter une nouvelle catégorie"
               >
@@ -63,14 +63,14 @@ import { MatIconModule } from "@angular/material/icon";
       
             <div class="flex gap-2">
               <button
-                (click)="createCategory()"
+                (click)="createCategory($event)"
                 [disabled]="!newCategoryName.trim()"
                 class="flex-1 px-4 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a35] disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
                 >
                 Créer
               </button>
               <button
-                (click)="toggleAddCategory()"
+                (click)="toggleAddCategory($event)"
                 class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-all font-medium"
                 >
                 Annuler
@@ -152,7 +152,9 @@ export class CategorySelectorComponent implements OnInit {
       this.categorySelected.emit(this.selectedCategoryId);
    }
 
-   toggleAddCategory(): void {
+   toggleAddCategory(event: Event): void {
+      event.preventDefault();
+      event.stopPropagation();
       this.showAddCategoryForm.update(value => !value);
       if (!this.showAddCategoryForm()) {
          this.newCategoryName = '';
@@ -160,7 +162,9 @@ export class CategorySelectorComponent implements OnInit {
       }
    }
 
-   createCategory(): void {
+   createCategory(event: Event): void {
+      event.preventDefault();
+      event.stopPropagation();
       if (!this.newCategoryName.trim()) {
          console.warn('Le nom de la catégorie est vide');
          return;

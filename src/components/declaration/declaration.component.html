@@ -117,7 +117,7 @@
             </div>
 
             <!-- Category -->
-            <app-category-selector [selectedCategoryId]="selectedCategory"
+            <app-category-selector [selectedCategoryId]="selectedCategory || existingDeclaration()?.category || ''"
             (categorySelected)="onCategorySelected($event)"></app-category-selector>
 
             <!-- Description -->
